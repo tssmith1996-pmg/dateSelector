@@ -3,3 +3,6 @@
 /node_modules
 webpack.statistics.dev.html
 webpack.statistics.prod.html
+.gitignore
+/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.23.04.03.pbiviz
+/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.23.04.03.pbiviz
