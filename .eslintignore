@@ -1,0 +1,9 @@
+node_modules
+dist
+coverage
+src_15_3
+src_17.3
+test
+.eslintrc.js
+karma.conf.ts
+test.webpack.config.js
