@@ -27,8 +27,8 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
     <>
       <RngeTooltip
         title={undefined}
-        topRow={`Number of ${stepValue}s from today`}
-        detailRow={`Set the date range by adding or subtracting ${stepValue}s. Click away to save & close.`}
+        topRow={`Extend ${stepValue}s from today`}
+        detailRow={`Set the date range by extending ${stepValue}s forward(+) or backward(-) from today. Click away to save & close.`}
         placement="left"
       >
         <TextField
