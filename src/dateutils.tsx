@@ -259,7 +259,7 @@ export const getInitRange = (
     firstMonthOfScope: month(0, rangeScope.start, rangeScope.start),
     lastMonthOfScope: month(0, rangeScope.end, endOfDay(rangeScope.end)),
     monthFromScopeEnd: day(0, subMonths(rangeScope.end,12), rangeScope.end),
-    days30FromScopeEnd: day(0, subDays(rangeScope.end,30), rangeScope.end),
+    days30FromScopeEnd: day(0, subDays(rangeScope.end,29), rangeScope.end),
   };
   return rtn !== ""
     ? _rnge
