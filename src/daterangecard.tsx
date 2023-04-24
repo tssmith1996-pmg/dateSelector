@@ -1,3 +1,10 @@
+/**
+
+This component represents a date range card that displays a timeline of dates.
+It receives several props to customize its behavior and appearance.
+@param {dateCardProps} props - An object containing the props passed to this component.
+@returns {JSX.Element} A JSX element that renders the date range card.
+*/
 import * as React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Zoom from "@mui/material/Zoom";
