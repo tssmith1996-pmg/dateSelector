@@ -32,7 +32,7 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
         placement="left"
       >
         <TextField
-          variant="outlined"
+          variant="standard"
           type="number"
           onChange={handleInputChange}
           sx={{ width: 76 }}
