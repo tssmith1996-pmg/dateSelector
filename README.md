@@ -66,7 +66,7 @@ The current version of the DateSelector visual is v2023.04.24.
 The DateSelector visual does not have any dependencies.
 
 ## Support
-If you encounter any issues while using the DateSelector visual, please visit the [support page](https://github.com/o221/dateSelector/issues) for assistance. Alternatively add any comments or feature requests on the [discussion page] (https://github.com/o221/dateSelector/discussions)
+If you encounter any issues while using the DateSelector visual, please visit the [support page](https://github.com/o221/dateSelector/issues) for assistance. Alternatively add any comments or feature requests on the [discussion page](https://github.com/o221/dateSelector/discussions)
 
 ## License
 The DateSelector visual is released under the MIT License. Please refer to the LICENSE file for more information.
