@@ -38,6 +38,13 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
           sx={{ width: 76 }}
           value={intervalValue}
           size="small"
+          onKeyDown={(ev) => {
+            // console.log(`Pressed keyCode ${ev.key}`);
+            if (ev.key === "Enter") {
+              handleClose();
+              ev.preventDefault();
+            }
+          }}
         />
       </RngeTooltip>
       <RngeTooltip title={`Save & Close`} placement="top">
