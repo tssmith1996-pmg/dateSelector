@@ -1,7 +1,7 @@
 # Date Selector Visual
 
 ## A compact rich functionality date range filter for Power BI
-The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.04.20.pbiviz) is a date range selector designed to be used with Microsoft Power BI.
+The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.04.24.pbiviz) is a date range selector designed to be used with Microsoft Power BI.
 
 ## Features
 - Allows users to select a range of dates with a compact user-friendly interface.
@@ -48,7 +48,7 @@ Can be synced with last  page viewed
 ## Installation
 To use the DateSelector visual, you can import it into your Power BI report by following these steps:
 
-Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.04.20.pbiviz) and import it into Power BI using the "Import from file" option.
+Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.04.24.pbiviz) and import it into Power BI using the "Import from file" option.
 
 1. Open the report in Power BI Desktop.
 2. In the Visualizations pane, select the ellipsis (...).
@@ -60,7 +60,7 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly.
 
 ## Version
-The current version of the DateSelector visual is 23.04.03.
+The current version of the DateSelector visual is v2023.04.24.
 
 ## Dependencies
 The DateSelector visual does not have any dependencies.
