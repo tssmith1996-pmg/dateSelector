@@ -48,10 +48,10 @@ export interface dateCardProps {
   themeColor?: string;
 
   // value representing the theme font to use
-  themeFont?: React.CSSProperties['fontFamily'];
+  themeFont?: any;
 
   // value representing the theme mode to use
-  themeMode?: 'light' | 'dark';
+  themeMode?: any;
 
   // boolean value indicating whether to show the help icon
   showHelpIcon?: boolean;

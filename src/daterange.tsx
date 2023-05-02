@@ -40,25 +40,33 @@ export default function DateRange(props: DateRangeProps) {
     setEndText(format(dates.end, "yyyy-MM-dd"));
   }, [dates]);
 
-  const handleInput = (e) => {
-    const date: string = e.target.value;
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateValue: string = e.target.value;
     if (e.target.id === "start") {
-      setStartText(date);
-    } else setEndText(date);
+      setStartText(dateValue);
+    } else setEndText(dateValue);
   };
 
   const dateSpan = inputParms(dates, rangeScope);
   const topRow = useHelpContext().showHelp ? "Enter Range" : dateSpan.string;
 
-  const handleBlur = (e) => {
-    const dte: Date = parse(e.target.value, "yyyy-MM-dd", new Date());
+  const doUpdate = (id: "start" | "end", value: string) => {
+    const dte: Date = parse(value, "yyyy-MM-dd", new Date());
     if (isValid(dte)) {
-      if (e.target.id === "start") {
+      if (id === "start") {
         handleVal([dte, dates.end]);
       } else handleVal([dates.start, dte]);
     } else {
       setStartText(format(dates.start, "yyyy-MM-dd"));
       setEndText(format(dates.end, "yyyy-MM-dd"));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target.id === "start") {
+      doUpdate("start", e.target.value);
+    } else {
+      doUpdate("end", e.target.value);
     }
   };
 
@@ -83,11 +91,12 @@ export default function DateRange(props: DateRangeProps) {
             <DateField
               id="start"
               value={startText}
+              underline={underline}
               error={!dateSpan.toValid}
               onBlur={handleBlur}
+              doUpdate={doUpdate}
               onChange={handleInput}
               onFocus={showUndeline}
-              underline={underline}
             />
           </Grid>
           {/* {showSingleDay && ( */}
@@ -98,10 +107,11 @@ export default function DateRange(props: DateRangeProps) {
                 id="end"
                 value={endText}
                 error={!dateSpan.toValid}
+                underline={underline}
                 onBlur={handleBlur}
                 onChange={handleInput}
                 onFocus={showUndeline}
-                underline={underline}
+                doUpdate={doUpdate}
               />
             </Grid>
           </>
