@@ -4,7 +4,7 @@
         "displayName": "DateSelector",
         "guid": "dateSel4A1A0033E6F54D1B809B6E51058D54E3",
         "visualClassName": "Visual",
-        "version": "v2023.05.02",
+        "version": "v2023.05.05",
         "description": "Date Range Selector",
         "supportUrl": "https://github.com/o221/powerBI-dateSelector/issues",
         "gitHubUrl": "https://github.com/o221/powerBI-dateSelector"
