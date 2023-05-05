@@ -60,7 +60,7 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly.
 
 ## Version
-The current version of the DateSelector visual is v2023.04.24.
+The current version of the DateSelector visual is v2023.05.05.
 
 ## Dependencies
 The DateSelector visual does not have any dependencies.
