@@ -39,7 +39,7 @@ The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/
      * Today, YTD, etc.
      * or ...
 Can be synced with last  page viewed
-     * With *pre-set* range there's no sync respected on the pre-set pages.
+     * With *pre-set* range there's *no sync respected* on the pre-set pages.
  #### Short cut keys 
   * when slider is active use fast shortcuts
  #### Help 
