@@ -62,8 +62,8 @@ To use the DateSelector visual, add it to your report canvas and connect it to t
 ## Version
 The current version of the DateSelector visual is v2023.05.05.
 
-## Dependencies
-The DateSelector visual does not have any dependencies.
+## Limitations
+The DateSelector visual currently supports only English language. Internationalisation is not yet planned.
 
 ## Support
 If you encounter any issues while using the DateSelector visual, please visit the [support page](https://github.com/o221/dateSelector/issues) for assistance. Alternatively add any comments or feature requests on the [discussion page](https://github.com/o221/dateSelector/discussions)
