@@ -60,7 +60,7 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly. 
 
 ## Example 
-A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20sample.pbix)
+A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20sample.pbix) Download it and open with Power BI Desktop.
 
 ## Version
 The current version of the DateSelector visual is v2023.05.05.
