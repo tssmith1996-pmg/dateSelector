@@ -130,6 +130,7 @@ export class Visual implements IVisual {
         start: minDate,
         end: maxDate,
       };
+      
       // console.log(this.rangeScope)
       DateCardClass.update({
         rangeScope: this.rangeScope,

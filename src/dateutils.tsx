@@ -173,7 +173,7 @@ export const week = (
   w: 0 | 1 | 2 | 3 | 4 | 5 | 6,
   startBaseDate: Date = startOfToday(),
   full?: boolean
-): dateRange => {
+): dateRange => { 
   // if (full) {console.log(full, getDay(startBaseDate),w,startBaseDate)}
   const j = full ? (w === getDay(subDays(startBaseDate,1)) ? i : i + 1) : i;
   return {
@@ -246,21 +246,36 @@ export const getInitRange = (
     thisYear: year(0, yearStartMonth),
     lastYear: year(1, yearStartMonth),
     nextYear: year(-1, yearStartMonth),
-    ytdToday: {start: year(0, yearStartMonth).start, end: endOfToday()},
-    ytdLastMonth: {start: year(0, yearStartMonth).start > month(1).end?year(1, yearStartMonth).start:year(0, yearStartMonth).start, end: month(1).end},
-    ytdThisMonth: {start: year(0, yearStartMonth).start, end: month(0).end},
-    ytdCalToday: {start: year(0, 0).start, end: endOfToday()},
-    ytdCalLastMonth: {start: year(0, 0).start, end: month(1).end},
-    ytdCalThisMonth: {start: year(0, 0).start, end: month(0).end},
-    ytToday: {start: addDays(subMonths(startOfToday(), 12), 1), end: endOfToday()},
-    yearToLastMonth: {start: startOfMonth(subMonths(startOfToday(), 12)), end: endOfMonth(subMonths(endOfToday(), 1))},
-    yearToThisMonth: {start: startOfMonth(subMonths(startOfToday(), 11)), end: endOfMonth(subMonths(endOfToday(), 0))},
+    ytdToday: { start: year(0, yearStartMonth).start, end: endOfToday() },
+    ytdLastMonth: {
+      start:
+        year(0, yearStartMonth).start > month(1).end
+          ? year(1, yearStartMonth).start
+          : year(0, yearStartMonth).start,
+      end: month(1).end,
+    },
+    ytdThisMonth: { start: year(0, yearStartMonth).start, end: month(0).end },
+    ytdCalToday: { start: year(0, 0).start, end: endOfToday() },
+    ytdCalLastMonth: { start: year(0, 0).start, end: month(1).end },
+    ytdCalThisMonth: { start: year(0, 0).start, end: month(0).end },
+    ytToday: {
+      start: addDays(subMonths(startOfToday(), 12), 1),
+      end: endOfToday(),
+    },
+    yearToLastMonth: {
+      start: startOfMonth(subMonths(startOfToday(), 12)),
+      end: endOfMonth(subMonths(endOfToday(), 1)),
+    },
+    yearToThisMonth: {
+      start: startOfMonth(subMonths(startOfToday(), 11)),
+      end: endOfMonth(subMonths(endOfToday(), 0)),
+    },
     firstWeekOfScope: week(0, weekStartDay, rangeScope.start),
     lastWeekOfScope: week(0, weekStartDay, rangeScope.end, true),
     firstMonthOfScope: month(0, rangeScope.start, rangeScope.start),
     lastMonthOfScope: month(0, rangeScope.end, endOfDay(rangeScope.end)),
-    monthFromScopeEnd: day(0, subMonths(rangeScope.end,12), rangeScope.end),
-    days30FromScopeEnd: day(0, subDays(rangeScope.end,29), rangeScope.end),
+    monthFromScopeEnd: day(0, subMonths(rangeScope.end, 12), rangeScope.end),
+    days30FromScopeEnd: day(0, subDays(rangeScope.end, 29), rangeScope.end),
   };
   return rtn !== ""
     ? _rnge

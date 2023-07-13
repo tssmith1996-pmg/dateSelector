@@ -20,7 +20,6 @@ export default function UseCurrent(props: UseCurrentProps) {
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
-
   const handleVal = (val: any) => {
     props.handleVal([val.start, val.end]);
   };
