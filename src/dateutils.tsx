@@ -55,6 +55,7 @@ import isWithinInterval from "date-fns/isWithinInterval";
 import { stepBool, dateRange, SliderProps } from "./interface";
 import { DATEUTILS } from "./constants";
 import getDay from 'date-fns/getDay'
+// import compareAsc from 'date-fns/compareAsc'
 
 const { periodTip, periodThis, periodGranularity } = DATEUTILS;
 
@@ -246,7 +247,7 @@ export const getInitRange = (
     lastYear: year(1, yearStartMonth),
     nextYear: year(-1, yearStartMonth),
     ytdToday: {start: year(0, yearStartMonth).start, end: endOfToday()},
-    ytdLastMonth: {start: year(0, yearStartMonth).start, end: month(1).end},
+    ytdLastMonth: {start: year(0, yearStartMonth).start > month(1).end?year(1, yearStartMonth).start:year(0, yearStartMonth).start, end: month(1).end},
     ytdThisMonth: {start: year(0, yearStartMonth).start, end: month(0).end},
     ytdCalToday: {start: year(0, 0).start, end: endOfToday()},
     ytdCalLastMonth: {start: year(0, 0).start, end: month(1).end},

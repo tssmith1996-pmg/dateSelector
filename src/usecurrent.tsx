@@ -41,6 +41,7 @@ export default function UseCurrent(props: UseCurrentProps) {
             {current
               .filter((item) => {
                 if (item.thisRange !== null) {
+                  // console.log(item.thisRange," : ",item.thisPeriod)
                   const x = ttl ? item.tip !== "" : item.tip === "";
                   const y = areIntervalsOverlapping(
                     item.thisRange,
