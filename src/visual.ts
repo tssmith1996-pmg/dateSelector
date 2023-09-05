@@ -90,13 +90,13 @@ export class Visual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-    // console.log("opt: ",options)
+    // Check if options are valid
     if (!Visual.areOptionsValid(options)) {
       this.clearData();
-      return null;
+      return;
     }
 
-    //  Get settings
+    // Get formatting settings
     this.formattingSettings =
       this.formattingSettingsService.populateFormattingSettingsModel(
         VisualSettingsModel,
@@ -111,8 +111,9 @@ export class Visual implements IVisual {
 
     if (Visual.isDataViewValid(dataView)) {
       this.clearData();
-      return null;
+      return;
     }
+
     //  Set up the date scope of the slider
     if (isDataUpdate || !this.initialized) {
       // Get the date values
