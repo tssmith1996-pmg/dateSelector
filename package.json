@@ -23,7 +23,7 @@
     "date-fns": "*",
     "lodash.debounce": "*",
     "powerbi-models": "*",
-    "powerbi-visuals-api": "~5.4.0",
+    "powerbi-visuals-api": "*",
     "powerbi-visuals-utils-formattingmodel": "*",
     "powerbi-visuals-utils-interactivityutils": "*",
     "powerbi-visuals-utils-svgutils": "*",
