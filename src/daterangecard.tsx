@@ -1,5 +1,4 @@
-/**
-
+/*
 This component represents a date range card that displays a timeline of dates.
 It receives several props to customize its behavior and appearance.
 @param {dateCardProps} props - An object containing the props passed to this component.
@@ -8,7 +7,8 @@ It receives several props to customize its behavior and appearance.
 import * as React from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import Zoom from "@mui/material/Zoom";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
+import { SetTheme } from "./settheme";
 import { useHotkeys } from "react-hotkeys-hook";
 import TopRow from "./daterangetoprow";
 import Timeline from "./timeline";
@@ -32,6 +32,7 @@ export default function DateRangeCard(props: dateCardProps) {
     themeColor,
     themeFont,
     themeMode,
+    fontSize,
     showCurrent,
     showIconText,
     show2ndSlider,
@@ -40,16 +41,11 @@ export default function DateRangeCard(props: dateCardProps) {
     showHelpIcon,
   } = props;
 
-  const theme = createTheme({
-    palette: {
-      mode: themeMode,
-      primary: {
-        main: themeColor,
-      },
-    },
-    typography: {
-      fontFamily: themeFont,
-    },
+  const theme = SetTheme({
+    themeMode: themeMode,
+    themeColor: themeColor,
+    themeFont: themeFont,
+    fontSize: fontSize,
   });
 
   const [openSlider, setOpenSlider] = React.useState<boolean>(showSlider);
@@ -95,7 +91,7 @@ export default function DateRangeCard(props: dateCardProps) {
             stepViz={stepViz}
             stepOpen={stepOpen}
             stepValue={stepValue}
-            handleClick={() =>  setStepOpen(!stepOpen)}
+            handleClick={() => setStepOpen(!stepOpen)}
             setStepOpen={setStepOpen}
             vizOpt={vizOpt}
             showCurrent={showCurrent}

@@ -1,5 +1,6 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
+import { useTheme } from "@mui/material/styles";
 
 interface DateFieldProps {
   id: "start" | "end";
@@ -8,6 +9,7 @@ interface DateFieldProps {
   underline?: boolean;
   type?: string;
   width?: number;
+  InputFontSize?: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
   onFocus: () => void;
@@ -23,8 +25,7 @@ export const DateField: React.FC<DateFieldProps> = ({
   onFocus,
   doUpdate,
   underline,
-  type = "date",
-  width = 95
+  type = "date"
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -33,10 +34,11 @@ export const DateField: React.FC<DateFieldProps> = ({
       if (inputElement && inputElement.value) {
         const dateValue: string = inputElement.value;
         doUpdate(id, dateValue);
-        console.log(id, dateValue);
+        // console.log(id, dateValue);
       }
     }
   };
+  const themeFontSize = useTheme().typography.fontSize;
 
   return (
     <TextField
@@ -44,11 +46,12 @@ export const DateField: React.FC<DateFieldProps> = ({
       sx={{
         "& input[type='date']::-webkit-calendar-picker-indicator": {
           display: "none",
-          WebkitAppearance: "none"
+          WebkitAppearance: "none",
         },
-        width: { width }
+        width: themeFontSize * 6,
       }}
       variant="standard"
+      size="small"
       type={type}
       error={error}
       value={value}
@@ -56,10 +59,13 @@ export const DateField: React.FC<DateFieldProps> = ({
       onBlur={onBlur}
       onFocus={onFocus}
       placeholder={"yyyy-MM-dd"}
-      InputProps={{
-        disableUnderline: underline
+      inputProps={{
+        style: { fontSize: themeFontSize, display: "flex", flexWrap: "wrap" },
       }}
-      onKeyPress={handleKeyPress}
+      InputProps={{
+        disableUnderline: underline,
+      }}
+      onKeyDown={handleKeyPress}
     />
   );
 };

@@ -99,10 +99,50 @@
                     }
                 },
                 "fontSize": {
+                    "displayName": "Font Size",
                     "type": {
-                        "formatting": {
-                            "fontSize": true
-                        }
+                        "enumeration": [
+                            {
+                                "displayName": "8pt",
+                                "description": "8pt",
+                                "value": "8"
+                            },
+                            {
+                                "displayName": "9pt",
+                                "description": "9pt",
+                                "value": "9"
+                            },
+                            {
+                                "displayName": "10pt",
+                                "description": "10pt",
+                                "value": "10"
+                            },
+                            {
+                                "displayName": "12pt",
+                                "description": "12pt",
+                                "value": "12"
+                            },
+                            {
+                                "displayName": "14pt",
+                                "description": "14pt",
+                                "value": "14"
+                            },
+                            {
+                                "displayName": "16pt",
+                                "description": "16pt",
+                                "value": "16"
+                            },
+                            {
+                                "displayName": "18pt",
+                                "description": "18pt",
+                                "value": "18"
+                            },
+                            {
+                                "displayName": "20pt",
+                                "description": "20pt",
+                                "value": "20"
+                            }
+                        ]
                     }
                 },
                 "fontFamily": {
@@ -743,10 +783,11 @@
                         ]
                     }
                 },
-
                 "payRefDate": {
                     "displayNameKey": "payRefDate",
-                    "type": {"text": true}
+                    "type": {
+                        "text": true
+                    }
                 },
                 "fmtPay": {
                     "displayName": "Pay Period format",

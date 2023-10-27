@@ -38,7 +38,6 @@ import { AdvancedFilter, IFilterColumnTarget } from "powerbi-models";
 import { interactivityFilterService } from "powerbi-visuals-utils-interactivityutils";
 import extractFilterColumnTarget = interactivityFilterService.extractFilterColumnTarget;
 
-
 // Formatting Options Panel
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { VisualSettingsModel } from "./settings";
@@ -131,7 +130,7 @@ export class Visual implements IVisual {
         start: minDate,
         end: maxDate,
       };
-      
+
       // console.log(this.rangeScope)
       DateCardClass.update({
         rangeScope: this.rangeScope,
@@ -148,9 +147,9 @@ export class Visual implements IVisual {
 
     if (
       startRange === "sync" ||
-      (this.dateInitRange === startRange && this.start) 
+      (this.dateInitRange === startRange && this.start)
       // check if an init range has already been set up
-      ) {
+    ) {
       this.dateRangeFilter = {
         start: this.start === null ? this.rangeScope.start : this.start,
         end: this.end === null ? this.rangeScope.end : this.end,
@@ -230,6 +229,7 @@ export class Visual implements IVisual {
         themeColor: style.themeColor.value.value,
         themeFont: style.themeFont.value,
         themeMode: style.themeMode.value,
+        fontSize: style.fontSize.value.toString(),
       });
     }
   };
@@ -249,6 +249,9 @@ export class Visual implements IVisual {
     const dayIndex = num % 7;
     return dayIndex as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   };
+  // private numberToString(n: number | string): string {
+  //   return typeof n === "number" ? n.toString() : n;
+  // }
 
   /**
    * Event listener for React date changes
@@ -427,6 +430,7 @@ export class Visual implements IVisual {
    * This method is called once every time we open properties pane or when the user edit any format property.
    */
   public getFormattingModel(): powerbi.visuals.FormattingModel {
+    console.log(this.formattingSettings)
     return this.formattingSettingsService.buildFormattingModel(
       this.formattingSettings
     );

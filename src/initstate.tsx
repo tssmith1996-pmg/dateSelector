@@ -6,7 +6,7 @@ import { dateCardProps } from "./interface";
 export const initialState: dateCardProps = {
   rangeScope: {
     start: startOfYear(startOfToday()),
-    end: endOfYear(startOfToday())
+    end: endOfYear(startOfToday()),
   },
   weekStartDay: 0, // 0 = Sun
   yearStartMonth: 0, // 0 = Jan
@@ -17,7 +17,7 @@ export const initialState: dateCardProps = {
     pay: 4,
     month: 1,
     quarter: 1,
-    year: 1
+    year: 1,
   },
   stepViz: {
     day: true,
@@ -25,7 +25,7 @@ export const initialState: dateCardProps = {
     pay: false,
     month: true,
     quarter: false,
-    year: true
+    year: true,
   },
   stepFmt: {
     day: "d-MMM",
@@ -33,20 +33,21 @@ export const initialState: dateCardProps = {
     week: "w",
     month: "MMMMM",
     quarter: "'Q'Q-yy",
-    year: "yy"
+    year: "yy",
   },
   payProps: {
     desc: "Pay-Period",
     ref: new Date("2023-01-1"), //startOfYear(startOfToday()),
-    len: 14
+    len: 14,
   },
   themeColor: "#607d8b",
   themeFont: '"Segoe UI", wf_segoe-ui_normal, helvetica, arial, sans-serif',
   themeMode: "light",
+  fontSize: "16",
   showCurrent: true,
   showHelpIcon: false,
   vizOpt: false,
   showIconText: false,
   showSlider: true,
-  show2ndSlider: true
+  show2ndSlider: true,
 };

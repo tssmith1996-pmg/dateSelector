@@ -50,8 +50,14 @@ export interface dateCardProps {
   // value representing the theme font to use
   themeFont?: any;
 
+  // value representing the input font size to use
+  fontSize?: string;
+
+  // value representing the theme font size to use
+  themeFontSize?: number;
+
   // value representing the theme mode to use
-  themeMode?: any;
+  themeMode?: any //'light' | 'dark'
 
   // boolean value indicating whether to show the help icon
   showHelpIcon?: boolean;

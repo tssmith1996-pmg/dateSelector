@@ -14,10 +14,10 @@ export class StyleSettings {
     // granularity display formats
     public fmtDate: string = 'd-MM-yyyy';
     public themeColor: string = "#607d8b";
-    public themeMode: string = "light";
+    public themeMode: any = "light";
     public themeFont: string = "\"Segoe UI\", wf_segoe-ui_normal, helvetica, arial, sans-serif";
     public fontFamily: string = "\"Segoe UI\", wf_segoe-ui_normal, helvetica, arial, sans-serif";
-    public fontSize: number = 16;
+    public fontSize: string = "14";
     public fontBold: boolean = false;
     public fontUnderline: boolean = false;
     public fontItalic: boolean = false;

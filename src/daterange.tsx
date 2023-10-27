@@ -9,10 +9,11 @@ import { inputParms } from "./dateutils";
 import { DateField } from "./datefield";
 import { useHelpContext } from "./helpprovider";
 import RngeTooltip from "./rngetooltip";
+import { useTheme } from "@mui/material/styles";
 
 const TextFieldDash: React.FC = () => {
   return (
-    <Box sx={{ width: 15 }}>
+    <Box sx={{ width: useTheme().typography.fontSize *.66 }}>
       <TextField
         id="dash"
         variant="standard"

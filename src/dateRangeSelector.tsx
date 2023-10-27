@@ -40,8 +40,8 @@ export default class DateCardClass extends React.Component<
       this.setState({
         dates: {
           start: e[0],
-          end: e[1]
-        }
+          end: e[1],
+        },
       });
       this.props.onChanged(e);
     }
@@ -77,8 +77,9 @@ export default class DateCardClass extends React.Component<
       themeColor,
       themeFont,
       themeMode,
+      fontSize,
       showIconText,
-      showHelpIcon
+      showHelpIcon,
     } = this.state;
     return this.state.rangeScope.start ? (
       <>
@@ -98,6 +99,7 @@ export default class DateCardClass extends React.Component<
           showSlider={showSlider}
           showCurrent={showCurrent}
           themeColor={themeColor}
+          fontSize={fontSize}
           themeFont={themeFont}
           themeMode={themeMode}
           showIconText={showIconText}
