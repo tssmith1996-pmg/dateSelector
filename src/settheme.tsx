@@ -17,6 +17,7 @@ export function SetTheme({
   themeFont,
   fontSize,
 }: CustomThemeOptions): Theme {
+  const sze = getNum(fontSize);
   const theme = createTheme({
     palette: {
       mode: themeMode,
@@ -26,7 +27,21 @@ export function SetTheme({
     },
     typography: {
       fontFamily: themeFont,
-      fontSize: getNum(fontSize),
+      fontSize: sze > 14 ? 14 : sze,
+      // htmlFontSize: sze,
+    },
+    components: {
+      // Name of the component
+      MuiBadge: {
+        styleOverrides: {
+          // Name of the slot
+          badge: {
+            // Some CSS
+            fontSize: ".5rem",
+            textTransform: "uppercase",
+          },
+        },
+      },
     },
   });
 

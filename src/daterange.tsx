@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-import TextField from "@mui/material/TextField";
-import Box from "@mui/material/Box";
+// import TextField from "@mui/material/TextField";
+// import Box from "@mui/material/Box";
 import { format, parse, isValid } from "date-fns";
 import { DateRangeProps } from "./interface";
 import { inputParms } from "./dateutils";
@@ -10,18 +10,24 @@ import { DateField } from "./datefield";
 import { useHelpContext } from "./helpprovider";
 import RngeTooltip from "./rngetooltip";
 import { useTheme } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+import Remove from "@mui/icons-material/Remove";
 
 const TextFieldDash: React.FC = () => {
   return (
-    <Box sx={{ width: useTheme().typography.fontSize *.66 }}>
-      <TextField
-        id="dash"
-        variant="standard"
-        disabled
-        value={"-"}
-        InputProps={{ disableUnderline: true }}
-      />
-    </Box>
+    <IconButton size="small">
+      <Remove style={{ fontSize: useTheme().typography.fontSize }} color="disabled"/>
+    </IconButton>
+
+    // <Box sx={{ width: useTheme().typography.fontSize *.66 }}>
+    //   <TextField
+    //     id="dash"
+    //     variant="standard"
+    //     disabled
+    //     value={"-"}
+    //     InputProps={{ disableUnderline: true }}
+    //   />
+    // </Box>
   );
 };
 

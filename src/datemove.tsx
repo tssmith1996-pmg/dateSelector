@@ -10,7 +10,8 @@ import { DateMoveProps } from "./interface";
 import RngeTooltip from "./rngetooltip";
 
 export default function DateMove(props: DateMoveProps) {
-  const { dates, stepValue, bf, vertical, reverse, viz, handleVal } = props;
+  const { dates, stepValue, bf, vertical, reverse, handleVal } = props;
+    // viz,
 
   const [ctrl, setCtrl] = useState(false);
 
@@ -22,7 +23,7 @@ export default function DateMove(props: DateMoveProps) {
     () =>
       debounce((dt) => handleVal(dt), 500, {
         leading: false,
-        trailing: true
+        trailing: true,
       }),
     [handleVal]
   );
@@ -52,48 +53,48 @@ export default function DateMove(props: DateMoveProps) {
 
   return (
     <>
-      {viz && (
+      {/* {viz && ( */}
         <Grid
           container
           direction={reverse ? "row-reverse" : vertical ? "column" : "row"}
         >
           <Box>
-            <IconButton
-              key={mve.iconLabel + reverse + vertical + stepValue}
-              aria-label={mve.iconLabel + " a " + stepValue}
-              size="small"
-              onClick={() => handleClick(bf)}
+            <RngeTooltip
+              title={undefined}
+              topRow={mve.topRow1}
+              detailRow={mve.detailRow1}
+              placement={mve.placement}
             >
-              <RngeTooltip
-                title={undefined}
-                topRow={mve.topRow1}
-                detailRow={mve.detailRow1}
-                placement={mve.placement}
+              <IconButton
+                key={mve.iconLabel + reverse + vertical + stepValue}
+                aria-label={mve.iconLabel + " a " + stepValue}
+                size="small"
+                onClick={() => handleClick(bf)}
               >
                 {mve.iconT}
-              </RngeTooltip>
-            </IconButton>
+              </IconButton>
+            </RngeTooltip>
           </Box>
           <Box>
-            <IconButton
-              key={mve.placement + reverse + vertical + stepValue}
-              id="eb"
-              aria-label={mve.placement + " a " + stepValue}
-              size="small"
-              onClick={handleExt}
+            <RngeTooltip
+              title={undefined}
+              topRow={mve.topRow2}
+              detailRow={mve.detailRow2}
+              placement={mve.placement}
             >
-              <RngeTooltip
-                title={undefined}
-                topRow={mve.topRow2}
-                detailRow={mve.detailRow2}
-                placement={mve.placement}
+              <IconButton
+                key={mve.placement + reverse + vertical + stepValue}
+                id="eb"
+                aria-label={mve.placement + " a " + stepValue}
+                size="small"
+                onClick={handleExt}
               >
                 {mve.iconB}
-              </RngeTooltip>
-            </IconButton>
+              </IconButton>
+            </RngeTooltip>
           </Box>
         </Grid>
-      )}
+      {/* )} */}
     </>
   );
 }

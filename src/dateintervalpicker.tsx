@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { Box, Popover, TextField } from "@mui/material";
-import ClickAwayListener from "@mui/material/ClickAwayListener";
-import Paper from "@mui/material/Paper";
+import {
+  Popover,
+  TextField,
+  ClickAwayListener,
+  Paper,
+} from "@mui/material";
 import { Interval, subDays } from "date-fns";
 import { getIntervalFunction } from "./dateutils";
 import IconButton from "@mui/material/IconButton";
@@ -16,6 +19,7 @@ interface IntervalParmsProps {
   intervalValue: number;
   stepValue: string;
 }
+
 const IntervalParms: React.FC<IntervalParmsProps> = ({
   setIntervalValue,
   handleClose,
@@ -28,18 +32,20 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
       <RngeTooltip
         title={undefined}
         topRow={`Extend ${stepValue}s from today`}
-        detailRow={`Set the date range by extending ${stepValue}s forward(+) or backward(-) from today. Click away to save & close.`}
+        detailRow={`Set the date range by extending ${stepValue}s forward (+) or backward (-) from today. Click away to save & close.`}
         placement="left"
       >
         <TextField
           variant="standard"
+          inputProps={{
+            style: { fontSize: 14, display: "flex", flexWrap: "wrap" },
+          }}
           type="number"
           onChange={handleInputChange}
           sx={{ width: 76 }}
           value={intervalValue}
           size="small"
           onKeyDown={(ev) => {
-            // console.log(`Pressed keyCode ${ev.key}`);
             if (ev.key === "Enter") {
               handleClose();
               ev.preventDefault();
@@ -47,14 +53,14 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
           }}
         />
       </RngeTooltip>
-      <RngeTooltip title={`Save & Close`} placement="top">
+      <RngeTooltip title="Save & Close" placement="top">
         <IconButton size="small" onClick={handleClose}>
-          <CheckIcon />
+          <CheckIcon style={{ fontSize: 14 }} color="primary" />
         </IconButton>
       </RngeTooltip>
-      <RngeTooltip title={`Reset to 0`} placement="top">
+      <RngeTooltip title="Reset to 0" placement="top">
         <IconButton size="small" onClick={() => setIntervalValue(0)}>
-          <RefreshIcon />
+          <RefreshIcon style={{ fontSize: 14 }} color="primary" />
         </IconButton>
       </RngeTooltip>
     </>
@@ -126,7 +132,7 @@ const DateIntervalPicker: React.FC<DateIntervalPickerProps> = ({
 
   return (
     <>
-      <Box sx={{ maxHeight: 18 }} onContextMenu={handleContextMenu}>
+      <div onContextMenu={handleContextMenu}>
         <Popover
           open={isOpen}
           sx={{ zIndex: 1000 }}
@@ -159,8 +165,8 @@ const DateIntervalPicker: React.FC<DateIntervalPickerProps> = ({
             </Paper>
           </ClickAwayListener>
         </Popover>
-        {children}
-      </Box>
+          {children}
+      </div>
     </>
   );
 };

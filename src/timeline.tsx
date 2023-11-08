@@ -1,7 +1,7 @@
 import * as React from "react";
-import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
-import DateMove from "./datemove";
+// import DateMove from "./datemove";
+// import Box from "@mui/material/Box";
 import RangeSlider from "./rangeslider";
 
 function Timeline({
@@ -18,7 +18,7 @@ function Timeline({
 }) {
   return (
     <>
-      <Grid xs="auto">
+      {/* <Grid xs="auto">
         <Box>
           <DateMove
             dates={dates}
@@ -45,7 +45,7 @@ function Timeline({
             viz={true}
           />
         </Box>
-      </Grid>
+      </Grid> */}
       <Grid xs marginLeft={1} paddingTop={0.3}>
         <RangeSlider
           dates={dates}

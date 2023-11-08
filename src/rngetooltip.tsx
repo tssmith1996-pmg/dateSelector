@@ -57,15 +57,15 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
   );
 })(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
-    backgroundColor: theme.palette.primary.dark,
-    // border: theme.palette.primary.dark,
-    // color: theme.palette.primary.contrastText,
-    fontSize: 9, fontWeight: 400,
+    backgroundColor: theme.palette.text.primary,
+    border: theme.palette.text.primary,
+    color: theme.palette.background.paper,
+    fontSize: 8, fontWeight: 400,
     maxWidth: 250
   },
   [`& .${tooltipClasses.arrow}`]: {
-    color: theme.palette.primary.dark,
-    border: theme.palette.primary.dark
+    color: theme.palette.text.primary,
+    border: theme.palette.text.primary
   }
 }));
 

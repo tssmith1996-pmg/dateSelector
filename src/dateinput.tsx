@@ -28,7 +28,7 @@ function DateInput({
           handleVal={handleVal}
         />
       </Grid>
-      <Zoom in={openSlider}>
+      {/* <Zoom in={openSlider}> */}
         <Grid xs="auto">
           <DateMove
             dates={dates}
@@ -42,7 +42,7 @@ function DateInput({
             viz={openSlider}
           />
         </Grid>
-      </Zoom>
+      {/* </Zoom> */}
       <Grid xs="auto" paddingRight={1}>
         <StepToggle
           stepViz={stepViz}
@@ -65,7 +65,7 @@ function DateInput({
           />
         </Grid>
       </Zoom>
-      <Zoom in={openSlider}>
+      {/* <Zoom in={openSlider}> */}
         <Grid xs="auto">
           <DateMove
             dates={dates}
@@ -79,7 +79,7 @@ function DateInput({
             viz={openSlider}
           />
         </Grid>
-      </Zoom>
+      {/* </Zoom> */}
     </>
   );
 }

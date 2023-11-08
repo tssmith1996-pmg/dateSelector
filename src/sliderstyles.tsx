@@ -17,7 +17,7 @@ export const styleB = {
     }
   },
   "& .MuiSlider-markLabel": {
-    fontSize: "0.65rem",
+    fontSize: "0.5rem",
     top: 24
   },
   "& .MuiSlider-track": {
@@ -45,7 +45,7 @@ export const styleT = {
     }
   },
   "& .MuiSlider-markLabel": {
-    fontSize: "0.65rem",
+    fontSize: "0.5rem",
     fontWeight: 500,
     top: 0
   }

@@ -1,7 +1,7 @@
 import * as React from "react";
-import ToggleButton from "@mui/material/ToggleButton";
+import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 import BlurOn from "@mui/icons-material/BlurOn";
 import { stepProps } from "./interface";
 import { DATEUTILS, STEP_TOGGLE } from "./constants";
@@ -33,7 +33,7 @@ export default function StepToggle(props: stepProps) {
 
   return (
     !viz && (
-      <ToggleButton
+      <IconButton
         value="on"
         size="small"
         onClick={props.onClick}
@@ -44,21 +44,22 @@ export default function StepToggle(props: stepProps) {
           sx={{
             "& .MuiBadge-badge": {
               right: -2,
-              top: -1
-            }
+              top: -1,
+            },
           }}
-          badgeContent={
-            <Typography
-              variant="overline"
-              sx={{ fontSize: 8, textTransform: "uppercase" }}
-            >
-              {<span>{stepValue.charAt(0)}</span>}
-            </Typography>
-          }
+          badgeContent={stepValue.charAt(0)}
+          // {
+          //   <Typography
+          //     variant="overline"
+          //     sx={{ fontsize: ".5em", textTransform: "uppercase" }}
+          //   >
+          //     {<span>{stepValue.charAt(0)}</span>}
+          //   </Typography>
+          // }
           //color="primary"
           anchorOrigin={{
             vertical: "top",
-            horizontal: "right"
+            horizontal: "right",
           }}
         >
           <RngeTooltip
@@ -67,10 +68,10 @@ export default function StepToggle(props: stepProps) {
             detailRow={DetailRow}
             placement="bottom"
           >
-            <BlurOn style={{ fontSize: 16 }} color="primary" />
+            <BlurOn style={{ fontSize: "inherit" }} color="primary" />
           </RngeTooltip>
         </Badge>
-      </ToggleButton>
+      </IconButton>
     )
   );
 }

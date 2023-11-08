@@ -38,6 +38,7 @@ export const DateField: React.FC<DateFieldProps> = ({
       }
     }
   };
+
   const themeFontSize = useTheme().typography.fontSize;
 
   return (
@@ -48,7 +49,7 @@ export const DateField: React.FC<DateFieldProps> = ({
           display: "none",
           WebkitAppearance: "none",
         },
-        width: themeFontSize * 6,
+        width: themeFontSize * 6.2,
       }}
       variant="standard"
       size="small"

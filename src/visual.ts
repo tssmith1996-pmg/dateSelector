@@ -40,11 +40,13 @@ import extractFilterColumnTarget = interactivityFilterService.extractFilterColum
 
 // Formatting Options Panel
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
-import { VisualSettingsModel } from "./settings";
+import { VisualSettingsModel } from "./vsettings";
+// import format from "date-fns/format";
 
 // React integration
 import * as React from "react";
 import { render } from "react-dom";
+
 // react application interfaces
 import DateCardClass from "./dateRangeSelector";
 import { getInitRange } from "./dateutils";
@@ -52,39 +54,56 @@ import { getInitRange } from "./dateutils";
 export class Visual implements IVisual {
   private target: HTMLElement;
   private reactRoot: React.ComponentElement<any, any>;
+  private host: powerbi.extensibility.visual.IVisualHost;
+
+  // formatiing pane
   private formattingSettings: VisualSettingsModel;
   private previousSettings: VisualSettingsModel | null = null;
   private formattingSettingsService: FormattingSettingsService;
+
+  // state setting
+  private initialized: boolean = false;
+
+  // filter object
   private static filterObjectProperty: {
     objectName: string;
     propertyName: string;
   } = { objectName: "general", propertyName: "filter" };
   private filterTarget!: IFilterColumnTarget;
-  private initialized: boolean = false;
-  private dateInitRange: string;
+
   // Initial date selection
-  public start: Date | null = null;
-  public end: Date | null = null;
+  // scope range determined by data view
   private rangeScope: {
     start: Date | null;
     end: Date | null;
   } = { start: null, end: null };
+  private lastRangeScope: {
+    start: Date | null;
+    end: Date | null;
+  };
+  // filter range determined by visual
+  private dateInitRange: string;
+  public start: Date | null = null;
+  public end: Date | null = null;
   private dateRangeFilter: {
     start: Date | null;
     end: Date | null;
   } = { start: null, end: null };
   private prevFilteredStartDate: Date | null = null;
   private prevFilteredEndDate: Date | null = null;
-  private host: powerbi.extensibility.visual.IVisualHost;
 
   constructor(options: VisualConstructorOptions) {
-    // console.log('Visual constructor', options);
+    // console.log('Visual constructor') //, options);
+    //Formatting Pane
     this.formattingSettingsService = new FormattingSettingsService();
+
+    // React integration
     this.reactRoot = React.createElement(DateCardClass, {
       onChanged: this.handleVal,
     });
     this.target = options.element;
     this.host = options.host;
+    this.host.hostCapabilities.allowInteractions = false;
     render(this.reactRoot, this.target);
   }
 
@@ -99,11 +118,10 @@ export class Visual implements IVisual {
     this.formattingSettings =
       this.formattingSettingsService.populateFormattingSettingsModel(
         VisualSettingsModel,
-        options.dataViews
+        options.dataViews[0]
       );
 
-    const isDataUpdate =
-      options.type === VisualUpdateType.Data || this.rangeScope.start === null;
+    const isDataUpdate = options.type === VisualUpdateType.Data;
     const isSettingsUpdate = this.previousSettings !== this.formattingSettings;
 
     const dataView: DataView = options.dataViews[0];
@@ -113,17 +131,21 @@ export class Visual implements IVisual {
       return;
     }
 
-    //  Set up the date scope of the slider
-    if (isDataUpdate || !this.initialized) {
-      // Get the date values
-      const cat: powerbi.DataViewCategoryColumn =
-        dataView.categorical.categories[0];
-      const len: number = cat.values.length - 1;
+    const cat: powerbi.DataViewCategoryColumn =
+      dataView.categorical.categories[0];
+    this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
 
-      // Initialise the filter
+    // Initialise the page
+    if (!this.initialized) {
       this.filterTarget = extractFilterColumnTarget(cat);
-      this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
+    }
 
+    // console.log("Init? ", this.initialized, "DataUpdate: ", isDataUpdate);
+
+    // Set up the date range scope of the slider
+    if (!this.initialized || isDataUpdate) {
+      // Get the date values for the timeline end points
+      const len: number = cat.values.length - 1;
       const minDate: Date = this.parseDate(cat.values[0]);
       const maxDate: Date = this.parseDate(cat.values[len]);
       this.rangeScope = {
@@ -131,49 +153,90 @@ export class Visual implements IVisual {
         end: maxDate,
       };
 
-      // console.log(this.rangeScope)
-      DateCardClass.update({
-        rangeScope: this.rangeScope,
-      });
+      // Update the date scope if changed
+      if (this.rangeScope !== this.lastRangeScope) {
+        DateCardClass.update({
+          rangeScope: this.rangeScope,
+        });
+        this.lastRangeScope = this.rangeScope;
+      }
     }
 
-    this.initializeValues(isSettingsUpdate);
-  }
+    // console.log("Update Rest of Cards");
+    this.doCards(isSettingsUpdate);
 
-  private initializeValues = (isSettingsUpdate: boolean) => {
-    const calendar = this.formattingSettings.calendarCard;
-    const startRange = calendar.startRange.value.toString();
-    // console.log("init? ",this.initialized)
-
-    if (
-      startRange === "sync" ||
-      (this.dateInitRange === startRange && this.start)
-      // check if an init range has already been set up
-    ) {
-      this.dateRangeFilter = {
-        start: this.start === null ? this.rangeScope.start : this.start,
-        end: this.end === null ? this.rangeScope.end : this.end,
-      };
-    } else {
-      this.dateRangeFilter = getInitRange(
-        startRange,
-        this.getDayNum(calendar.weekStartDay.value.valueOf()),
-        this.getNum(calendar.yearStartMonth.value.valueOf()),
-        this.rangeScope
-      );
-      this.dateInitRange = startRange;
-    }
-
-    DateCardClass.update({
-      dates: this.dateRangeFilter,
-    });
-
-    this.handleVal([this.dateRangeFilter.start, this.dateRangeFilter.end]);
+    // if (isSettingsUpdate)
+    // console.log("Update Date Ranges");
+    this.doDates();
 
     this.initialized = true;
+  }
+
+  private doDates = () => {
+    const calendar = this.formattingSettings.calendarCard;
+    const startRange = calendar.startRange.value.toString();
+    const year = this.formattingSettings.yearCard;
+    const week = this.formattingSettings.weekCard;
+
+    this.prevFilteredStartDate = this.start;
+    this.prevFilteredEndDate = this.end;
+    // console.log("doDates");
+
+    const fltr = getInitRange(
+      startRange,
+      this.getDayNum(week.weekStartDay.value.valueOf()),
+      this.getNum(year.yearStartMonth.value.valueOf()),
+      this.rangeScope
+    );
+
+    if (startRange === "sync") {
+      this.start === null ? this.rangeScope.start : this.start;
+      this.end = this.end === null ? this.rangeScope.end : this.end;
+    } else if (!this.initialized) {
+      this.start = fltr.start;
+      this.end = fltr.end;
+    }
+
+    const isFilterChanged: boolean =
+      String(this.prevFilteredStartDate) !== String(this.start) ||
+      String(this.prevFilteredEndDate) !== String(this.end);
+
+    // console.log("changed: ", isFilterChanged);
+    // check if an init range has already been set up
+    if (
+      startRange === "sync" ||
+      (this.initialized && this.dateInitRange === startRange)
+    ) {
+      this.dateRangeFilter = {
+        start: this.start,
+        end: this.end,
+      };
+    } else {
+      this.dateRangeFilter = fltr;
+    }
+    this.dateInitRange = startRange;
+
+    if (isFilterChanged || !this.initialized) {
+      DateCardClass.update({
+        dates: this.dateRangeFilter,
+      });
+
+      // if (!this.initialized || startRange !== "sync" && this.start === fltr.start) {
+      this.handleVal([this.dateRangeFilter.start, this.dateRangeFilter.end]);
+
+      // console.log({
+      //   StartFilter: format(this.dateRangeFilter.start, "dd/MM/yyyy"), // this.dateRangeFilter.start,
+      //   EndFilter: format(this.dateRangeFilter.end, "dd/MM/yyyy"), // this.dateRangeFilter.end},
+      // });
+    }
+  };
+
+  private doCards = (isSettingsUpdate: boolean) => {
+    // console.log("Cards: ", isSettingsUpdate);
 
     if (isSettingsUpdate) {
       this.previousSettings = this.formattingSettings;
+      const calendar = this.formattingSettings.calendarCard;
       const style = this.formattingSettings.styleCard;
       const config = this.formattingSettings.configCard;
       const day = this.formattingSettings.dayCard;
@@ -183,9 +246,11 @@ export class Visual implements IVisual {
       const quarter = this.formattingSettings.quarterCard;
       const year = this.formattingSettings.yearCard;
 
+      // console.log(config.show2ndSlider.value);
+
       DateCardClass.update({
-        weekStartDay: this.getDayNum(calendar.weekStartDay.value.valueOf()),
-        yearStartMonth: this.getNum(calendar.yearStartMonth.value.valueOf()),
+        weekStartDay: this.getDayNum(week.weekStartDay.value.valueOf()),
+        yearStartMonth: this.getNum(year.yearStartMonth.value.valueOf()),
         stepInit: calendar.stepInit.value.toString(),
         stepSkip: {
           day: 1,
@@ -235,9 +300,9 @@ export class Visual implements IVisual {
   };
 
   private clearData(): void {
-    // console.log('cleared ');
+    console.log("cleared ");
     this.initialized = false;
-    this.dateInitRange = "";
+    this.dateInitRange = undefined;
     // DateCardClass.update(initialState);
   }
 
@@ -361,8 +426,6 @@ export class Visual implements IVisual {
     options: powerbi.extensibility.visual.VisualUpdateOptions
   ): boolean {
     // check that we have a valid dataview
-    // check that the field is a date
-
     if (
       !options ||
       !options.dataViews ||
@@ -370,11 +433,11 @@ export class Visual implements IVisual {
       !options.dataViews[0].metadata ||
       !Visual.isDataViewCategoricalValid(options.dataViews[0].categorical)
     ) {
-      //console.log("false opt")
       return true;
     } else return false;
   }
 
+  // check that the field is a date
   private static isDataViewCategoricalValid(
     dataViewCategorical: powerbi.DataViewCategorical
   ): boolean {
@@ -430,9 +493,20 @@ export class Visual implements IVisual {
    * This method is called once every time we open properties pane or when the user edit any format property.
    */
   public getFormattingModel(): powerbi.visuals.FormattingModel {
-    console.log(this.formattingSettings)
+    // console.log(this.formattingSettings)
     return this.formattingSettingsService.buildFormattingModel(
       this.formattingSettings
     );
   }
 }
+
+// console.log("Init? ", this.initialized, {
+//   startRange: startRange,
+//   InitRange: this.dateInitRange,
+//   start: format(this.start,"dd/MM/yyyy"),
+//   end: format(this.end,"dd/MM/yyyy"),
+//   // this_rangeScope_start: this.rangeScope.start,
+//   // this_rangeScope_end: this.rangeScope.end,
+//   filter_START: format(this.dateRangeFilter.start,"dd/MM/yyyy"), // this.dateRangeFilter.start,
+//   filter_END: format(this.dateRangeFilter.end,"dd/MM/yyyy") // this.dateRangeFilter.end,
+// });

@@ -4,13 +4,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RngeTooltip from "./rngetooltip";
 import { TOGGLE_SLIDER_BUTTON } from "./constants";
 
-const {
-  TopRowOpen,
-  TopRowClosed,
-  TopRowEnd,
-  DetailRowOpen,
-  DetailRowClosed
-} = TOGGLE_SLIDER_BUTTON;
+const { TopRowOpen, TopRowClosed, TopRowEnd, DetailRowOpen, DetailRowClosed } =
+  TOGGLE_SLIDER_BUTTON;
 
 interface ToggleSliderButtonProps {
   openSlider: boolean;
@@ -19,7 +14,7 @@ interface ToggleSliderButtonProps {
 
 function ToggleSliderButton({
   openSlider,
-  toggleSlider
+  toggleSlider,
 }: ToggleSliderButtonProps) {
   const topRow = React.useMemo(
     () => (openSlider ? TopRowClosed : TopRowOpen) + TopRowEnd,
@@ -36,6 +31,7 @@ function ToggleSliderButton({
       aria-label="Toggle Slider"
       onClick={toggleSlider}
       id="menuToggle"
+      size="small"
     >
       <RngeTooltip
         shortCut={"S"}
@@ -44,7 +40,7 @@ function ToggleSliderButton({
         detailRow={detailRow}
         placement="bottom-end"
       >
-        <MoreVertIcon style={{ fontSize: 16 }} />
+        <MoreVertIcon style={{ fontSize: "inherit" }} />
       </RngeTooltip>
     </IconButton>
   );
