@@ -8,6 +8,8 @@ The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/
 - Enables users to filter data based on the selected date range.
 - Simple and intuitive design, easy to use.
 
+![Date Range Selector Anatomy](./readme_files/Date%20Selector1.png?raw=true "Date Range Selector Anatomy")
+
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/30431819/231940537-9274dfcf-d11b-429f-9711-83d8e82b2abd.png">
 
 ***
