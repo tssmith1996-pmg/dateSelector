@@ -1,30 +1,32 @@
 # Date Selector Visual
 
 ## A compact rich functionality date range filter for Power BI
-The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.04.24.pbiviz) is a date range selector designed to be used with Microsoft Power BI.
+The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.2.2023.11.07.pbiviz) is a date range selector designed to be used with Microsoft Power BI.
 
 ## Features
 - Allows users to select a range of dates with a compact user-friendly interface.
 - Enables users to filter data based on the selected date range.
 - Simple and intuitive design, easy to use.
 
-## Anatomy
+### Anatomy
 
-![Date Range Selector Anatomy](./readme_files/Date%20Selector1.png?raw=true "Date Range Selector Anatomy")
+![Date Range Selector Anatomy](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector1.png?raw=true "Date Range Selector Anatomy")
 
-## With dual timeline showing
+### With dual timeline showing
 
-![Date Range Selector with two level timeline](./readme_files/Date%20Selector2.png?raw=true "Date Range Selector Timeline")
+![Date Range Selector with two level timeline](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector2.png?raw=true "Date Range Selector Timeline")
 
-## Advancd features
+### Advancd features
 
-![Date Range Selector Advanced Features](./readme_files/Date%20Selector3.png?raw=true "Date Range Selector Advanced Features")
+![Date Range Selector Advanced Features](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector3.png?raw=true "Date Range Selector Advanced Features")
 
-## Shortcut keys
+### Shortcut keys
 
-![Date Range Selector Shortcut Keys](./readme_files/Date%20Selector4.png?raw=true "Date Range Selector Shortcut Keys")
+![Date Range Selector Shortcut Keys](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector4.png?raw=true "Date Range Selector Shortcut Keys")
 
  ****
+
+ ## Summary
  
  #### Date Range Input
   * Input via field, quick action buttons or slider
@@ -53,7 +55,7 @@ Can be synced with last  page viewed
 ## Installation
 To use the DateSelector visual, you can import it into your Power BI report by following these steps:
 
-Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.v2023.05.05.pbiviz) and import it into Power BI using the "Import from file" option.
+Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.2.2023.11.07.pbiviz) and import it into Power BI using the "Import from file" option.
 
 1. Open the report in Power BI Desktop.
 2. In the Visualizations pane, select the ellipsis (...).
@@ -65,7 +67,7 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly. 
 
 ## Example 
-A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20sample.pbix) Download it and open with Power BI Desktop.
+A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20selector%20doc.pbix) Download it and open with Power BI Desktop.
 
 ## Version
 The current version of the DateSelector visual is v2023.05.05.
