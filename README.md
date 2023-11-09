@@ -20,29 +20,29 @@ The [**DateSelector** visual](https://github.com/o221/powerBI-dateSelector/blob/
 <img width="600" alt="image" src="https://user-images.githubusercontent.com/30431819/231941191-da5e2c64-929e-4099-8b10-609981076712.png">
 
  ****
- 
+
  #### Date Range Input
   * Input via field, quick action buttons or slider
      * The date entry is not limited to the filtered scope
 * Up to 6 levels of granularity on the slider(s)
      * Granularity determines step size of the interactions
      * Based on granularity - Top timeline is the primary granularity
-     * Shows selected range on two granularity levels (optional) 
+     * Shows selected range on two granularity levels (optional)
      * Second timeline shows context - it is also active
 * Optional buttons for Today, This Week, etc. with optional YTD, etc.
      * Today, etc. buttons, are hidden when the button's period is not in scope.
 * Range slider shows full scope of selected date field
 * Filters reduce the scope on any level - Visual/Page/All Pages
 
- #### Start-up state 
-  * Slicer opens in configured *pre-set* state 
+ #### Start-up state
+  * Slicer opens in configured *pre-set* state
      * Today, YTD, etc.
      * or ...
 Can be synced with last  page viewed
      * With *pre-set* range there's *no sync respected* on the pre-set pages.
- #### Short cut keys 
+ #### Short cut keys
   * when slider is active use fast shortcuts
- #### Help 
+ #### Help
   * Descriptive tooltip option
 
 ## Installation
@@ -57,9 +57,9 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 5. Click on the visual and select "Add."
 
 ## Usage
-To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly. 
+To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly.
 
-## Example 
+## Example
 A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20sample.pbix) Download it and open with Power BI Desktop.
 
 ## Version
