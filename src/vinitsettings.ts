@@ -27,7 +27,7 @@ export class StyleSettings {
 
 export class CalendarSettings {
     // Initial date range
-    public startRange: string = "rangeScope"
+    public startRange: string = "sync"
     // Initial step granularity
     public stepInit: string = "day";
     //Pay periods

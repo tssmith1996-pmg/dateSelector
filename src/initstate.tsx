@@ -10,7 +10,7 @@ export const initialState: dateCardProps = {
   },
   weekStartDay: 0, // 0 = Sun
   yearStartMonth: 0, // 0 = Jan
-  stepInit: "week",
+  stepInit: "sync",
   stepSkip: {
     day: 1,
     week: 4,
