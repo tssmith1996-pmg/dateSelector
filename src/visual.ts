@@ -32,6 +32,7 @@ import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 import IVisual = powerbi.extensibility.visual.IVisual;
 import DataView = powerbi.DataView;
 import VisualUpdateType = powerbi.VisualUpdateType;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 
 // filter stuff
 import { AdvancedFilter, IFilterColumnTarget } from "powerbi-models";
@@ -55,11 +56,17 @@ export class Visual implements IVisual {
   private target: HTMLElement;
   private reactRoot: React.ComponentElement<any, any>;
   private host: powerbi.extensibility.visual.IVisualHost;
+  private events: IVisualEventService;
 
   // formatiing pane
   private formattingSettings: VisualSettingsModel;
   private previousSettings: VisualSettingsModel | null = null;
   private formattingSettingsService: FormattingSettingsService;
+
+// Landing Page
+  // private isLandingPageOn: boolean;
+  // private LandingPageRemoved: boolean;
+  // private LandingPage: d3.Selection<any>;
 
   // state setting
   private initialized: boolean = false;
@@ -105,6 +112,7 @@ export class Visual implements IVisual {
     this.host = options.host;
     this.host.hostCapabilities.allowInteractions = false;
     render(this.reactRoot, this.target);
+    this.events = options.host.eventService;
   }
 
   public update(options: VisualUpdateOptions) {
@@ -113,6 +121,8 @@ export class Visual implements IVisual {
       this.clearData();
       return;
     }
+
+    this.events.renderingStarted(options);
 
     // Get formatting settings
     this.formattingSettings =
@@ -170,6 +180,8 @@ export class Visual implements IVisual {
     this.doDates();
 
     this.initialized = true;
+    this.events.renderingFinished(options);
+
   }
 
   private doDates = () => {

@@ -1,6 +1,7 @@
 {
     "supportsHighlight": true,
     "supportsSynchronizingFilterState": true,
+    "supportsKeyboardFocus": true,
     "advancedEditModeSupport": 2,
     "privileges": [],
     "dataRoles": [
