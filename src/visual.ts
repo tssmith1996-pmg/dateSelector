@@ -52,6 +52,9 @@ import { render } from "react-dom";
 import DateCardClass from "./dateRangeSelector";
 import { getInitRange } from "./dateutils";
 
+import tinycolor from "tinycolor2";
+// import format from "date-fns/format";
+
 export class Visual implements IVisual {
   private target: HTMLElement;
   private reactRoot: React.ComponentElement<any, any>;
@@ -63,7 +66,7 @@ export class Visual implements IVisual {
   private previousSettings: VisualSettingsModel | null = null;
   private formattingSettingsService: FormattingSettingsService;
 
-// Landing Page
+  // Landing Page
   // private isLandingPageOn: boolean;
   // private LandingPageRemoved: boolean;
   // private LandingPage: d3.Selection<any>;
@@ -99,24 +102,37 @@ export class Visual implements IVisual {
   private prevFilteredStartDate: Date | null = null;
   private prevFilteredEndDate: Date | null = null;
 
+  private isHighContrast: boolean;
+  private foregroundColor: string;
+  private backgroundColor: string;
+
   constructor(options: VisualConstructorOptions) {
-    // console.log('Visual constructor') //, options);
     //Formatting Pane
     this.formattingSettingsService = new FormattingSettingsService();
+
+    this.host = options.host;
+
+    this.isHighContrast = this.host.colorPalette.isHighContrast;
+    if (this.isHighContrast) {
+      this.foregroundColor = this.host.colorPalette.foreground.value;
+      this.backgroundColor = this.host.colorPalette.background.value;
+    }
 
     // React integration
     this.reactRoot = React.createElement(DateCardClass, {
       onChanged: this.handleVal,
     });
     this.target = options.element;
-    this.host = options.host;
     this.host.hostCapabilities.allowInteractions = false;
     render(this.reactRoot, this.target);
     this.events = options.host.eventService;
   }
 
   public update(options: VisualUpdateOptions) {
+    // console.log("Update: ", options);
     // Check if options are valid
+    // console.log("Contrast:", this.isHighContrast, this.foregroundColor);
+
     if (!Visual.areOptionsValid(options)) {
       this.clearData();
       return;
@@ -181,7 +197,6 @@ export class Visual implements IVisual {
 
     this.initialized = true;
     this.events.renderingFinished(options);
-
   }
 
   private doDates = () => {
@@ -192,7 +207,6 @@ export class Visual implements IVisual {
 
     this.prevFilteredStartDate = this.start;
     this.prevFilteredEndDate = this.end;
-    // console.log("doDates");
 
     const fltr = getInitRange(
       startRange,
@@ -202,7 +216,7 @@ export class Visual implements IVisual {
     );
 
     if (startRange === "sync") {
-      this.start === null ? this.rangeScope.start : this.start;
+      this.start = this.start === null ? this.rangeScope.start : this.start;
       this.end = this.end === null ? this.rangeScope.end : this.end;
     } else if (!this.initialized) {
       this.start = fltr.start;
@@ -226,6 +240,8 @@ export class Visual implements IVisual {
     } else {
       this.dateRangeFilter = fltr;
     }
+    // console.log("filter: ", this.dateRangeFilter);
+
     this.dateInitRange = startRange;
 
     if (isFilterChanged || !this.initialized) {
@@ -303,9 +319,15 @@ export class Visual implements IVisual {
         showIconText: config.showIconText.value,
         showSlider: !config.showSlider.value,
         show2ndSlider: config.show2ndSlider.value,
-        themeColor: style.themeColor.value.value,
+        themeColor: this.isHighContrast
+          ? this.foregroundColor
+          : style.themeColor.value.value,
         themeFont: style.themeFont.value,
-        themeMode: style.themeMode.value,
+        themeMode: this.isHighContrast
+          ? tinycolor(this.backgroundColor).isDark()
+            ? "dark"
+            : "light"
+          : style.themeMode.value,
         fontSize: style.fontSize.value.toString(),
       });
     }
