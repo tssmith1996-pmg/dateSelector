@@ -1,22 +1,24 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
-// import TextField from "@mui/material/TextField";
-// import Box from "@mui/material/Box";
+import { useTheme } from "@mui/material/styles";
+import IconButton from "@mui/material/IconButton";
+// import Zoom from "@mui/material/Zoom";
+import Remove from "@mui/icons-material/Remove";
 import { format, parse, isValid } from "date-fns";
-import { DateRangeProps } from "./interface";
 import { inputParms } from "./dateutils";
 import { DateField } from "./datefield";
 import { useHelpContext } from "./helpprovider";
 import RngeTooltip from "./rngetooltip";
-import { useTheme } from "@mui/material/styles";
-import IconButton from "@mui/material/IconButton";
-import Remove from "@mui/icons-material/Remove";
+import { DateRangeProps } from "./interface";
 
 const TextFieldDash: React.FC = () => {
   return (
     <IconButton size="small">
-      <Remove style={{ fontSize: useTheme().typography.fontSize }} color="disabled"/>
+      <Remove
+        style={{ fontSize: useTheme().typography.fontSize }}
+        color="disabled"
+      />
     </IconButton>
 
     // <Box sx={{ width: useTheme().typography.fontSize *.66 }}>
@@ -32,7 +34,7 @@ const TextFieldDash: React.FC = () => {
 };
 
 export default function DateRange(props: DateRangeProps) {
-  const { dates, rangeScope, handleVal } = props;
+  const { dates, rangeScope, handleVal, singleDay } = props;
 
   const [underline, setUndeline] = useState<boolean>(() => true);
   const [startText, setStartText] = useState<string>(() =>
@@ -98,6 +100,7 @@ export default function DateRange(props: DateRangeProps) {
             <DateField
               id="start"
               value={startText}
+              max={singleDay? "": endText}
               underline={underline}
               error={!dateSpan.toValid}
               onBlur={handleBlur}
@@ -106,23 +109,24 @@ export default function DateRange(props: DateRangeProps) {
               onFocus={showUndeline}
             />
           </Grid>
-          {/* {showSingleDay && ( */}
-          <>
-            <TextFieldDash />
-            <Grid xs="auto">
-              <DateField
-                id="end"
-                value={endText}
-                error={!dateSpan.toValid}
-                underline={underline}
-                onBlur={handleBlur}
-                onChange={handleInput}
-                onFocus={showUndeline}
-                doUpdate={doUpdate}
-              />
-            </Grid>
-          </>
-          {/* )} */}
+          {!singleDay && (
+            <>
+              <TextFieldDash />
+              <Grid xs="auto">
+                <DateField
+                  id="end"
+                  value={endText}
+                  min={startText}
+                  error={!dateSpan.toValid}
+                  underline={underline}
+                  onBlur={handleBlur}
+                  onChange={handleInput}
+                  onFocus={showUndeline}
+                  doUpdate={doUpdate}
+                />
+              </Grid>
+            </>
+          )}
         </Grid>
       </RngeTooltip>
     </div>

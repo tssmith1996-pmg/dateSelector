@@ -8,6 +8,7 @@
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
 import FormattingSettingsCard = formattingSettings.SimpleCard;
+// import FormattingSettingsGroup = formattingSettings.Group;
 import FormattingSettingsSlice = formattingSettings.Slice;
 import FormattingSettingsModel = formattingSettings.Model;
 import {
@@ -123,7 +124,16 @@ class calendarSettings extends FormattingSettingsCard {
     value: this.calendar.stepInit,
   });
 
+  singleDay = new formattingSettings.ToggleSwitch({
+    name: "singleDay",
+    description:
+      "Allow only single day selection (or beginning of period where day steps are not selected).",
+    displayName: "Single Day Only",
+    value: this.calendar.singleDay,
+  });
+
   slices: Array<FormattingSettingsSlice> = [
+    this.singleDay,
     this.startRange,
     this.stepInit,
   ];
@@ -132,6 +142,12 @@ class calendarSettings extends FormattingSettingsCard {
 class configSettings extends FormattingSettingsCard {
   public config: ConfigSettings = new ConfigSettings();
 
+  enableSlider = new formattingSettings.ToggleSwitch({
+    name: "enableSlider",
+    description: "Show the button to toggle timeline",
+    displayName: "Enable Timeline",
+    value: this.config.enableSlider,
+  });
 
   showSlider = new formattingSettings.ToggleSwitch({
     name: "showSlider",
@@ -162,6 +178,15 @@ class configSettings extends FormattingSettingsCard {
     displayName: "Current Icon Text",
     value: this.config.showIconText,
   });
+
+  showMove = new formattingSettings.ToggleSwitch({
+    name: "showMove",
+    description:
+      "Show the arrows and step levels to quickly move or extend/reduce the selected period by a chosen step.",
+    displayName: "Show move arrows",
+    value: this.config.showMove,
+  });
+
   showHelpIcon = new formattingSettings.ToggleSwitch({
     name: "showHelpIcon",
     description: "Show help button for optional extended tooltip help.",
@@ -184,18 +209,19 @@ class configSettings extends FormattingSettingsCard {
   uid: string = "timelineUid";
 
   slices: Array<FormattingSettingsSlice> = [
+    this.enableSlider,
     this.showSlider,
     this.show2ndSlider,
+    this.showMove,
     this.showCurrent,
     this.showIconText,
-    this.showHelpIcon,
     this.showMore,
+    this.showHelpIcon,
   ];
 }
 
 class daySettings extends FormattingSettingsCard {
   public day: DaySettings = new DaySettings();
-
 
   showDay = new formattingSettings.ToggleSwitch({
     name: "showDay",
@@ -216,9 +242,9 @@ class daySettings extends FormattingSettingsCard {
   displayName: string = "Day steps";
   analyticsPane: boolean = false;
   uid: string = "dayUid";
-  topLevelSlice =this.showDay;
+  topLevelSlice = this.showDay;
 
-  slices: Array<FormattingSettingsSlice> = [ this.fmtDay];
+  slices: Array<FormattingSettingsSlice> = [this.fmtDay];
 }
 
 class weekSettings extends FormattingSettingsCard {
@@ -257,7 +283,7 @@ class weekSettings extends FormattingSettingsCard {
   displayName: string = "Week steps";
   analyticsPane: boolean = false;
   uid: string = "weekUid";
-  topLevelSlice =this.showWeek;
+  topLevelSlice = this.showWeek;
 
   slices: Array<FormattingSettingsSlice> = [
     this.weekStartDay,

@@ -50,4 +50,6 @@ export const initialState: dateCardProps = {
   showIconText: false,
   showSlider: true,
   show2ndSlider: true,
+  singleDay: false,
+  showMove: true,
 };

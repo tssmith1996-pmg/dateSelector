@@ -10,8 +10,9 @@ import { DateMoveProps } from "./interface";
 import RngeTooltip from "./rngetooltip";
 
 export default function DateMove(props: DateMoveProps) {
-  const { dates, stepValue, bf, vertical, reverse, handleVal } = props;
-    // viz,
+  const { dates, stepValue, bf, vertical, reverse, handleVal, singleDay } =
+    props;
+  // viz,
 
   const [ctrl, setCtrl] = useState(false);
 

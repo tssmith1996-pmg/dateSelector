@@ -39,6 +39,9 @@ export default function DateRangeCard(props: dateCardProps) {
     handleVal,
     showSlider,
     showHelpIcon,
+    singleDay,
+    showMove,
+    enableSlider
   } = props;
 
   const theme = SetTheme({
@@ -54,12 +57,7 @@ export default function DateRangeCard(props: dateCardProps) {
 
   const current = React.useMemo(() => {
     return Increment(
-      stepViz,
-      weekStartDay,
-      yearStartMonth,
-      payProps,
-      vizOpt,
-      rangeScope
+      stepViz, weekStartDay, yearStartMonth, payProps, vizOpt, rangeScope
     );
   }, [stepViz, weekStartDay, yearStartMonth, payProps, vizOpt, rangeScope]);
 
@@ -98,7 +96,10 @@ export default function DateRangeCard(props: dateCardProps) {
             showIconText={showIconText}
             setStepValue={setStepValue}
             current={current}
-          />
+            singleDay={singleDay}
+            showMove={showMove}
+            enableSlider={enableSlider}
+            />
           <Zoom in={!openSlider}>
             <Grid container spacing={0} xs={12}>
               <Timeline
@@ -112,7 +113,8 @@ export default function DateRangeCard(props: dateCardProps) {
                 weekStartDay={weekStartDay}
                 yearStartMonth={yearStartMonth}
                 show2ndSlider={show2ndSlider}
-              />
+                singleDay={singleDay}
+                />
             </Grid>
           </Zoom>
         </HelpProvider>

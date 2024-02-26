@@ -17,7 +17,9 @@ function DateInput({
   stepValue,
   handleClick,
   handleStep,
-  handleViz
+  handleViz,
+  singleDay,
+  showMove
 }) {
   return (
     <>
@@ -26,60 +28,65 @@ function DateInput({
           dates={dates}
           rangeScope={rangeScope}
           handleVal={handleVal}
+          singleDay={singleDay}
         />
       </Grid>
-      {/* <Zoom in={openSlider}> */}
-        <Grid xs="auto">
-          <DateMove
-            dates={dates}
-            rangeScope={rangeScope}
-            stepValue={stepValue}
-            payProps={payProps}
-            handleVal={handleVal}
-            bf={"b"}
-            vertical={false}
-            reverse={true}
-            viz={openSlider}
-          />
-        </Grid>
-      {/* </Zoom> */}
-      <Grid xs="auto" paddingRight={1}>
-        <StepToggle
-          stepViz={stepViz}
-          stepValue={stepValue}
-          payProps={payProps}
-          viz={stepOpen}
-          handleStep={handleStep}
-          onClick={handleClick}
-        />
-      </Grid>
-      <Zoom in={stepOpen}>
-        <Grid xs="auto">
-          <StepsMenu
-            stepViz={stepViz}
-            stepValue={stepValue}
-            payProps={payProps}
-            viz={stepOpen}
-            handleStep={handleStep}
-            handleViz={handleViz}
-          />
-        </Grid>
-      </Zoom>
-      {/* <Zoom in={openSlider}> */}
-        <Grid xs="auto">
-          <DateMove
-            dates={dates}
-            rangeScope={rangeScope}
-            stepValue={stepValue}
-            payProps={payProps}
-            handleVal={handleVal}
-            bf={"f"}
-            vertical={false}
-            reverse={false}
-            viz={openSlider}
-          />
-        </Grid>
-      {/* </Zoom> */}
+      {showMove && (
+        <>
+          <Grid xs="auto">
+            <DateMove
+              dates={dates}
+              rangeScope={rangeScope}
+              stepValue={stepValue}
+              payProps={payProps}
+              handleVal={handleVal}
+              bf={"b"}
+              vertical={false}
+              reverse={true}
+              viz={openSlider}
+              singleDay={singleDay}
+            />
+          </Grid>
+          <Grid xs="auto" paddingRight={1}>
+            <StepToggle
+              stepViz={stepViz}
+              stepValue={stepValue}
+              payProps={payProps}
+              viz={stepOpen}
+              handleStep={handleStep}
+              onClick={handleClick}
+            />
+          </Grid>
+          <Zoom in={stepOpen}>
+            <Grid xs="auto">
+              <StepsMenu
+                stepViz={stepViz}
+                stepValue={stepValue}
+                payProps={payProps}
+                viz={stepOpen}
+                handleStep={handleStep}
+                handleViz={handleViz}
+              />
+            </Grid>
+          </Zoom>
+          {/* <Zoom in={openSlider}> */}
+          <Grid xs="auto">
+            <DateMove
+              dates={dates}
+              rangeScope={rangeScope}
+              stepValue={stepValue}
+              payProps={payProps}
+              handleVal={handleVal}
+              bf={"f"}
+              vertical={false}
+              reverse={false}
+              viz={openSlider}
+              singleDay={singleDay}
+              />
+          </Grid>
+          {/* </Zoom> */}
+        </>
+       )}
     </>
   );
 }

@@ -4,6 +4,8 @@ import DateRangeCard from "./daterangecard";
 import { dateCardProps } from "./interface";
 import { initialState } from "./initstate";
 import { Typography } from "@mui/material";
+import {startOfDay} from "date-fns/startOfDay";
+import {endOfDay} from "date-fns/endOfDay";
 
 export default class DateCardClass extends React.Component<
   { onChanged: (arg0: any) => void },
@@ -39,11 +41,17 @@ export default class DateCardClass extends React.Component<
     ) {
       this.setState({
         dates: {
-          start: e[0],
-          end: e[1],
+          start: startOfDay(e[0]),
+          end: endOfDay(this.state.singleDay ? e[0] : e[1]),
         },
       });
-      this.props.onChanged(e);
+
+      // console.log("state: ", this.state.singleDay, e,this.state.dates);
+
+      this.props.onChanged([
+        startOfDay(e[0]),
+        endOfDay(this.state.singleDay ? e[0] : e[1]),
+      ]);
     }
   };
 
@@ -80,6 +88,9 @@ export default class DateCardClass extends React.Component<
       fontSize,
       showIconText,
       showHelpIcon,
+      singleDay,
+      showMove,
+      enableSlider,
     } = this.state;
     return this.state.rangeScope.start ? (
       <>
@@ -106,6 +117,9 @@ export default class DateCardClass extends React.Component<
           showHelpIcon={showHelpIcon}
           handleVal={this.onDateChanged}
           show2ndSlider={show2ndSlider}
+          singleDay={singleDay}
+          showMove={showMove}
+          enableSlider={enableSlider}
         />
       </>
     ) : (

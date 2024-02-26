@@ -10,7 +10,8 @@ import {
 } from "./dateutils";
 
 export default function RangeSlider(props: SliderProps) {
-  const { dates, rangeScope, stepValue, show2ndSlider, handleVal } = props;
+  const { dates, rangeScope, stepValue, show2ndSlider, handleVal, singleDay } =
+    props;
 
   const [sliderStart, setSliderStart] = React.useState<number>(
     sliderMarkNumber(dates.start, rangeScope.start)
@@ -52,12 +53,16 @@ export default function RangeSlider(props: SliderProps) {
         val = stp ? val : closestMark(val);
       }
 
-      val[1] = sliderEnd === val[1] || stp ? val[1] : val[1] - 1;
+      val[1] = singleDay
+        ? val[0]
+        : sliderEnd === val[1] || stp
+        ? val[1]
+        : val[1] - 1;
 
       if (commit) {
         handleVal([
           sliderMarkDate(val[0], rangeScope.start),
-          sliderMarkDate(val[1], rangeScope.start)
+          sliderMarkDate(val[1], rangeScope.start),
         ]);
       } else {
         setSliderStart(val[0]);
@@ -66,7 +71,8 @@ export default function RangeSlider(props: SliderProps) {
     }
   };
 
-  const handleOnChange = (e: MouseEvent, val: number[]) => {
+  const handleOnChange = (e: MouseEvent, val: number[], thumb: number) => {
+    val = singleDay ? (thumb === 1 ? [val[1], val[1]] : [val[0], val[0]]) : val;
     const top = e.target["name"] === "top";
     handleChange(e, val, top ? stepValue === "day" : false, false);
   };

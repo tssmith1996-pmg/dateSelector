@@ -14,38 +14,11 @@ function Timeline({
   weekStartDay,
   yearStartMonth,
   stepSkip,
-  stepFmt
+  stepFmt,
+  singleDay
 }) {
   return (
     <>
-      {/* <Grid xs="auto">
-        <Box>
-          <DateMove
-            dates={dates}
-            rangeScope={rangeScope}
-            stepValue={stepValue}
-            payProps={payProps}
-            handleVal={handleVal}
-            bf={"b"}
-            vertical={true}
-            viz={true}
-          />
-        </Box>
-      </Grid>
-      <Grid xs="auto">
-        <Box>
-          <DateMove
-            dates={dates}
-            rangeScope={rangeScope}
-            stepValue={stepValue}
-            payProps={payProps}
-            handleVal={handleVal}
-            bf={"f"}
-            vertical={true}
-            viz={true}
-          />
-        </Box>
-      </Grid> */}
       <Grid xs marginLeft={1} paddingTop={0.3}>
         <RangeSlider
           dates={dates}
@@ -58,6 +31,7 @@ function Timeline({
           yearStartMonth={yearStartMonth}
           handleVal={handleVal}
           show2ndSlider={show2ndSlider}
+          singleDay={singleDay}
         />
       </Grid>
     </>

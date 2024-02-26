@@ -24,28 +24,48 @@ const TopRow: React.FC<topRowProps> = ({
   showCurrent,
   showIconText,
   current,
+  singleDay,
+  showMove,
+  enableSlider,
 }) => {
+  // console.log(enableSlider);
   return (
     <Grid container rowSpacing={0.3} paddingLeft={0.3} xs={12}>
-      <Grid xs="auto">
-        <ToggleSliderButton
+      {enableSlider && (
+        <Grid
+          xs="auto"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <ToggleSliderButton
+            openSlider={openSlider}
+            toggleSlider={toggleSlider}
+          />
+        </Grid>
+      )}
+      <Grid
+        xs="auto"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <DateInput
+          dates={dates}
+          rangeScope={rangeScope}
+          payProps={payProps}
+          handleVal={handleVal}
+          stepViz={stepViz}
           openSlider={openSlider}
-          toggleSlider={toggleSlider}
+          stepOpen={stepOpen}
+          stepValue={stepValue}
+          handleClick={handleClick}
+          handleStep={setStepValue}
+          handleViz={setStepOpen}
+          singleDay={singleDay}
+          showMove={showMove}
         />
       </Grid>
-      <DateInput
-        dates={dates}
-        rangeScope={rangeScope}
-        payProps={payProps}
-        handleVal={handleVal}
-        stepViz={stepViz}
-        openSlider={openSlider}
-        stepOpen={stepOpen}
-        stepValue={stepValue}
-        handleClick={handleClick}
-        handleStep={setStepValue}
-        handleViz={setStepOpen}
-      />
       <Grid xs="auto">
         <Zoom in={!stepOpen}>
           <Box>
@@ -58,6 +78,7 @@ const TopRow: React.FC<topRowProps> = ({
               handleVal={handleVal}
               current={current}
               stepValue={stepValue}
+              singleDay={singleDay}
             />
           </Box>
         </Zoom>
@@ -68,5 +89,5 @@ const TopRow: React.FC<topRowProps> = ({
     </Grid>
   );
 };
- 
-export default TopRow
+
+export default TopRow;

@@ -17,44 +17,46 @@ import KeyboardDoubleArrowRight from "@mui/icons-material/KeyboardDoubleArrowRig
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 // import Collapse from "@material-ui/core/Collapse";
 
-import startOfDay from "date-fns/startOfDay";
-import endOfDay from "date-fns/endOfDay";
-import format from "date-fns/format";
-import formatDistance from "date-fns/formatDistance";
-import differenceInDays from "date-fns/differenceInDays";
-import eachDayOfInterval from "date-fns/eachDayOfInterval";
-import eachYearOfInterval from "date-fns/eachYearOfInterval";
-import eachWeekOfInterval from "date-fns/eachWeekOfInterval";
-import eachMonthOfInterval from "date-fns/eachMonthOfInterval";
-import eachQuarterOfInterval from "date-fns/eachQuarterOfInterval";
-import startOfToday from "date-fns/startOfToday";
-import startOfWeek from "date-fns/startOfWeek";
-import startOfMonth from "date-fns/startOfMonth";
-import startOfQuarter from "date-fns/startOfQuarter";
-import startOfYear from "date-fns/startOfYear";
-import endOfToday from "date-fns/endOfToday";
-import endOfWeek from "date-fns/endOfWeek";
-import endOfMonth from "date-fns/endOfMonth";
-import endOfQuarter from "date-fns/endOfQuarter";
-import endOfYear from "date-fns/endOfYear";
-import addMonths from "date-fns/addMonths";
-import addDays from "date-fns/addDays";
-import subDays from "date-fns/subDays";
-import subWeeks from "date-fns/subWeeks";
-import addWeeks from "date-fns/addWeeks";
-import subMonths from "date-fns/subMonths";
-import subQuarters from "date-fns/subQuarters";
-import addQuarters from "date-fns/addQuarters";
-import subYears from "date-fns/subYears";
-import addYears from "date-fns/addYears";
-import isAfter from "date-fns/isAfter";
-import lastDayOfMonth from "date-fns/lastDayOfMonth";
-import isLastDayOfMonth from "date-fns/isLastDayOfMonth";
-import isFirstDayOfMonth from "date-fns/isFirstDayOfMonth";
-import isWithinInterval from "date-fns/isWithinInterval";
+import type { Interval } from "date-fns";
+import { startOfDay } from "date-fns/startOfDay";
+import { endOfDay } from "date-fns/endOfDay";
+import { format } from "date-fns/format";
+import { formatDistance } from "date-fns/formatDistance";
+import { differenceInDays } from "date-fns/differenceInDays";
+import { eachDayOfInterval } from "date-fns/eachDayOfInterval";
+import { eachYearOfInterval } from "date-fns/eachYearOfInterval";
+import { eachWeekOfInterval } from "date-fns/eachWeekOfInterval";
+import { eachMonthOfInterval } from "date-fns/eachMonthOfInterval";
+import { eachQuarterOfInterval } from "date-fns/eachQuarterOfInterval";
+import { startOfToday } from "date-fns/startOfToday";
+import { startOfWeek } from "date-fns/startOfWeek";
+import { startOfMonth } from "date-fns/startOfMonth";
+import { startOfQuarter } from "date-fns/startOfQuarter";
+import { startOfYear } from "date-fns/startOfYear";
+import { endOfToday } from "date-fns/endOfToday";
+import { endOfWeek } from "date-fns/endOfWeek";
+import { endOfMonth } from "date-fns/endOfMonth";
+import { endOfQuarter } from "date-fns/endOfQuarter";
+import { endOfYear } from "date-fns/endOfYear";
+import { addMonths } from "date-fns/addMonths";
+import { addDays } from "date-fns/addDays";
+import { subDays } from "date-fns/subDays";
+import { subWeeks } from "date-fns/subWeeks";
+import { addWeeks } from "date-fns/addWeeks";
+import { subMonths } from "date-fns/subMonths";
+import { subQuarters } from "date-fns/subQuarters";
+import { addQuarters } from "date-fns/addQuarters";
+import { subYears } from "date-fns/subYears";
+import { addYears } from "date-fns/addYears";
+import { isAfter } from "date-fns/isAfter";
+import { lastDayOfMonth } from "date-fns/lastDayOfMonth";
+import { isLastDayOfMonth } from "date-fns/isLastDayOfMonth";
+import { isFirstDayOfMonth } from "date-fns/isFirstDayOfMonth";
+import { isWithinInterval } from "date-fns/isWithinInterval";
 import { stepBool, dateRange, SliderProps } from "./interface";
 import { DATEUTILS } from "./constants";
-import getDay from 'date-fns/getDay'
+import { getDay } from "date-fns/getDay";
+
 // import compareAsc from 'date-fns/compareAsc'
 
 const { periodTip, periodThis, periodGranularity } = DATEUTILS;
@@ -717,10 +719,10 @@ export const inputParms = (dates: dateRange, rangeScope: dateRange) => {
       format(_end, "EEE, d MMM yy");
     return {
       string:
-        formatDistance(_start, _end)
+        (noDays > 0 ? formatDistance(_start, _end)
           .toLowerCase()
           .replace(/\b\w/g, (s) => s.toUpperCase()) +
-        (noDays !== 0 ? " from " + _startStory + " to " : " - ") +
+        " from " + _startStory + " to " : " ") +
         _endStory +
         (_startInRange && _endInRange ? `` : `. [Selection exceeds scope]`),
       duration: formatDistance(_start, _end),

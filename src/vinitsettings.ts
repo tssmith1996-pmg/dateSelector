@@ -26,6 +26,8 @@ export class StyleSettings {
 }
 
 export class CalendarSettings {
+    // Single date popup calendar
+    public singleDay: boolean = false;
     // Initial date range
     public startRange: string = "sync"
     // Initial step granularity
@@ -38,6 +40,8 @@ export class CalendarSettings {
 }
 
 export class ConfigSettings {
+    // Slider button visibility
+    public enableSlider: boolean = true;
     // Slider initial visibility
     public showSlider: boolean = false;
     // 2 slider view
@@ -45,8 +49,10 @@ export class ConfigSettings {
     // granularity display items
     public showCurrent: boolean = true;
     public showIconText: boolean = false;
-    public showHelpIcon: boolean = false;
     public showMore: boolean = false;
+    // Show the move/extend arrows
+    public showMove: boolean = true;
+    public showHelpIcon: boolean = false;
 }
 
 export class DaySettings {

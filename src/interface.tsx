@@ -67,6 +67,12 @@ export interface dateCardProps {
 
   // boolean value indicating whether to show the icon text
   showIconText?: boolean;
+  // boolean value indicating whether to constrain to a single day
+  singleDay?: boolean;
+  // boolean value indicating whether to show arrows to move/extend by period step
+  showMove?: boolean;
+  // boolean value indicating whether to show timeline toggle button
+  enableSlider?: boolean;
 }
 
 export interface topRowProps {
@@ -86,6 +92,9 @@ export interface topRowProps {
   showCurrent: boolean;
   showIconText: boolean;
   current: any;
+  singleDay?: boolean;
+  showMove?: boolean;
+  enableSlider?: boolean;
 }
 
 export interface DateMoveProps {
@@ -99,6 +108,7 @@ export interface DateMoveProps {
   reverse?: boolean;
   render?: number;
   handleVal?: (val) => void;
+  singleDay?: boolean;
 }
 
 export interface stepProps {
@@ -123,9 +133,10 @@ export interface UseCurrentProps {
   showIconText?: boolean;
   vizOpt?: boolean;
   current: any;
-  handleVal?: (val) => void;
+  handleVal?: (val: any) => void;
   handleStep?: (newValue: string) => void;
   handleViz?: (viz: boolean) => void;
+  singleDay?: boolean;
 }
 
 export interface DateRangeProps {
@@ -133,6 +144,7 @@ export interface DateRangeProps {
   rangeScope?: dateRange;
   handleVal?: (val) => void;
   fmtDate?: string;
+  singleDay?: boolean;
 }
 
 export interface SliderProps {
@@ -149,6 +161,7 @@ export interface SliderProps {
   toggleSlider?: () => void;
   show2ndSlider?: boolean;
   handleStep?: (val) => void;
+  singleDay?: boolean;
 }
 
 export interface dateRange {

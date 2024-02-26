@@ -27,7 +27,7 @@ export function SetTheme({
     },
     typography: {
       fontFamily: themeFont,
-      fontSize: sze > 14 ? 14 : sze,
+      fontSize: sze > 16 ? 16 : sze,
       // htmlFontSize: sze,
     },
     components: {

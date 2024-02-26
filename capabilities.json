@@ -273,6 +273,11 @@
         },
         "calendar": {
             "properties": {
+                "singleDay": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "startRange": {
                     "type": {
                         "enumeration": [
@@ -439,6 +444,11 @@
                         "bool": true
                     }
                 },
+                "enableSlider": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "show2ndSlider": {
                     "type": {
                         "bool": true
@@ -452,6 +462,11 @@
                 },
                 "showIconText": {
                     "displayNameKey": "showIconText",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "showMove": {
                     "type": {
                         "bool": true
                     }

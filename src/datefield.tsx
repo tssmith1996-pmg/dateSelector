@@ -1,10 +1,13 @@
 import * as React from "react";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
+import { hexToCSSFilter } from "hex-to-css-filter";
 
 interface DateFieldProps {
   id: "start" | "end";
   value: string;
+  max?: string;
+  min?: string;
   error?: boolean;
   underline?: boolean;
   type?: string;
@@ -25,6 +28,7 @@ export const DateField: React.FC<DateFieldProps> = ({
   onFocus,
   doUpdate,
   underline,
+  max,min,
   type = "date"
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -40,16 +44,20 @@ export const DateField: React.FC<DateFieldProps> = ({
   };
 
   const themeFontSize = useTheme().typography.fontSize;
+  const themeColour = hexToCSSFilter(useTheme().palette.primary.main).filter;
 
   return (
     <TextField
       id={id}
       sx={{
         "& input[type='date']::-webkit-calendar-picker-indicator": {
-          display: "none",
-          WebkitAppearance: "none",
+          // display: "none",
+          // WebkitAppearance: "none",
+          height: themeFontSize,
+          // width: themeFontSize,
+          filter: themeColour,
         },
-        width: themeFontSize * 6.2,
+        // width: themeFontSize * 7.2,
       }}
       variant="standard"
       size="small"
@@ -62,6 +70,8 @@ export const DateField: React.FC<DateFieldProps> = ({
       placeholder={"yyyy-MM-dd"}
       inputProps={{
         style: { fontSize: themeFontSize, display: "flex", flexWrap: "wrap" },
+        max: max,
+        min: min,
       }}
       InputProps={{
         disableUnderline: underline,

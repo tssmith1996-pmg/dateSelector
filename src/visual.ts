@@ -66,13 +66,9 @@ export class Visual implements IVisual {
   private previousSettings: VisualSettingsModel | null = null;
   private formattingSettingsService: FormattingSettingsService;
 
-  // Landing Page
-  // private isLandingPageOn: boolean;
-  // private LandingPageRemoved: boolean;
-  // private LandingPage: d3.Selection<any>;
-
   // state setting
   private initialized: boolean = false;
+  private singleDay: boolean = false;
 
   // filter object
   private static filterObjectProperty: {
@@ -107,15 +103,22 @@ export class Visual implements IVisual {
   private backgroundColor: string;
 
   constructor(options: VisualConstructorOptions) {
+    // console.log('Visual constructor') //, options);
     //Formatting Pane
     this.formattingSettingsService = new FormattingSettingsService();
 
     this.host = options.host;
 
     this.isHighContrast = this.host.colorPalette.isHighContrast;
+      // console.log(this.isHighContrast);
     if (this.isHighContrast) {
       this.foregroundColor = this.host.colorPalette.foreground.value;
       this.backgroundColor = this.host.colorPalette.background.value;
+      DateCardClass.update({
+        themeColor: this.foregroundColor,
+        themeMode: tinycolor(this.backgroundColor).isDark() ? "dark" : "light",
+      });
+      // console.log("isHighContrast");
     }
 
     // React integration
@@ -123,6 +126,7 @@ export class Visual implements IVisual {
       onChanged: this.handleVal,
     });
     this.target = options.element;
+    this.host = options.host;
     this.host.hostCapabilities.allowInteractions = false;
     render(this.reactRoot, this.target);
     this.events = options.host.eventService;
@@ -206,7 +210,8 @@ export class Visual implements IVisual {
     const week = this.formattingSettings.weekCard;
 
     this.prevFilteredStartDate = this.start;
-    this.prevFilteredEndDate = this.end;
+    this.prevFilteredEndDate = this.singleDay ? this.start : this.end;
+    this.singleDay = calendar.singleDay.value;
 
     const fltr = getInitRange(
       startRange,
@@ -235,10 +240,13 @@ export class Visual implements IVisual {
     ) {
       this.dateRangeFilter = {
         start: this.start,
-        end: this.end,
+        end: this.singleDay ? this.start : this.end,
       };
     } else {
-      this.dateRangeFilter = fltr;
+      this.dateRangeFilter = {
+        start: fltr.start,
+        end: this.singleDay ? fltr.start : fltr.end,
+      };
     }
     // console.log("filter: ", this.dateRangeFilter);
 
@@ -280,6 +288,9 @@ export class Visual implements IVisual {
         weekStartDay: this.getDayNum(week.weekStartDay.value.valueOf()),
         yearStartMonth: this.getNum(year.yearStartMonth.value.valueOf()),
         stepInit: calendar.stepInit.value.toString(),
+        singleDay: calendar.singleDay.value,
+        showMove: config.showMove.value,
+        enableSlider: config.enableSlider.value,
         stepSkip: {
           day: 1,
           week: week.weekSkip.value,
@@ -371,7 +382,9 @@ export class Visual implements IVisual {
       jsonFilters[0].conditions[1]
     ) {
       const startDate: Date = new Date(`${jsonFilters[0].conditions[0].value}`);
-      const endDate: Date = new Date(`${jsonFilters[0].conditions[1].value}`);
+      const endDate: Date = new Date(
+        `${jsonFilters[0].conditions[this.singleDay ? 0 : 1].value}`
+      );
 
       if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
         this.start = startDate;

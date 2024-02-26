@@ -2,7 +2,7 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import areIntervalsOverlapping from "date-fns/areIntervalsOverlapping";
+import { areIntervalsOverlapping } from "date-fns/areIntervalsOverlapping";
 import Typography from "@mui/material/Typography";
 // import { v4 as uuidv4 } from "uuid";
 import { UseCurrentProps } from "./interface";
@@ -11,12 +11,19 @@ import DateIntervalPicker from "./dateintervalpicker";
 // import Badge from "@mui/material/Badge";
 
 export default function UseCurrent(props: UseCurrentProps) {
-  const { rangeScope, vizOpt, showCurrent, showIconText, current, stepValue } =
-    props;
+  const {
+    rangeScope,
+    vizOpt,
+    showCurrent,
+    showIconText,
+    current,
+    stepValue,
+    singleDay,
+  } = props;
 
   const [ttl, setTtl] = React.useState(true);
   const handleVal = (val: any) => {
-    props.handleVal([val.start, val.end]);
+    props.handleVal([val.start, singleDay ? val.start : val.end]);
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
@@ -45,7 +52,7 @@ export default function UseCurrent(props: UseCurrentProps) {
                   return item.show && x && y;
                 } else return vizOpt;
               })
-              .map((item, index) => (
+              .map((item, index: number) => (
                 <DateIntervalPicker
                   handleVal={handleVal}
                   stepValue={item.step}

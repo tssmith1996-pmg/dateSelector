@@ -4,12 +4,12 @@
         "displayName": "DateSelector",
         "guid": "dateSel4A1A0033E6F54D1B809B6E51058D54E3",
         "visualClassName": "Visual",
-        "version": "2.2023.11.27",
+        "version": "2.2024.02.26",
         "description": "Date Range Selector",
         "supportUrl": "https://github.com/o221/powerBI-dateSelector/issues",
         "gitHubUrl": "https://github.com/o221/powerBI-dateSelector"
     },
-    "apiVersion": "5.4.0",
+    "apiVersion": "5.8.0",
     "author": {
         "name": "jro",
         "email": "josborn@tambla.com.au"
