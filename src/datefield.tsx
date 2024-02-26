@@ -57,7 +57,8 @@ export const DateField: React.FC<DateFieldProps> = ({
           // width: themeFontSize,
           filter: themeColour,
         },
-        // width: themeFontSize * 7.2,
+         width: themeFontSize * 7.8,
+        // width: 90,
       }}
       variant="standard"
       size="small"
@@ -69,7 +70,8 @@ export const DateField: React.FC<DateFieldProps> = ({
       onFocus={onFocus}
       placeholder={"yyyy-MM-dd"}
       inputProps={{
-        style: { fontSize: themeFontSize, display: "flex", flexWrap: "wrap" },
+        // style: { fontSize: themeFontSize, display: "flex", flexWrap: "wrap" },
+        style: { fontSize: themeFontSize },
         max: max,
         min: min,
       }}
