@@ -158,6 +158,26 @@ export const getIntervalFunction = (stepValue: string) => {
 
 /** Initial Range set up **/
 
+/**
+ * @name day
+ * @category Day Interval
+ * @summary Determine the interval a number of days from a given date, optionally to another date.
+ *
+ * @description
+ * Get the interval for a day (or number of days) from the given date(s).
+ *
+ * @param i - The number of days to be subtracted from the interval.
+ * @param startBaseDate - A date in the required interval - default is Today.
+ * @param endBaseDate - is last full week required.
+ *
+ * @returns The day interval with the days subtracted
+ *
+ * @example
+ * // This day starting monday, from Wed, 20 Mar 24:
+ * const result = Day(0, new Date(2024, 3, 20))
+ * //=> {start: Wed Mar 20 2024 00:00:00,
+ * //      end: Wed Mar 20 2024 23:59:59}
+ */
 export const day = (
   i: number,
   startBaseDate: Date = startOfToday(),
@@ -170,6 +190,27 @@ export const day = (
   };
 };
 
+/**
+ * @name week
+ * @category Week Interval
+ * @summary Determine the week interval from a given date.
+ *
+ * @description
+ * Get the week interval a number of weeks from the given date.
+ *
+ * @param i - The number of weeks to be subtracted.
+ * @param w - The start day of the week - Sun is 0; Sat is 6.
+ * @param startBaseDate - The starting date - default is Today.
+ * @param full - is last full week required.
+ *
+ * @returns The week interval with the weeks subtracted
+ *
+ * @example
+ * // This week starting monday, from Wed, 20 Mar 24:
+ * const result = week(0, 1, new Date(2024, 3, 20), 1)
+ * //=> {start: Mon Mar 18 2024 00:00:00,
+ * //      end: Sun Mar 24 2024 00:00:00}
+ */
 export const week = (
   i: number,
   w: 0 | 1 | 2 | 3 | 4 | 5 | 6,
