@@ -4,6 +4,7 @@ import Slider from "@mui/material/Slider";
 import Zoom from "@mui/material/Zoom";
 import { ValueLabel } from "./rngetooltip";
 import { style, styleB, styleT } from "./sliderstyles";
+import { Grid } from "@mui/material";
 
 interface DualSliderProps {
   value: number[];
@@ -45,12 +46,12 @@ function DualSlider(props: DualSliderProps): JSX.Element {
   } = props;
 
   return (
-    <Box sx={{ height: "55px" }}>
+    <Grid sx={{ height: "40px" }}>
       <Box>
         <Slider
           name="top"
           key="slider1"
-          size="small"
+          size="medium"
           color="primary"
           value={value}
           onChangeCommitted={handleTopCommit}
@@ -59,8 +60,8 @@ function DualSlider(props: DualSliderProps): JSX.Element {
           step={step}
           marks={mainMarks}
           valueLabelDisplay="auto"
-          components={{
-            ValueLabel: ValueLabel
+          slots={{
+            valueLabel: ValueLabel
           }}
           valueLabelFormat={valueLabelFormat}
           min={0}
@@ -69,7 +70,7 @@ function DualSlider(props: DualSliderProps): JSX.Element {
         />
       </Box>
       <Zoom in={showBottomSlider}>
-        <Box component="span" height={"10px"}>
+        <Box >
           <Slider
             name="bottom"
             key="slider2"
@@ -81,8 +82,8 @@ function DualSlider(props: DualSliderProps): JSX.Element {
             step={null}
             max={max}
             marks={superMarks}
-            components={{
-              ValueLabel: ValueLabel
+            slots={{
+              valueLabel: ValueLabel
             }}
             valueLabelDisplay="auto"
             valueLabelFormat={valueLabelFormat}
@@ -93,7 +94,7 @@ function DualSlider(props: DualSliderProps): JSX.Element {
           />
         </Box>
       </Zoom>
-    </Box>
+    </Grid>
   );
 }
 

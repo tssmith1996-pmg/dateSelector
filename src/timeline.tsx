@@ -19,7 +19,7 @@ function Timeline({
 }) {
   return (
     <>
-      <Grid xs marginLeft={1} paddingTop={0.3}>
+      <Grid xs marginLeft={1} paddingTop={0.1}>
         <RangeSlider
           dates={dates}
           payProps={payProps}
