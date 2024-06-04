@@ -10,6 +10,7 @@ export const styleB = {
   // zIndex: 1,
   marginTop: -16,
   "& .MuiSlider-thumb": {
+    marginTop: 1.6,
     width: 4,
     height: 4,
     "&:hover": {
@@ -18,26 +19,31 @@ export const styleB = {
   },
   "& .MuiSlider-markLabel": {
     fontSize: "0.5rem",
-    top: 24,
-    paddingLeft: 0.9,
+    top: 22,
+    transform: "translateX(15%)",
+    left: "calc(-50% + 15px)",
+  },
+  "& .MuiSlider-rail": {
+    opacity: 0,
+    height: "1px",
   },
   "& .MuiSlider-mark": {
-    top: 26,
+    top: 20,
     height: 11,
     width: "1px",
     borderRadius: "0%",
     opacity: 0.3,
   },
   "& .MuiSlider-markActive": {
-    top: 16,
-    height: 10,
+    top: 28,
+    height: 13,
     width: "1px",
     borderRadius: "0%",
-    opacity: 0.5,
+    opacity: 1,
   },
   "& .MuiSlider-track": {
-    top: 16,
-    height: 10,
+    top: 28,
+    height: 13,
     opacity: 0.2,
     borderRadius: "0%",
     "&:hover": {
@@ -58,12 +64,15 @@ export const styleT = {
       boxShadow: "0 0 0 6px rgba(58, 133, 137, 0.16)",
     },
     "&:before": {
-      boxShadow: "0 2px 12px 0 rgba(0,0,0,0.4)",
+      boxShadow: "0 2px 8px 0 rgba(0,0,0,0.4)",
     },
+  },
+  "& .MuiSlider-railActive": {
+    opacity: 0,
   },
   "& .MuiSlider-markLabel": {
     fontSize: "0.5rem",
-    fontWeight: 500,
+    fontWeight: 400,
     top: 6,
   },
   "& .MuiSlider-mark": {
@@ -74,14 +83,14 @@ export const styleT = {
     opacity: 0.3,
   },
   "& .MuiSlider-markActive": {
-    top: 28,
-    height: 12,
+    // top: 19,
+    height: 18,
     width: "1px",
-    borderRadius: "0%",
+    // borderRadius: "0%",
     opacity: 0.5,
   },
   "& .MuiSlider-track": {
-    top: 28,
+    // top: 20,
     height: 10,
     opacity: 0.2,
     borderRadius: "0%",

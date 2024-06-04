@@ -46,8 +46,8 @@ function DualSlider(props: DualSliderProps): JSX.Element {
   } = props;
 
   return (
-    <Grid sx={{ height: "40px" }}>
-      <Box>
+    <Grid sm>
+      <Box sx={{ height: "52px" }}>
         <Slider
           name="top"
           key="slider1"
@@ -68,9 +68,9 @@ function DualSlider(props: DualSliderProps): JSX.Element {
           max={max}
           sx={Object.assign({}, style, styleT)}
         />
-      </Box>
+      </Box >
       <Zoom in={showBottomSlider}>
-        <Box >
+        <Box sx={{ height: "55px" }}>
           <Slider
             name="bottom"
             key="slider2"
