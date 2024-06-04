@@ -292,7 +292,7 @@ export class Visual implements IVisual {
         showMove: config.showMove.value,
         enableSlider: config.enableSlider.value,
         stepSkip: {
-          day: 1,
+          day: day.daySkip.value,
           week: week.weekSkip.value,
           pay: pay.paySkip.value,
           month: month.monthSkip.value,

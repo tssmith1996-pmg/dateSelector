@@ -236,6 +236,13 @@ class daySettings extends FormattingSettingsCard {
     value: this.day.fmtDay,
   });
 
+  daySkip = new formattingSettings.NumUpDown({
+    name: "daySkip",
+    displayName: "# Day labels to skip",
+    description: "Timeline only shows markers on days skipped by the number - 0 shows today only",
+    value: this.day.daySkip,
+  });
+
   name: string = "day";
   description: string =
     "Show the Today button on the Step Bar & Current Period Bar";
@@ -244,7 +251,7 @@ class daySettings extends FormattingSettingsCard {
   uid: string = "dayUid";
   topLevelSlice = this.showDay;
 
-  slices: Array<FormattingSettingsSlice> = [this.fmtDay];
+  slices: Array<FormattingSettingsSlice> = [this.daySkip,this.fmtDay];
 }
 
 class weekSettings extends FormattingSettingsCard {
@@ -266,7 +273,7 @@ class weekSettings extends FormattingSettingsCard {
   weekSkip = new formattingSettings.NumUpDown({
     name: "weekSkip",
     displayName: "# Week labels to skip",
-    description: "Timeline skips the number of week marker labels specified",
+    description: "Timeline only shows markers on weeks skipped by the number - 0 shows today only",
     value: this.week.weekSkip,
   });
 
@@ -311,7 +318,7 @@ class paySettings extends FormattingSettingsCard {
   paySkip = new formattingSettings.NumUpDown({
     name: "paySkip",
     displayName: "# Pay labels to skip",
-    description: "Timeline skips the number of pay marker labels specified",
+    description: "Timeline only shows markers on pay days skipped by the number - 0 shows today only",
     value: this.pay.paySkip,
   });
 
@@ -393,7 +400,7 @@ class monthSettings extends FormattingSettingsCard {
   monthSkip = new formattingSettings.NumUpDown({
     name: "monthSkip",
     displayName: "# Month labels to skip",
-    description: "Timeline skips the number of month marker labels specified",
+    description: "Timeline only shows markers on months skipped by the number - 0 shows today only",
     value: this.month.monthSkip,
   });
 
@@ -430,7 +437,7 @@ class quarterSettings extends FormattingSettingsCard {
   quarterSkip = new formattingSettings.NumUpDown({
     name: "quarterSkip",
     displayName: "# Quarter labels to skip",
-    description: "Timeline skips the number of quarter marker labels specified",
+    description: "Timeline only shows markers on quarter boundaries skipped by the number - 0 shows today only",
     value: this.quarter.quarterSkip,
   });
 
@@ -467,7 +474,7 @@ class yearSettings extends FormattingSettingsCard {
   yearSkip = new formattingSettings.NumUpDown({
     name: "yearSkip",
     displayName: "# Year labels to skip",
-    description: "Timeline skips the number of year marker labels specified",
+    description: "Timeline only shows markers on years skipped by the number - 0 shows today only",
     value: this.year.yearSkip,
   });
 

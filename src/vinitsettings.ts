@@ -59,6 +59,7 @@ export class DaySettings {
     // Slider initial visibility
     public showDay: boolean = true;
     public fmtDay: string = 'd-MMM';
+    public daySkip: number = 0;
 }
 
 export class WeekSettings {

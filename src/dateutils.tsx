@@ -652,7 +652,7 @@ export const createMarks = (
   pay: any
 ) => {
   const periodHandlers = {
-    day: () => [startOfToday()],
+    day: () => eachDayOfInterval(range),
     week: () => eachWeekOfInterval(range, { weekStartsOn: weekStart }),
     month: () => eachMonthOfInterval(range),
     pay: () => eachPaydayOfInterval(range, pay),
@@ -679,13 +679,13 @@ export const doMarks = (
   _offset: number
 ) => {
   return _val.map((x: Date, i: number) => {
-    const v: number = sliderMarkNumber(x, _min);
+    const v: number = sliderMarkNumber(_skip === 0 ? startOfToday(): x, _min);
     const od =
       _offset === 0
         ? _min
         : addYears(_min, sliderMarkDate(v, _min).getMonth() <= _offset ? 1 : 0);
     const l =
-      (i + 1) % _skip === 0 || i === 0 || i === _val.length - 1
+       (i + 1) % _skip === 0 || i === 0 || i === _val.length - 1
         ? sliderMarkText(v, od, _fmt)
         : "";
     return { value: v, label: l };
