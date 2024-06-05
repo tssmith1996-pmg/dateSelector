@@ -2,7 +2,7 @@ export const style = {
   width: "98%",
   "& .MuiSlider-rail": {
     opacity: 0.28,
-    height: "1px",
+    height: 1.1,
   },
 } as const;
 
@@ -10,9 +10,10 @@ export const styleB = {
   // zIndex: 1,
   marginTop: -16,
   "& .MuiSlider-thumb": {
-    marginTop: 1.6,
-    width: 4,
-    height: 4,
+    marginTop: 0.8,
+    width: 1.1,
+    height: 12,
+    borderRadius: "0%",
     "&:hover": {
       boxShadow: "0 0 0 6px rgba(58, 133, 137, 0.16)",
     },
@@ -25,24 +26,24 @@ export const styleB = {
   },
   "& .MuiSlider-rail": {
     opacity: 0,
-    height: "1px",
+    height: 1.1,
   },
   "& .MuiSlider-mark": {
     top: 20,
     height: 11,
-    width: "1px",
+    width: 1.1,
     borderRadius: "0%",
     opacity: 0.3,
   },
   "& .MuiSlider-markActive": {
-    top: 28,
+    top: 27,
     height: 13,
-    width: "1px",
+    width: 1.1,
     borderRadius: "0%",
     opacity: 1,
   },
   "& .MuiSlider-track": {
-    top: 28,
+    top: 27,
     height: 13,
     opacity: 0.2,
     borderRadius: "0%",
@@ -78,14 +79,14 @@ export const styleT = {
   "& .MuiSlider-mark": {
     top: 19,
     height: 5,
-    width: "1px",
+    width: 1.1,
     borderRadius: "0%",
     opacity: 0.3,
   },
   "& .MuiSlider-markActive": {
     // top: 19,
     height: 18,
-    width: "1px",
+    width: 1.1,
     // borderRadius: "0%",
     opacity: 0.5,
   },
@@ -121,6 +122,6 @@ export const styleTabs = {
   },
   "& .MuiTabs-indicatorSpan": {
     maxWidth: 10,
-    width: "10px",
+    width: 10,
   },
 } as const;
