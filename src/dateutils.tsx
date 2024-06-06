@@ -592,10 +592,9 @@ export const sliderMarkDate = (val: number, min: Date) => addDays(min, val);
 export const sliderMarkText = (num: number, min: Date, fmt = "d-MMM-yy") =>
   format(addDays(min, num), fmt);
 
-type StepMinor = "day" | "week" | "pay" | "month" | "quarter" | "year";
-type StepMajor = "day" | "week" | "pay" | "month" | "quarter" | "year";
+type Step = "day" | "week" | "pay" | "month" | "quarter" | "year";
 
-export const stepMinor: Record<StepMinor, StepMajor> = {
+export const stepMinor: Record<Step, Step> = {
   day: "month",
   week: "month",
   pay: "month",
@@ -604,7 +603,7 @@ export const stepMinor: Record<StepMinor, StepMajor> = {
   year: "month",
 };
 
-export const stepMajor: Record<StepMajor, StepMajor> = {
+export const stepMajor: Record<Step, Step> = {
   day: "day",
   week: "week",
   pay: "pay",
@@ -664,11 +663,10 @@ export const createMarks = (
       }).map((x) => addMonths(x, yearStart)),
   };
 
-  const handler = periodHandlers[period];
-  if (handler) {
-    return handler();
-  }
-  return null; // or handle unsupported period
+  const result = periodHandlers[period] ? periodHandlers[period]() : [];
+  const resultSet = new Set([range.start, ...result, range.end]);
+
+  return Array.from(resultSet).sort((a, b) => a.getTime() - b.getTime());
 };
 
 export const doMarks = (
@@ -680,13 +678,13 @@ export const doMarks = (
 ) => {
   return _val.map((x: Date, i: number) => {
     const v: number = sliderMarkNumber(_skip === 0 ? startOfToday(): x, _min);
-    const od =
+    const dateValue =
       _offset === 0
         ? _min
         : addYears(_min, sliderMarkDate(v, _min).getMonth() <= _offset ? 1 : 0);
     const l =
        (i + 1) % _skip === 0 || i === 0 || i === _val.length - 1
-        ? sliderMarkText(v, od, _fmt)
+        ? sliderMarkText(v, dateValue, _fmt)
         : "";
     return { value: v, label: l };
   });
