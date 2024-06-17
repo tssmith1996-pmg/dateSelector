@@ -92,6 +92,7 @@ export default class DateCardClass extends React.Component<
       showMove,
       enableSlider,
     } = this.state;
+    // console.log(this.state);
     return this.state.rangeScope.start ? (
       <>
         <DateRangeCard

@@ -1,3 +1,75 @@
+export interface Settings {
+  styleSettings: {
+    fmtDate?: string;
+    themeColor?: string;
+    themeMode?: any;
+    themeFont?: string;
+    fontFamily?: string;
+    fontSize?: string;
+    fontBold?: boolean;
+    fontUnderline?: boolean;
+    fontItalic?: boolean;
+    fontColor?: string;
+  };
+  calendarSettings?: {
+    singleDay?: boolean;
+    startRange?: string;
+    stepInit?: string;
+    payLength?: number;
+    fmtDate?: string;
+  };
+  configSettings?: {
+    enableSlider?: boolean;
+    showSlider?: boolean;
+    show2ndSlider?: boolean;
+    showCurrent?: boolean;
+    showIconText?: boolean;
+    showMore?: boolean;
+    showMove?: boolean;
+    showExpand?: boolean;
+    showHelpIcon?: boolean;
+  };
+  granularity?: {
+    daySettings?: {
+      showDay?: boolean;
+      fmtDay?: string;
+      daySkip?: number;
+    };
+    weekSettings?: {
+      showWeek?: boolean;
+      weekStartDay?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+      weekSkip?: number;
+      fmtWeek?: string;
+    };
+    paySettings?: {
+      showPay?: boolean;
+      paySkip?: number;
+      payLength?: number;
+      fmtPay?: string;
+      payRefDay?: number;
+      payRefYear?: number;
+      payRefMonth?: number;
+      payRefDate?: Date;
+    };
+    monthSettings?: {
+      showMonth?: boolean;
+      monthSkip?: number;
+      fmtMonth?: string;
+    };
+    quarterSettings?: {
+      showQuarter?: boolean;
+      fmtQuarter?: string;
+      quarterSkip?: number;
+    };
+    yearSettings?: {
+      showYear?: boolean;
+      fmtYear?: string;
+      yearStartMonth?: number;
+      yearSkip?: number;
+    };
+  };
+}
+
 export interface dateCardProps {
   // date range object representing the selected date range
   dates?: dateRange;
@@ -57,7 +129,7 @@ export interface dateCardProps {
   themeFontSize?: number;
 
   // value representing the theme mode to use
-  themeMode?: any //'light' | 'dark'
+  themeMode?: any; //'light' | 'dark'
 
   // boolean value indicating whether to show the help icon
   showHelpIcon?: boolean;

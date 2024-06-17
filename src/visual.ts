@@ -28,16 +28,24 @@
 import powerbi from "powerbi-visuals-api";
 // powerbi viz stuff
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisual = powerbi.extensibility.visual.IVisual;
-import DataView = powerbi.DataView;
-import VisualUpdateType = powerbi.VisualUpdateType;
-import IVisualEventService = powerbi.extensibility.IVisualEventService;
+import VisualUpdateOptions      = powerbi.extensibility.visual.VisualUpdateOptions;
+import IVisual                  = powerbi.extensibility.visual.IVisual;
+import DataView                 = powerbi.DataView;
+import VisualUpdateType         = powerbi.VisualUpdateType;
+import IVisualEventService      = powerbi.extensibility.IVisualEventService;
 
 // filter stuff
-import { AdvancedFilter, IFilterColumnTarget } from "powerbi-models";
+import {
+  // IFilter,
+  IFilterColumnTarget,
+  // IAdvancedFilter,
+  // Filter,
+  // PrimitiveValueType,
+  AdvancedFilter
+} from "powerbi-models";
 import { interactivityFilterService } from "powerbi-visuals-utils-interactivityutils";
 import extractFilterColumnTarget = interactivityFilterService.extractFilterColumnTarget;
+// import InteractivityFilterService  = interactivityFilterService.InteractivityFilterService ;
 
 // Formatting Options Panel
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
@@ -46,7 +54,7 @@ import { VisualSettingsModel } from "./vsettings";
 
 // React integration
 import * as React from "react";
-import { render } from "react-dom";
+import { createRoot } from 'react-dom/client';
 
 // react application interfaces
 import DateCardClass from "./dateRangeSelector";
@@ -61,7 +69,7 @@ export class Visual implements IVisual {
   private host: powerbi.extensibility.visual.IVisualHost;
   private events: IVisualEventService;
 
-  // formatiing pane
+  // formatiing panel
   private formattingSettings: VisualSettingsModel;
   private previousSettings: VisualSettingsModel | null = null;
   private formattingSettingsService: FormattingSettingsService;
@@ -70,24 +78,31 @@ export class Visual implements IVisual {
   private initialized: boolean = false;
   private singleDay: boolean = false;
 
+  // State
+    // private waitingForData: boolean;
+    // private updateFilter: boolean;
+
   // filter object
   private static filterObjectProperty: {
     objectName: string;
     propertyName: string;
   } = { objectName: "general", propertyName: "filter" };
   private filterTarget!: IFilterColumnTarget;
+  private jsonFilters: powerbi.IFilter[];
 
   // Initial date selection
-  // scope range determined by data view
+  // scope range determined from data view
   private rangeScope: {
     start: Date | null;
     end: Date | null;
   } = { start: null, end: null };
+
   private lastRangeScope: {
     start: Date | null;
     end: Date | null;
   };
-  // filter range determined by visual
+
+  // selected filter range determined from visual
   private dateInitRange: string;
   public start: Date | null = null;
   public end: Date | null = null;
@@ -98,6 +113,7 @@ export class Visual implements IVisual {
   private prevFilteredStartDate: Date | null = null;
   private prevFilteredEndDate: Date | null = null;
 
+  // support high contrast
   private isHighContrast: boolean;
   private foregroundColor: string;
   private backgroundColor: string;
@@ -128,7 +144,8 @@ export class Visual implements IVisual {
     this.target = options.element;
     this.host = options.host;
     this.host.hostCapabilities.allowInteractions = false;
-    render(this.reactRoot, this.target);
+    const root = createRoot(this.target);
+      root.render(this.reactRoot);
     this.events = options.host.eventService;
   }
 
@@ -142,7 +159,14 @@ export class Visual implements IVisual {
       return;
     }
 
+    // const xx = interactivityFilterService.createInteractivityFilterService(this.host);
+
+    // console.log(xx);
+
     this.events.renderingStarted(options);
+
+    this.jsonFilters = options.jsonFilters;
+    // this.restoreRangeFilter(options.dataViews[0]);
 
     // Get formatting settings
     this.formattingSettings =
@@ -163,12 +187,14 @@ export class Visual implements IVisual {
 
     const cat: powerbi.DataViewCategoryColumn =
       dataView.categorical.categories[0];
-    this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
+
+      this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
 
     // Initialise the page
     if (!this.initialized) {
       this.filterTarget = extractFilterColumnTarget(cat);
-    }
+    //  console.log("filterColumnTarget",this.filterTarget);
+  }
 
     // console.log("Init? ", this.initialized, "DataUpdate: ", isDataUpdate);
 
@@ -203,6 +229,37 @@ export class Visual implements IVisual {
     this.events.renderingFinished(options);
   }
 
+//   private restoreRangeFilter(dataView: DataView){
+//     if (this.jsonFilters &&
+//         (dataView.metadata && dataView.metadata.columns && dataView.metadata.columns[0])
+//     ){
+//         const filter: IAdvancedFilter = <IAdvancedFilter> this.jsonFilters.find((filter: IAdvancedFilter) => {
+//             const target: { table?: string, column?: string} = <any>filter.target;
+//             const source: string[] | undefined = String(dataView.metadata.columns[0].queryName).split('.');
+//             if(source && source[0] && source[1]){
+//                 return filter.logicalOperator == "And" && filter.target && target.table === source[0] && target.column === source[1];
+//             } else {
+//                 return false;
+//             }
+//         });
+
+//         if (filter && filter.conditions) {
+//             const greaterThan = filter.conditions.find(cond => cond.operator === "GreaterThan"),
+//                 lessThan = filter.conditions.find(cond => cond.operator === "LessThan");
+//             const range: {
+//                 min: number | null;
+//                 max: number | null;
+//             } = {
+//                 min: greaterThan ? Number(greaterThan.value) : null,
+//                 max: lessThan ? Number(lessThan.value) : null
+//             };
+
+//             console.log(range)
+//             // this.behavior.scalableRange.setValue(range);
+//         }
+//     }
+// }
+
   private doDates = () => {
     const calendar = this.formattingSettings.calendarCard;
     const startRange = calendar.startRange.value.toString();
@@ -227,13 +284,14 @@ export class Visual implements IVisual {
       this.start = fltr.start;
       this.end = fltr.end;
     }
+    // console.log("filter range: ", this.start, this.end );
 
     const isFilterChanged: boolean =
       String(this.prevFilteredStartDate) !== String(this.start) ||
       String(this.prevFilteredEndDate) !== String(this.end);
-
     // console.log("changed: ", isFilterChanged);
-    // check if an init range has already been set up
+
+    // check if an init filter range has already been set up
     if (
       startRange === "sync" ||
       (this.initialized && this.dateInitRange === startRange)
@@ -242,6 +300,7 @@ export class Visual implements IVisual {
         start: this.start,
         end: this.singleDay ? this.start : this.end,
       };
+      // console.log(this.formattingSettings.calendarCard.stepInit.value)
     } else {
       this.dateRangeFilter = {
         start: fltr.start,
@@ -282,15 +341,13 @@ export class Visual implements IVisual {
       const quarter = this.formattingSettings.quarterCard;
       const year = this.formattingSettings.yearCard;
 
-      // console.log(config.show2ndSlider.value);
+      // console.log(config.configGroup.show2ndSlider.value);
 
       DateCardClass.update({
         weekStartDay: this.getDayNum(week.weekStartDay.value.valueOf()),
         yearStartMonth: this.getNum(year.yearStartMonth.value.valueOf()),
         stepInit: calendar.stepInit.value.toString(),
         singleDay: calendar.singleDay.value,
-        showMove: config.showMove.value,
-        enableSlider: config.enableSlider.value,
         stepSkip: {
           day: day.daySkip.value,
           week: week.weekSkip.value,
@@ -324,12 +381,14 @@ export class Visual implements IVisual {
           ),
           len: pay.payLength.value,
         },
-        showHelpIcon: config.showHelpIcon.value,
-        showCurrent: config.showCurrent.value,
-        vizOpt: config.showMore.value,
-        showIconText: config.showIconText.value,
-        showSlider: !config.showSlider.value,
-        show2ndSlider: config.show2ndSlider.value,
+        showHelpIcon: config.configGroup.showHelpIcon.value,
+        showMove: config.configMove.showMove.value,
+        showCurrent: config.configCurrent.showCurrent.value,
+        vizOpt: config.configCurrent.showMore.value,
+        showIconText: config.configCurrent.showIconText.value,
+        enableSlider: config.configGroup.enableSlider.value,
+        showSlider: !config.configGroup.showSlider.value && config.configGroup.enableSlider.value,
+        show2ndSlider: config.configGroup.show2ndSlider.value,
         themeColor: this.isHighContrast
           ? this.foregroundColor
           : style.themeColor.value.value,
@@ -407,7 +466,9 @@ export class Visual implements IVisual {
       this.createFilter(startDate, endDate, filterTarget),
       Visual.filterObjectProperty.objectName,
       Visual.filterObjectProperty.propertyName,
-      this.getFilterAction(startDate, endDate)
+      (startDate && endDate)
+      ? powerbi.FilterAction.merge
+      : powerbi.FilterAction.remove
     );
   }
 
@@ -417,23 +478,24 @@ export class Visual implements IVisual {
     endDate: Date,
     filterTarget: IFilterColumnTarget
   ): AdvancedFilter {
-    if (startDate == null || endDate == null || !filterTarget) {
-      return null;
-    }
-
     return new AdvancedFilter(
       filterTarget,
       "And",
       {
         operator: "GreaterThanOrEqual",
-        value: startDate.toJSON(),
+        value: startDate
+        ?  startDate.toJSON(): null
       },
       {
         operator: "LessThanOrEqual",
-        value: endDate.toJSON(),
+        value: endDate
+        ? endDate.toJSON()
+        : null
       }
     );
   }
+
+
 
   // Clear the filter
   public clearSelection(target: IFilterColumnTarget): void {
@@ -464,7 +526,7 @@ export class Visual implements IVisual {
 
   // Clean up
   public getFilterAction(startDate: Date, endDate: Date): powerbi.FilterAction {
-    return startDate !== null && endDate !== null
+    return (startDate && endDate)
       ? powerbi.FilterAction.merge
       : powerbi.FilterAction.remove;
   }
@@ -536,7 +598,7 @@ export class Visual implements IVisual {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
   /**
-   * Returns properties pane formatting model content hierarchies, properties and latest formatting values, Then populate properties pane.
+   * Returns properties pane formatting model content hierarchies, properties and latest formatting values, Than populate properties pane.
    * This method is called once every time we open properties pane or when the user edit any format property.
    */
   public getFormattingModel(): powerbi.visuals.FormattingModel {

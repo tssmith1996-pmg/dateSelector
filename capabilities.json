@@ -36,6 +36,20 @@
         }
     ],
     "objects": {
+        "granularity": {
+            "properties": {
+                "myNumericSlice": {
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "myAnotherNumericSlice": {
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
         "general": {
             "displayName": "General",
             "displayNameKey": "Visual_General",
@@ -453,7 +467,21 @@
                     "type": {
                         "bool": true
                     }
-                },
+                }
+            }
+        },
+        "config3": {
+            "properties": {
+                "showHelpIcon": {
+                    "displayNameKey": "showHelpIcon",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "config2": {
+            "properties": {
                 "showCurrent": {
                     "displayNameKey": "showCurrent",
                     "type": {
@@ -466,19 +494,22 @@
                         "bool": true
                     }
                 },
+                "showMore": {
+                    "displayNameKey": "showMore",
+                    "type": {
+                        "bool": true
+                    }
+                }
+            }
+        },
+        "config1": {
+            "properties": {
                 "showMove": {
                     "type": {
                         "bool": true
                     }
                 },
-                "showHelpIcon": {
-                    "displayNameKey": "showHelpIcon",
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showMore": {
-                    "displayNameKey": "showMore",
+                "showExpand": {
                     "type": {
                         "bool": true
                     }
