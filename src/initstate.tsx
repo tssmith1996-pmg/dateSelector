@@ -76,7 +76,8 @@ export const defaultSettings: Settings = {
 
 const { granularity, calendarSettings, styleSettings, configSettings } =
   defaultSettings;
-const {
+
+  const {
   daySettings,
   weekSettings,
   paySettings,
@@ -86,6 +87,7 @@ const {
 } = granularity;
 
 export const initialState: dateCardProps = {
+  landingOn: true,
   rangeScope: {
     start: startOfYear(startOfToday()),
     end: endOfYear(startOfToday()),

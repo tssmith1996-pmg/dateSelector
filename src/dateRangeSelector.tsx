@@ -3,9 +3,10 @@ import { format } from "date-fns";
 import DateRangeCard from "./daterangecard";
 import { dateCardProps } from "./interface";
 import { initialState } from "./initstate";
-import { Typography } from "@mui/material";
-import {startOfDay} from "date-fns/startOfDay";
-import {endOfDay} from "date-fns/endOfDay";
+// import { Typography } from "@mui/material";
+import { startOfDay } from "date-fns/startOfDay";
+import { endOfDay } from "date-fns/endOfDay";
+import LandingPage from "./landingPage";
 
 export default class DateCardClass extends React.Component<
   { onChanged: (arg0: any) => void },
@@ -26,7 +27,8 @@ export default class DateCardClass extends React.Component<
   constructor(props: any) {
     super(props);
     this.state = initialState;
-    if (!this.state.dates) this.state.dates = this.state.rangeScope; // this.datesLoaded = false;};
+    // console.log("drs initial state",this.state.landingOn,format(this.state.rangeScope.start, "dd-MM-yyyy"));
+    if (!this.state.dates) this.state.dates = this.state.rangeScope;
     this.onDateChanged = this.onDateChanged.bind(this);
   }
 
@@ -45,9 +47,6 @@ export default class DateCardClass extends React.Component<
           end: endOfDay(this.state.singleDay ? e[0] : e[1]),
         },
       });
-
-      // console.log("state: ", this.state.singleDay, e,this.state.dates);
-
       this.props.onChanged([
         startOfDay(e[0]),
         endOfDay(this.state.singleDay ? e[0] : e[1]),
@@ -66,72 +65,17 @@ export default class DateCardClass extends React.Component<
   }
 
   render() {
-    const {
-      dates,
-      rangeScope,
-      stepViz,
-      vizOpt,
-      stepFmt,
-      stepSkip,
-      stepInit,
-      stepPeriod,
-      payProps,
-      fmtDate,
-      weekStartDay,
-      yearStartMonth,
-      showSlider,
-      show2ndSlider,
-      showCurrent,
-      themeColor,
-      themeFont,
-      themeMode,
-      fontSize,
-      showIconText,
-      showHelpIcon,
-      singleDay,
-      showMove,
-      enableSlider,
-    } = this.state;
-    // console.log(this.state);
-    return this.state.rangeScope.start ? (
-      <>
-        <DateRangeCard
-          dates={dates}
-          rangeScope={rangeScope}
-          vizOpt={vizOpt}
-          stepViz={stepViz}
-          stepFmt={stepFmt}
-          stepSkip={stepSkip}
-          stepInit={stepInit}
-          stepPeriod={stepPeriod}
-          payProps={payProps}
-          fmtDate={fmtDate}
-          weekStartDay={weekStartDay}
-          yearStartMonth={yearStartMonth}
-          showSlider={showSlider}
-          showCurrent={showCurrent}
-          themeColor={themeColor}
-          fontSize={fontSize}
-          themeFont={themeFont}
-          themeMode={themeMode}
-          showIconText={showIconText}
-          showHelpIcon={showHelpIcon}
-          handleVal={this.onDateChanged}
-          show2ndSlider={show2ndSlider}
-          singleDay={singleDay}
-          showMove={showMove}
-          enableSlider={enableSlider}
-        />
-      </>
-    ) : (
-      <>
-        <Typography variant="h5" ml={2} mt={3}>
-          Blank dates are not supported.
-        </Typography>
-        <Typography variant="body2" m={2}>
-          Please add a valid source date column or filter out the blanks.
-        </Typography>
-      </>
+    // console.log("drs render state",this.state.landingOn,format(this.state.rangeScope.start, "dd-MM-yyyy"));
+
+    if (this.state.landingOn) {
+      return <LandingPage />;
+    }
+
+    return (
+      <DateRangeCard
+        {...this.state} // Spread all state properties for concise prop passing
+        handleVal={this.onDateChanged} // Pass onDateChanged as a separate prop
+      />
     );
   }
 }

@@ -2,6 +2,8 @@
     "supportsHighlight": true,
     "supportsSynchronizingFilterState": true,
     "supportsKeyboardFocus": true,
+    "supportsLandingPage": true,
+    "supportsEmptyDataView": true,
     "advancedEditModeSupport": 2,
     "privileges": [],
     "dataRoles": [

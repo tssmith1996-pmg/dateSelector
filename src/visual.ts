@@ -28,20 +28,20 @@
 import powerbi from "powerbi-visuals-api";
 // powerbi viz stuff
 import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import VisualUpdateOptions      = powerbi.extensibility.visual.VisualUpdateOptions;
-import IVisual                  = powerbi.extensibility.visual.IVisual;
-import DataView                 = powerbi.DataView;
-import VisualUpdateType         = powerbi.VisualUpdateType;
-import IVisualEventService      = powerbi.extensibility.IVisualEventService;
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import IVisual = powerbi.extensibility.visual.IVisual;
+import DataView = powerbi.DataView;
+import VisualUpdateType = powerbi.VisualUpdateType;
+import IVisualEventService = powerbi.extensibility.IVisualEventService;
 
 // filter stuff
 import {
   // IFilter,
   IFilterColumnTarget,
-  // IAdvancedFilter,
+  IAdvancedFilter,
   // Filter,
   // PrimitiveValueType,
-  AdvancedFilter
+  AdvancedFilter,
 } from "powerbi-models";
 import { interactivityFilterService } from "powerbi-visuals-utils-interactivityutils";
 import extractFilterColumnTarget = interactivityFilterService.extractFilterColumnTarget;
@@ -54,7 +54,7 @@ import { VisualSettingsModel } from "./vsettings";
 
 // React integration
 import * as React from "react";
-import { createRoot } from 'react-dom/client';
+import { createRoot } from "react-dom/client";
 
 // react application interfaces
 import DateCardClass from "./dateRangeSelector";
@@ -79,8 +79,8 @@ export class Visual implements IVisual {
   private singleDay: boolean = false;
 
   // State
-    // private waitingForData: boolean;
-    // private updateFilter: boolean;
+  // private waitingForData: boolean;
+  // private updateFilter: boolean;
 
   // filter object
   private static filterObjectProperty: {
@@ -117,6 +117,8 @@ export class Visual implements IVisual {
   private isHighContrast: boolean;
   private foregroundColor: string;
   private backgroundColor: string;
+  private isLandingPageOn: boolean;
+  private loadReact: boolean;
 
   constructor(options: VisualConstructorOptions) {
     // console.log('Visual constructor') //, options);
@@ -126,44 +128,39 @@ export class Visual implements IVisual {
     this.host = options.host;
 
     this.isHighContrast = this.host.colorPalette.isHighContrast;
-      // console.log(this.isHighContrast);
+
+    // console.log(this.isHighContrast);
     if (this.isHighContrast) {
       this.foregroundColor = this.host.colorPalette.foreground.value;
       this.backgroundColor = this.host.colorPalette.background.value;
+      const theme = tinycolor(this.backgroundColor).isDark() ? "dark" : "light";
       DateCardClass.update({
         themeColor: this.foregroundColor,
-        themeMode: tinycolor(this.backgroundColor).isDark() ? "dark" : "light",
+        themeMode: theme,
       });
       // console.log("isHighContrast");
     }
 
-    // React integration
-    this.reactRoot = React.createElement(DateCardClass, {
-      onChanged: this.handleVal,
-    });
     this.target = options.element;
     this.host = options.host;
     this.host.hostCapabilities.allowInteractions = false;
-    const root = createRoot(this.target);
-      root.render(this.reactRoot);
     this.events = options.host.eventService;
+    this.host.displayWarningIcon(
+      "Range Scope",
+      "The range selected may exceed the scope of available dates"
+    );
+
+    this.loadReact = true;
   }
 
   public update(options: VisualUpdateOptions) {
-    // console.log("Update: ", options);
     // Check if options are valid
-    // console.log("Contrast:", this.isHighContrast, this.foregroundColor);
 
-    if (!Visual.areOptionsValid(options)) {
-      this.clearData();
+    this.checkLanding(options);
+
+    if (this.isLandingPageOn) {
       return;
     }
-
-    // const xx = interactivityFilterService.createInteractivityFilterService(this.host);
-
-    // console.log(xx);
-
-    this.events.renderingStarted(options);
 
     this.jsonFilters = options.jsonFilters;
     // this.restoreRangeFilter(options.dataViews[0]);
@@ -180,23 +177,21 @@ export class Visual implements IVisual {
 
     const dataView: DataView = options.dataViews[0];
 
-    if (Visual.isDataViewValid(dataView)) {
-      this.clearData();
-      return;
-    }
+    // if (Visual.isDataViewValid(dataView)) {
+    //   this.clearData();
+    //   return;
+    // }
 
     const cat: powerbi.DataViewCategoryColumn =
       dataView.categorical.categories[0];
 
-      this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
+    this.setFilterValues(options.jsonFilters as AdvancedFilter[]);
 
     // Initialise the page
     if (!this.initialized) {
       this.filterTarget = extractFilterColumnTarget(cat);
-    //  console.log("filterColumnTarget",this.filterTarget);
-  }
-
-    // console.log("Init? ", this.initialized, "DataUpdate: ", isDataUpdate);
+      //  console.log("filterColumnTarget",this.filterTarget);
+    }
 
     // Set up the date range scope of the slider
     if (!this.initialized || isDataUpdate) {
@@ -213,54 +208,74 @@ export class Visual implements IVisual {
       if (this.rangeScope !== this.lastRangeScope) {
         DateCardClass.update({
           rangeScope: this.rangeScope,
+          landingOn: this.isLandingPageOn,
         });
         this.lastRangeScope = this.rangeScope;
+        // this.initialized = true;
+        // return;
       }
     }
 
     // console.log("Update Rest of Cards");
     this.doCards(isSettingsUpdate);
 
-    // if (isSettingsUpdate)
     // console.log("Update Date Ranges");
-    this.doDates();
+    this.doDates(this.restoreRangeFilter(dataView));
 
-    this.initialized = true;
     this.events.renderingFinished(options);
   }
 
-//   private restoreRangeFilter(dataView: DataView){
-//     if (this.jsonFilters &&
-//         (dataView.metadata && dataView.metadata.columns && dataView.metadata.columns[0])
-//     ){
-//         const filter: IAdvancedFilter = <IAdvancedFilter> this.jsonFilters.find((filter: IAdvancedFilter) => {
-//             const target: { table?: string, column?: string} = <any>filter.target;
-//             const source: string[] | undefined = String(dataView.metadata.columns[0].queryName).split('.');
-//             if(source && source[0] && source[1]){
-//                 return filter.logicalOperator == "And" && filter.target && target.table === source[0] && target.column === source[1];
-//             } else {
-//                 return false;
-//             }
-//         });
+  private restoreRangeFilter(dataView: DataView) {
+    if (
+      this.jsonFilters &&
+      dataView.metadata &&
+      dataView.metadata.columns &&
+      dataView.metadata.columns[0]
+    ) {
+      const filter: IAdvancedFilter = <IAdvancedFilter>this.jsonFilters.find(
+        (filter: IAdvancedFilter) => {
+          const target: { table?: string; column?: string } = <any>(
+            filter.target
+          );
+          const source: string[] | undefined = String(
+            dataView.metadata.columns[0].queryName
+          ).split(".");
+          if (source && source[0] && source[1]) {
+            return (
+              filter.logicalOperator == "And" &&
+              filter.target &&
+              target.table === source[0] &&
+              target.column === source[1]
+            );
+          } else {
+            return false;
+          }
+        }
+      );
 
-//         if (filter && filter.conditions) {
-//             const greaterThan = filter.conditions.find(cond => cond.operator === "GreaterThan"),
-//                 lessThan = filter.conditions.find(cond => cond.operator === "LessThan");
-//             const range: {
-//                 min: number | null;
-//                 max: number | null;
-//             } = {
-//                 min: greaterThan ? Number(greaterThan.value) : null,
-//                 max: lessThan ? Number(lessThan.value) : null
-//             };
+      if (filter && filter.conditions) {
+        const greaterThan = filter.conditions.find(
+            (cond) => cond.operator === "GreaterThanOrEqual"
+          ),
+          lessThan = filter.conditions.find(
+            (cond) => cond.operator === "LessThanOrEqual"
+          );
+        const range: {
+          min: string | number | boolean | Date | null;
+          max: string | number | boolean | Date | null;
+        } = {
+          min: greaterThan ? greaterThan.value : null,
+          max: lessThan ? lessThan.value : null,
+        };
+        if (!range.min) return false
+        this.start = this.parseDate(range.min);
+        this.end = this.parseDate(range.max);
+        return true
+      }
+    }
+  }
 
-//             console.log(range)
-//             // this.behavior.scalableRange.setValue(range);
-//         }
-//     }
-// }
-
-  private doDates = () => {
+  private doDates = (restored : boolean) => {
     const calendar = this.formattingSettings.calendarCard;
     const startRange = calendar.startRange.value.toString();
     const year = this.formattingSettings.yearCard;
@@ -277,7 +292,7 @@ export class Visual implements IVisual {
       this.rangeScope
     );
 
-    if (startRange === "sync") {
+    if (startRange === "sync" || restored) {
       this.start = this.start === null ? this.rangeScope.start : this.start;
       this.end = this.end === null ? this.rangeScope.end : this.end;
     } else if (!this.initialized) {
@@ -307,13 +322,14 @@ export class Visual implements IVisual {
         end: this.singleDay ? fltr.start : fltr.end,
       };
     }
-    // console.log("filter: ", this.dateRangeFilter);
 
     this.dateInitRange = startRange;
 
     if (isFilterChanged || !this.initialized) {
+      // console.log("filter: ", this.dateRangeFilter);
       DateCardClass.update({
         dates: this.dateRangeFilter,
+        landingOn: this.isLandingPageOn,
       });
 
       // if (!this.initialized || startRange !== "sync" && this.start === fltr.start) {
@@ -344,6 +360,7 @@ export class Visual implements IVisual {
       // console.log(config.configGroup.show2ndSlider.value);
 
       DateCardClass.update({
+        landingOn: this.isLandingPageOn,
         weekStartDay: this.getDayNum(week.weekStartDay.value.valueOf()),
         yearStartMonth: this.getNum(year.yearStartMonth.value.valueOf()),
         stepInit: calendar.stepInit.value.toString(),
@@ -387,7 +404,9 @@ export class Visual implements IVisual {
         vizOpt: config.configCurrent.showMore.value,
         showIconText: config.configCurrent.showIconText.value,
         enableSlider: config.configGroup.enableSlider.value,
-        showSlider: !config.configGroup.showSlider.value && config.configGroup.enableSlider.value,
+        showSlider:
+          !config.configGroup.showSlider.value &&
+          config.configGroup.enableSlider.value,
         show2ndSlider: config.configGroup.show2ndSlider.value,
         themeColor: this.isHighContrast
           ? this.foregroundColor
@@ -402,13 +421,6 @@ export class Visual implements IVisual {
       });
     }
   };
-
-  private clearData(): void {
-    console.log("cleared ");
-    this.initialized = false;
-    this.dateInitRange = undefined;
-    // DateCardClass.update(initialState);
-  }
 
   private getNum = (n: number | string) => {
     return typeof n === "number" ? n : parseInt(n, 10);
@@ -456,6 +468,31 @@ export class Visual implements IVisual {
     }
   };
 
+  private checkLanding(options: VisualUpdateOptions) {
+    this.isLandingPageOn =
+      !options.dataViews[0]?.metadata?.columns?.length ||
+      !options.dataViews[0].categorical.categories[0].source.type.dateTime;
+
+    this.events.renderingStarted(options);
+
+    if (this.loadReact) {
+      // React integration
+      this.reactRoot = React.createElement(DateCardClass, {
+        onChanged: this.handleVal,
+        landingOn: this.isLandingPageOn,
+      });
+      const root = createRoot(this.target);
+      root.render(this.reactRoot);
+      this.loadReact = false;
+      // console.log("loadReact")
+    } else {
+      DateCardClass.update({
+        landingOn: this.isLandingPageOn,
+      });
+      // console.log("updateReact")
+    }
+  }
+
   // Apply the filter
   public applyDatePeriod(
     startDate: Date,
@@ -466,9 +503,9 @@ export class Visual implements IVisual {
       this.createFilter(startDate, endDate, filterTarget),
       Visual.filterObjectProperty.objectName,
       Visual.filterObjectProperty.propertyName,
-      (startDate && endDate)
-      ? powerbi.FilterAction.merge
-      : powerbi.FilterAction.remove
+      startDate && endDate
+        ? powerbi.FilterAction.merge
+        : powerbi.FilterAction.remove
     );
   }
 
@@ -483,25 +520,19 @@ export class Visual implements IVisual {
       "And",
       {
         operator: "GreaterThanOrEqual",
-        value: startDate
-        ?  startDate.toJSON(): null
+        value: startDate ? startDate.toJSON() : null,
       },
       {
         operator: "LessThanOrEqual",
-        value: endDate
-        ? endDate.toJSON()
-        : null
+        value: endDate ? endDate.toJSON() : null,
       }
     );
   }
-
-
 
   // Clear the filter
   public clearSelection(target: IFilterColumnTarget): void {
     this.prevFilteredStartDate = null;
     this.prevFilteredEndDate = null;
-
     this.applyDatePeriod(null, null, target);
   }
 
@@ -526,24 +557,9 @@ export class Visual implements IVisual {
 
   // Clean up
   public getFilterAction(startDate: Date, endDate: Date): powerbi.FilterAction {
-    return (startDate && endDate)
+    return startDate && endDate
       ? powerbi.FilterAction.merge
       : powerbi.FilterAction.remove;
-  }
-
-  private static areOptionsValid(
-    options: powerbi.extensibility.visual.VisualUpdateOptions
-  ): boolean {
-    // check that we have a valid dataview
-    if (
-      !options ||
-      !options.dataViews ||
-      !options.dataViews[0] ||
-      !options.dataViews[0].metadata ||
-      !Visual.isDataViewCategoricalValid(options.dataViews[0].categorical)
-    ) {
-      return true;
-    } else return false;
   }
 
   // check that the field is a date

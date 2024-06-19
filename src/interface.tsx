@@ -77,6 +77,9 @@ export interface dateCardProps {
   // date range object representing the scope of available dates to choose from
   rangeScope?: dateRange;
 
+  // boolean value indicating whether to display landing page
+  landingOn?: boolean;
+
   // boolean value indicating whether to display step controls for selecting dates
   stepViz?: stepBool;
 
@@ -134,9 +137,6 @@ export interface dateCardProps {
   // boolean value indicating whether to show the help icon
   showHelpIcon?: boolean;
 
-  // function to handle the selected value(s)
-  handleVal?: (val) => void;
-
   // boolean value indicating whether to show the icon text
   showIconText?: boolean;
   // boolean value indicating whether to constrain to a single day
@@ -145,10 +145,15 @@ export interface dateCardProps {
   showMove?: boolean;
   // boolean value indicating whether to show timeline toggle button
   enableSlider?: boolean;
+
+  // function to handle the selected value(s)
+  handleVal?: (val) => void;
+
 }
 
 export interface topRowProps {
   openSlider: boolean;
+  landingOn?: boolean;
   toggleSlider: () => void;
   dates?: dateRange;
   rangeScope?: dateRange;
