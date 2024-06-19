@@ -15,7 +15,7 @@
         "email": "josborn@tambla.com.au"
     },
     "assets": {
-        "icon": "assets/timeline.png"
+        "icon": "assets/landingLogo.png"
     },
     "capabilities": "capabilities.json",
     "dependencies": null,
