@@ -2,7 +2,7 @@ import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import RngeTooltip from "./rngetooltip";
-import { TOGGLE_SLIDER_BUTTON } from "./constants";
+import { TOGGLE_SLIDER_BUTTON } from "../constants";
 
 const { TopRowOpen, TopRowClosed, TopRowEnd, DetailRowOpen, DetailRowClosed } =
   TOGGLE_SLIDER_BUTTON;

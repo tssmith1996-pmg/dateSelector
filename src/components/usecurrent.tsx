@@ -4,11 +4,9 @@ import IconButton from "@mui/material/IconButton";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { areIntervalsOverlapping } from "date-fns/areIntervalsOverlapping";
 import Typography from "@mui/material/Typography";
-// import { v4 as uuidv4 } from "uuid";
-import { UseCurrentProps } from "./interface";
+import { UseCurrentProps, dateRange } from "../interface";
 import RngeTooltip from "./rngetooltip";
 import DateIntervalPicker from "./dateintervalpicker";
-// import Badge from "@mui/material/Badge";
 
 export default function UseCurrent(props: UseCurrentProps) {
   const {
@@ -19,11 +17,12 @@ export default function UseCurrent(props: UseCurrentProps) {
     current,
     stepValue,
     singleDay,
+    handleVal,
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
-  const handleVal = (val: any) => {
-    props.handleVal([val.start, singleDay ? val.start : val.end]);
+  const handleDate = (val: dateRange) => {
+    handleVal([val.start, singleDay ? val.start : val.end]);
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
@@ -54,7 +53,7 @@ export default function UseCurrent(props: UseCurrentProps) {
               })
               .map((item, index: number) => (
                 <DateIntervalPicker
-                  handleVal={handleVal}
+                  handleVal={handleDate}
                   stepValue={item.step}
                   key={"dip" + item.thisRange + index}
                 >
@@ -79,7 +78,7 @@ export default function UseCurrent(props: UseCurrentProps) {
                       value={item.tip.toLowerCase().trim()}
                       onMouseDown={() => {
                         if (item.thisRange) {
-                          handleVal(item.thisRange);
+                          handleDate(item.thisRange);
                           handleStep(item.step);
                         } else {
                           setTtl(!ttl);

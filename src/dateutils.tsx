@@ -53,7 +53,7 @@ import { lastDayOfMonth } from "date-fns/lastDayOfMonth";
 import { isLastDayOfMonth } from "date-fns/isLastDayOfMonth";
 import { isFirstDayOfMonth } from "date-fns/isFirstDayOfMonth";
 import { isWithinInterval } from "date-fns/isWithinInterval";
-import { stepBool, dateRange, SliderProps } from "./interface";
+import { step, dateRange, SliderProps } from "./interface";
 import { DATEUTILS } from "./constants";
 import { getDay } from "date-fns/getDay";
 
@@ -482,7 +482,7 @@ export const getRange = (fn: string, step: string, dates) => {
 /** Current Period Parameters */
 
 export const Increment = (
-  stepViz: stepBool,
+  stepViz: step<boolean>,
   weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6,
   yearStartMonth: number,
   payProps?: any,

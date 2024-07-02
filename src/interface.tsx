@@ -1,4 +1,34 @@
+import { valueFormatter as vf } from "powerbi-visuals-utils-formattingutils";
+import IValueFormatter = vf.IValueFormatter;
+import { IFilterColumnTarget } from "powerbi-models";
+
+export interface VisualState {
+  viewport: ViewportData;
+  settings: dateCardProps;
+  category: CategoryData;
+}
+
+export interface ViewportData {
+  width: number;
+  height: number;
+}
+
+export interface CategoryData {
+  displayName: string;
+  count: number;
+  rangeValues: dateRange;
+  maxWidth: number;
+  formatter: IValueFormatter;
+  filterTarget: IFilterColumnTarget;
+}
+
 export interface Settings {
+  general: {
+    dates?: dateRange; // date range object representing the selected date range
+    rangeScope?: dateRange; // date range object representing the scope of available dates to choose from
+    landingOff?: boolean; // boolean value indicating whether to display landing page
+    filter?: any;
+  };
   styleSettings: {
     fmtDate?: string;
     themeColor?: string;
@@ -18,7 +48,7 @@ export interface Settings {
     payLength?: number;
     fmtDate?: string;
   };
-  configSettings?: {
+  layoutSettings?: {
     enableSlider?: boolean;
     showSlider?: boolean;
     show2ndSlider?: boolean;
@@ -78,25 +108,26 @@ export interface dateCardProps {
   rangeScope?: dateRange;
 
   // boolean value indicating whether to display landing page
-  landingOn?: boolean;
+  landingOff?: boolean;
 
+  startRange?: string;
   // boolean value indicating whether to display step controls for selecting dates
-  stepViz?: stepBool;
-
-  // boolean value indicating whether to display visualization options for the date range
-  vizOpt?: boolean;
+  stepViz?: step<boolean>;
 
   // string value representing the format of the granularity display for the step controls
-  stepFmt?: stepString;
+  stepFmt?: step<string>;
 
   // number value representing the number of steps to skip in the step controls
-  stepSkip?: stepNum;
+  stepSkip?: step<number>;
 
   // string value representing the initial granularity display format for the step controls
   stepInit?: string;
 
   // string value representing the period of the step controls
   stepPeriod?: string;
+
+  // boolean value indicating whether to display visualization options for the date range
+  vizOpt?: boolean;
 
   // payment-related object representing payment-related properties
   payProps?: pay;
@@ -147,19 +178,19 @@ export interface dateCardProps {
   enableSlider?: boolean;
 
   // function to handle the selected value(s)
-  handleVal?: (val) => void;
-
+  handleVal?: (val: any) => void;
+  onFilterChanged?: (val: dateRange) => void;
 }
 
 export interface topRowProps {
   openSlider: boolean;
-  landingOn?: boolean;
+  landingOff?: boolean;
   toggleSlider: () => void;
   dates?: dateRange;
   rangeScope?: dateRange;
   payProps?: pay;
   handleVal?: (val) => void;
-  stepViz?: stepBool;
+  stepViz?: step<boolean>;
   stepOpen: boolean;
   stepValue: string;
   handleClick: () => void;
@@ -190,7 +221,7 @@ export interface DateMoveProps {
 
 export interface stepProps {
   // value: string;
-  stepViz?: stepBool;
+  stepViz?: step<boolean>;
   stepValue?: string;
   payProps?: pay;
   viz?: boolean;
@@ -204,7 +235,7 @@ export interface UseCurrentProps {
   weekStartDay?: 0 | 1 | 2 | 3 | 4 | 5 | 6;
   yearStartMonth?: number;
   payProps?: pay;
-  stepViz?: stepBool;
+  stepViz?: step<boolean>;
   showCurrent?: boolean;
   stepValue?: string;
   showIconText?: boolean;
@@ -231,8 +262,8 @@ export interface SliderProps {
   yearStartMonth?: number;
   stepValue?: string;
   payProps?: pay;
-  stepFmt?: stepString;
-  stepSkip?: stepNum;
+  stepFmt?: step<string>;
+  stepSkip?: step<number>;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   handleVal?: (val) => void;
   toggleSlider?: () => void;
@@ -246,31 +277,13 @@ export interface dateRange {
   end: Date;
 }
 
-export interface stepBool {
-  day: boolean;
-  week: boolean;
-  pay: boolean;
-  month: boolean;
-  quarter: boolean;
-  year: boolean;
-}
-
-interface stepString {
-  day: string;
-  week: string;
-  pay: string;
-  month: string;
-  quarter: string;
-  year: string;
-}
-
-interface stepNum {
-  day: number;
-  week: number;
-  pay: number;
-  month: number;
-  quarter: number;
-  year: number;
+export interface step<T> {
+  day: T;
+  week: T;
+  pay: T;
+  month: T;
+  quarter: T;
+  year: T;
 }
 
 interface pay {

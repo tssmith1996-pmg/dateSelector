@@ -1,11 +1,10 @@
-import { getRange } from "./dateutils";
+import { getRange } from "../dateutils";
 import { useHotkeys } from "react-hotkeys-hook";
 import debounce from "lodash.debounce";
 import type { Interval } from "date-fns";
 
-type Callback = (result: Date[]) => void;
 export function dateMoveKeys(
-  fn: Callback,
+  fn: (result: Date[]) => void,
   stepValue: string,
   dates: Interval,
   current: any,

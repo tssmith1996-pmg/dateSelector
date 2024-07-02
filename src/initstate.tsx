@@ -1,8 +1,12 @@
 import { Settings, dateCardProps } from "./interface";
 //import { defaultSettings } from "./vinitsettings";
-import { startOfYear, startOfToday, endOfYear } from "date-fns";
+ import { startOfToday } from "date-fns";
+  //,startOfYear, endOfYear
 
 export const defaultSettings: Settings = {
+  general: {
+    rangeScope: {start: null,end: null},
+  },
   styleSettings: {
     fmtDate: "d-MM-yyyy",
     themeColor: "#607d8b",
@@ -22,7 +26,7 @@ export const defaultSettings: Settings = {
     payLength: 14,
     fmtDate: "EEE, d MMM yy",
   },
-  configSettings: {
+  layoutSettings: {
     enableSlider: true,
     showSlider: false,
     show2ndSlider: true,
@@ -74,7 +78,7 @@ export const defaultSettings: Settings = {
   },
 };
 
-const { granularity, calendarSettings, styleSettings, configSettings } =
+const { general, granularity, calendarSettings, styleSettings, layoutSettings } =
   defaultSettings;
 
   const {
@@ -87,11 +91,8 @@ const { granularity, calendarSettings, styleSettings, configSettings } =
 } = granularity;
 
 export const initialState: dateCardProps = {
-  landingOn: true,
-  rangeScope: {
-    start: startOfYear(startOfToday()),
-    end: endOfYear(startOfToday()),
-  },
+  landingOff: general.landingOff,
+  rangeScope: general.rangeScope,
   weekStartDay: weekSettings.weekStartDay, // 0 = Sun
   yearStartMonth: yearSettings.yearStartMonth, // 0 = Jan
   stepInit: calendarSettings.stepInit,
@@ -132,13 +133,13 @@ export const initialState: dateCardProps = {
   themeFont: styleSettings.themeFont,
   themeMode: styleSettings.themeMode,
   fontSize: styleSettings.fontSize,
-  showCurrent: configSettings.showCurrent,
-  showHelpIcon: configSettings.showHelpIcon,
-  vizOpt: configSettings.showMore,
-  showIconText: configSettings.showIconText,
+  showCurrent: layoutSettings.showCurrent,
+  showHelpIcon: layoutSettings.showHelpIcon,
+  vizOpt: layoutSettings.showMore,
+  showIconText: layoutSettings.showIconText,
   singleDay: calendarSettings.singleDay,
-  showSlider: configSettings.showSlider,
-  show2ndSlider: configSettings.show2ndSlider,
-  showMove: configSettings.showMove,
-  enableSlider: configSettings.enableSlider,
+  showSlider: layoutSettings.showSlider,
+  show2ndSlider: layoutSettings.show2ndSlider,
+  showMove: layoutSettings.showMove,
+  enableSlider: layoutSettings.enableSlider,
 };

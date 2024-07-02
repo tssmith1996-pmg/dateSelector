@@ -6,7 +6,7 @@ import {
   Paper,
 } from "@mui/material";
 import { Interval, subDays } from "date-fns";
-import { getIntervalFunction } from "./dateutils";
+import { getIntervalFunction } from "../dateutils";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";

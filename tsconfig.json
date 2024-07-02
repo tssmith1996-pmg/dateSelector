@@ -20,6 +20,8 @@
         ]
     },
     "files": [
-        "./src/visual.ts"
+        "./src/dateSelector.tsx",
+        "./src/optionsMapper.tsx",
+        "./src/reactUtils.tsx"
     ]
 }

@@ -5,7 +5,7 @@ import InfoOutlined from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 // import Typography from "@mui/material/Typography";
 import { useHotkeys } from "react-hotkeys-hook";
-import { HELP_PROVIDER } from "./constants";
+import { HELP_PROVIDER } from "../constants";
 
 const HelpContext = React.createContext({
   showKey: false,
@@ -23,7 +23,7 @@ export const HelpProvider = ({ children, showHelpIcon }) => {
 
   const toggleHelp = (): void => {
     setShowHelp(!showHelp);
-    
+
   };
 
   const value = { showKey, showHelp, toggleHelp };

@@ -5,7 +5,7 @@ import Zoom from "@mui/material/Zoom";
 import DateInput from "./dateinput";
 import UseCurrent from "./usecurrent";
 import ToggleSliderButton from "./togglesliderbutton";
-import { topRowProps } from "./interface";
+import { topRowProps } from "../interface";
 
 const TopRow: React.FC<topRowProps> = ({
   openSlider,
@@ -28,7 +28,6 @@ const TopRow: React.FC<topRowProps> = ({
   showMove,
   enableSlider,
 }) => {
-  // console.log(enableSlider);
   return (
     <Grid container rowSpacing={0.3} paddingLeft={0.3} xs={12}>
       {enableSlider && (

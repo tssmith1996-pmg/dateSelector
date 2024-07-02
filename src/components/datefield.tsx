@@ -43,21 +43,17 @@ export const DateField: React.FC<DateFieldProps> = ({
     }
   };
 
-  const themeFontSize = useTheme().typography.fontSize;
-  const themeColour = hexToCSSFilter(useTheme().palette.primary.main).filter;
+  const theme = useTheme();
 
   return (
     <TextField
       id={id}
       sx={{
         "& input[type='date']::-webkit-calendar-picker-indicator": {
-          // display: "none",
-          // WebkitAppearance: "none",
-          height: themeFontSize,
-          // width: themeFontSize,
-          filter: themeColour,
+          height: theme.typography.fontSize,
+          filter: theme.palette.primary.main ? hexToCSSFilter(theme.palette.primary.main).filter : "",
         },
-         width: themeFontSize * 7.8,
+         width: theme.typography.fontSize * 7.8,
         // width: 90,
       }}
       variant="standard"
@@ -70,10 +66,8 @@ export const DateField: React.FC<DateFieldProps> = ({
       onFocus={onFocus}
       placeholder={"yyyy-MM-dd"}
       inputProps={{
-        // style: { fontSize: themeFontSize, display: "flex", flexWrap: "wrap" },
-        style: { fontSize: themeFontSize },
-        max: max,
-        min: min,
+        max,
+        min
       }}
       InputProps={{
         disableUnderline: underline,

@@ -5,8 +5,8 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Box from "@mui/material/Box";
 import debounce from "lodash.debounce";
 import { useHotkeys } from "react-hotkeys-hook";
-import { getRange, moveParms } from "./dateutils";
-import { DateMoveProps } from "./interface";
+import { getRange, moveParms } from "../dateutils";
+import { DateMoveProps } from "../interface";
 import RngeTooltip from "./rngetooltip";
 
 export default function DateMove(props: DateMoveProps) {

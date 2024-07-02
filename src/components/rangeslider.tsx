@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SliderProps } from "./interface";
+import { SliderProps } from "../interface";
 import DualSlider from "./dualslider";
 import {
   mainMarks,
@@ -7,7 +7,7 @@ import {
   sliderMarkNumber,
   sliderMarkDate,
   sliderMarkText
-} from "./dateutils";
+} from "../dateutils";
 
 export default function RangeSlider(props: SliderProps) {
   const { dates, rangeScope, stepValue, show2ndSlider, handleVal, singleDay } =

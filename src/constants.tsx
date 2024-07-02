@@ -1,3 +1,9 @@
+export const LINE_COLOR: string = "#AAAAAA";
+export const BAR_COLOR: string = "#5555FF";
+
+export const FONT_SIZE: number = 10;
+export const FONT_FAMILY: string = "helvetica,arial,sans-serif";
+
 export const HELP_PROVIDER = {
   ShortCut: "H",
   TopRowHelp: "Date Range Selection - shortcut key (H)",

@@ -7,8 +7,8 @@ import Badge from "@mui/material/Badge";
 import Typography from "@mui/material/Typography";
 import RngeTooltip from "./rngetooltip";
 
-import { Increment } from "./dateutils";
-import { stepProps } from "./interface";
+import { Increment } from "../dateutils";
+import { stepProps } from "../interface";
 
 export default function StepsMenu(props: stepProps) {
   const { stepViz, stepValue, payProps, viz } = props;

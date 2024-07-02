@@ -3,41 +3,19 @@ import { useEffect, useState } from "react";
 import Grid from "@mui/material/Unstable_Grid2";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
-// import Zoom from "@mui/material/Zoom";
 import Remove from "@mui/icons-material/Remove";
 import { format, parse, isValid } from "date-fns";
-import { inputParms } from "./dateutils";
+import { inputParms } from "../dateutils";
 import { DateField } from "./datefield";
 import { useHelpContext } from "./helpprovider";
 import RngeTooltip from "./rngetooltip";
-import { DateRangeProps } from "./interface";
-
-const TextFieldDash: React.FC = () => {
-  return (
-    <IconButton size="small">
-      <Remove
-        style={{ fontSize: useTheme().typography.fontSize }}
-        color="disabled"
-      />
-    </IconButton>
-
-    // <Box sx={{ width: useTheme().typography.fontSize *.66 }}>
-    //   <TextField
-    //     id="dash"
-    //     variant="standard"
-    //     disabled
-    //     value={"-"}
-    //     InputProps={{ disableUnderline: true }}
-    //   />
-    // </Box>
-  );
-};
+import { DateRangeProps } from "../interface";
 
 export default function DateRange(props: DateRangeProps) {
   const { dates, rangeScope, handleVal, singleDay } = props;
 
-  const [underline, setUndeline] = useState<boolean>(() => true);
-  const [startText, setStartText] = useState<string>(() =>
+  const [underline, setUnderline] = useState(true);
+    const [startText, setStartText] = useState<string>(() =>
     format(dates.start, "yyyy-MM-dd")
   );
   const [endText, setEndText] = useState<string>(() =>
@@ -72,24 +50,12 @@ export default function DateRange(props: DateRangeProps) {
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (e.target.id === "start") {
-      doUpdate("start", e.target.value);
-    } else {
-      doUpdate("end", e.target.value);
-    }
-  };
+    doUpdate(e.target.id as "start" | "end", e.target.value);  };
 
-  const showUndeline = () => {
-    setUndeline(false);
-  };
-
-  const hideUndeline = () => {
-    setUndeline(true);
-  };
+    const toggleUnderline = () => setUnderline((prev) => !prev);
 
   return (
-    <div onMouseEnter={showUndeline} onMouseLeave={hideUndeline}>
-      <RngeTooltip
+    <div onMouseEnter={toggleUnderline} onMouseLeave={toggleUnderline}>      <RngeTooltip
         title={undefined}
         topRow={topRow}
         detailRow={dateSpan.string}
@@ -100,18 +66,23 @@ export default function DateRange(props: DateRangeProps) {
             <DateField
               id="start"
               value={startText}
-              max={singleDay? "": endText}
+              max={singleDay ? "" : endText}
               underline={underline}
               error={!dateSpan.toValid}
               onBlur={handleBlur}
               doUpdate={doUpdate}
               onChange={handleInput}
-              onFocus={showUndeline}
-            />
+              onFocus={() => setUnderline(true)}
+             />
           </Grid>
           {!singleDay && (
             <>
-              <TextFieldDash />
+              <IconButton size="small">
+                <Remove
+                  style={{ fontSize: useTheme().typography.fontSize }}
+                  color="disabled"
+                />
+              </IconButton>
               <Grid xs="auto">
                 <DateField
                   id="end"
@@ -120,9 +91,9 @@ export default function DateRange(props: DateRangeProps) {
                   error={!dateSpan.toValid}
                   underline={underline}
                   onBlur={handleBlur}
-                  onChange={handleInput}
-                  onFocus={showUndeline}
                   doUpdate={doUpdate}
+                  onChange={handleInput}
+                  onFocus={() => setUnderline(true)}
                 />
               </Grid>
             </>
