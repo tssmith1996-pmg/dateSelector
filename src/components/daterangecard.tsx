@@ -23,8 +23,11 @@ export default function DateRangeCard(props: dateCardProps) {
   const {
     landingOff, dates, rangeScope, weekStartDay, yearStartMonth, stepInit, stepSkip, stepViz,
     vizOpt, stepFmt, payProps, themeColor, themeFont, themeMode, fontSize, showCurrent,
-    showIconText, show2ndSlider, showSlider, showHelpIcon, singleDay, showMove, enableSlider, onFilterChanged,
+    showIconText, show2ndSlider, showSlider, showHelpIcon, singleDay, showMove, enableSlider, onFilterChanged,showExpand
   } = props;
+
+  // console.log(props)
+    // console.log("drc",showExpand);
 
   if (landingOff) {
     const theme = SetTheme({
@@ -69,6 +72,7 @@ export default function DateRangeCard(props: dateCardProps) {
     dateMoveKeys(onChangeVal, stepValue, dates, current);
     useHotkeys("s", () => toggleSlider(), [openSlider]);
 
+
     return (
       <>
         <ThemeProvider theme={theme}>
@@ -92,9 +96,10 @@ export default function DateRangeCard(props: dateCardProps) {
               current={current}
               singleDay={singleDay}
               showMove={showMove}
+              showExpand={showExpand}
               enableSlider={enableSlider}
             />
-            <Zoom in={!openSlider}>
+            <Zoom in={openSlider}>
               <Grid container spacing={0} xs={12}>
                 <Timeline
                   dates={dates}

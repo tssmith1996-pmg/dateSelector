@@ -208,81 +208,9 @@
                 "themeFont": {
                     "displayName": "Font",
                     "type": {
-                        "enumeration": [
-                            {
-                                "displayName": "Default",
-                                "description": "Segoe UI",
-                                "value": "\"Segoe UI\", wf_segoe-ui_normal, helvetica, arial, sans-serif"
-                            },
-                            {
-                                "displayName": "Arial",
-                                "value": "Arial"
-                            },
-                            {
-                                "displayName": "Arial Unicode MS",
-                                "value": "\"Arial Unicode MS\""
-                            },
-                            {
-                                "displayName": "Calibri",
-                                "value": "Calibri"
-                            },
-                            {
-                                "displayName": "Cambria",
-                                "value": "Cambria"
-                            },
-                            {
-                                "displayName": "Candara",
-                                "value": "Candara"
-                            },
-                            {
-                                "displayName": "Comic Sans MS",
-                                "value": "\"Comic Sans MS\""
-                            },
-                            {
-                                "displayName": "Consolas",
-                                "value": "Consolas"
-                            },
-                            {
-                                "displayName": "Constantia",
-                                "value": "Constantia"
-                            },
-                            {
-                                "displayName": "Corbel",
-                                "value": "Corbel"
-                            },
-                            {
-                                "displayName": "Courier New",
-                                "value": "\"Courier New\""
-                            },
-                            {
-                                "displayName": "Georgia",
-                                "value": "Georgia"
-                            },
-                            {
-                                "displayName": "Segoe (Bold)",
-                                "value": "\"Segoe UI Bold\", wf_segoe-ui_bold, helvetica, arial, sans-serif"
-                            },
-                            {
-                                "displayName": "Segoe UI",
-                                "value": "\"Segoe UI\", wf_segoe-ui_normal, helvetica, arial, sans-serif"
-                            },
-                            {
-                                "displayName": "Segoe UI Light",
-                                "value": "\"Segoe UI Light\", wf_segoe-ui_bold, helvetica, arial, sans-serif"
-                            },
-                            {
-                                "displayName": "Tahoma",
-                                "value": "Tahoma"
-                            },
-                            {
-                                "displayName": "Times New Roman",
-                                "value": "\"Times New Roman\""
-                            },
-                            {
-                                "displayName": "Trebuchet MS",
-                                "value": "\"Trebuchet MS\""
-                            }
-                        ]
+                        "formatting": {
+                            "fontFamily": true
+                        }
                     }
                 }
             }
@@ -453,7 +381,7 @@
                 }
             }
         },
-        "config": {
+        "layout": {
             "properties": {
                 "showSlider": {
                     "type": {
@@ -469,21 +397,13 @@
                     "type": {
                         "bool": true
                     }
-                }
-            }
-        },
-        "config3": {
-            "properties": {
+                },
                 "showHelpIcon": {
                     "displayNameKey": "showHelpIcon",
                     "type": {
                         "bool": true
                     }
-                }
-            }
-        },
-        "config2": {
-            "properties": {
+                },
                 "showCurrent": {
                     "displayNameKey": "showCurrent",
                     "type": {
@@ -501,11 +421,7 @@
                     "type": {
                         "bool": true
                     }
-                }
-            }
-        },
-        "config1": {
-            "properties": {
+                },
                 "showMove": {
                     "type": {
                         "bool": true
@@ -518,7 +434,7 @@
                 }
             }
         },
-        "day": {
+        "period": {
             "properties": {
                 "showDay": {
                     "type": {
@@ -564,10 +480,7 @@
                         ]
                     }
                 }
-            }
-        },
-        "week": {
-            "properties": {
+            ,
                 "showWeek": {
                     "displayNameKey": "showWeek",
                     "type": {
@@ -661,22 +574,10 @@
                         "bool": true
                     }
                 },
-                "showMonth": {
-                    "displayNameKey": "showMonth",
-                    "type": {
-                        "bool": true
-                    }
-                },
                 "showPay": {
                     "displayNameKey": "showPay",
                     "type": {
                         "bool": true
-                    }
-                },
-                "monthSkip": {
-                    "displayNameKey": "monthSkip",
-                    "type": {
-                        "numeric": true
                     }
                 },
                 "quarterSkip": {
@@ -685,16 +586,7 @@
                         "numeric": true
                     }
                 }
-            }
-        },
-        "pay": {
-            "properties": {
-                "showPay": {
-                    "displayNameKey": "showPay",
-                    "type": {
-                        "bool": true
-                    }
-                },
+ ,
                 "paySkip": {
                     "displayNameKey": "paySkip",
                     "type": {
@@ -811,11 +703,7 @@
                         ]
                     }
                 }
-            }
-        },
-        "month": {
-            "properties": {
-                "showMonth": {
+,                "showMonth": {
                     "displayNameKey": "showMonth",
                     "type": {
                         "bool": true
@@ -860,17 +748,7 @@
                         ]
                     }
                 }
-            }
-        },
-        "quarter": {
-            "properties": {
-                "showQuarter": {
-                    "displayNameKey": "showQuarter",
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "fmtQuarter": {
+,                "fmtQuarter": {
                     "displayName": "Quarter format",
                     "displayNameKey": "fmtQuater",
                     "type": {
@@ -886,22 +764,6 @@
                                 "displayNameKey": "Visual_Text_Yy"
                             }
                         ]
-                    }
-                },
-                "quarterSkip": {
-                    "displayNameKey": "quarterSkip",
-                    "type": {
-                        "numeric": true
-                    }
-                }
-            }
-        },
-        "year": {
-            "properties": {
-                "showYear": {
-                    "displayNameKey": "showYear",
-                    "type": {
-                        "bool": true
                     }
                 },
                 "yearStartMonth": {

@@ -24,7 +24,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "powerbi-models": "^1.13.0",
-    "powerbi-visuals-api": "~5.10.0",
+    "powerbi-visuals-api": "^5.10.0",
     "powerbi-visuals-utils-colorutils": "^6.0.4",
     "powerbi-visuals-utils-dataviewutils": "^6.1.0",
     "powerbi-visuals-utils-formattingmodel": "^6.0.0",
@@ -43,7 +43,7 @@
     "@types/react-dom": "^18.2.14",
     "@types/tinycolor2": "^1.4.6",
     "@typescript-eslint/eslint-plugin": "*",
-    "eslint": "*",
+    "eslint": "^8.57.0",
     "eslint-plugin-powerbi-visuals": "*",
     "typescript": "*"
   }

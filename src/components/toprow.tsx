@@ -25,7 +25,7 @@ const TopRow: React.FC<topRowProps> = ({
   showIconText,
   current,
   singleDay,
-  showMove,
+  showMove,showExpand,
   enableSlider,
 }) => {
   return (
@@ -63,9 +63,11 @@ const TopRow: React.FC<topRowProps> = ({
           handleViz={setStepOpen}
           singleDay={singleDay}
           showMove={showMove}
+          showExpand={showExpand}
         />
       </Grid>
       <Grid xs="auto">
+      {!stepOpen && (
         <Zoom in={!stepOpen}>
           <Box>
             <UseCurrent
@@ -80,7 +82,7 @@ const TopRow: React.FC<topRowProps> = ({
               singleDay={singleDay}
             />
           </Box>
-        </Zoom>
+        </Zoom>)}
       </Grid>
       <Grid xs>
         <Box></Box>

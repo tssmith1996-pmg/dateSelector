@@ -19,11 +19,11 @@ function DateInput({
   handleStep,
   handleViz,
   singleDay,
-  showMove
+  showMove,showExpand,
 }) {
   return (
     <>
-      <Grid xs="auto">
+      <Grid xs="auto" paddingRight={1} >
         <DateRange
           dates={dates}
           rangeScope={rangeScope}
@@ -33,6 +33,7 @@ function DateInput({
       </Grid>
       {showMove && (
         <>
+          <Zoom in={showMove}>
           <Grid xs="auto">
             <DateMove
               dates={dates}
@@ -45,8 +46,9 @@ function DateInput({
               reverse={true}
               viz={openSlider}
               singleDay={singleDay}
+              showExpand={showExpand}
             />
-          </Grid>
+          </Grid></Zoom>
           <Grid xs="auto" paddingRight={1}>
             <StepToggle
               stepViz={stepViz}
@@ -82,6 +84,7 @@ function DateInput({
               reverse={false}
               viz={openSlider}
               singleDay={singleDay}
+              showExpand={showExpand}
               />
           </Grid>
           {/* </Zoom> */}

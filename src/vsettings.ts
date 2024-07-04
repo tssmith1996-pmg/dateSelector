@@ -19,25 +19,28 @@ export class VisualSettingsModel extends FormattingSettingsModel {
   // Building visual formatting settings card
   styleSettings = new styleSettings();
   calendarSettings = new calendarSettings();
-  layoutSettings = new LayoutSettings();
-  daySettings = new daySettings();
-  weekSettings = new weekSettings();
-  paySettings = new paySettings();
-  monthSettings = new monthSettings();
-  quarterSettings = new quarterSettings();
-  yearSettings = new yearSettings();
+  layoutSettings = new layoutSettings();
+  // daySettings = new daySettings();
+  // weekSettings = new weekSettings();
+  // paySettings = new paySettings();
+  // monthSettings = new monthSettings();
+  // quarterSettings = new quarterSettings();
+  // yearSettings = new yearSettings();
+  periodSettings = new periodSettings();
 
   // Add formatting settings card to cards list in model
   cards: Array<FormattingSettingsCard> = [
     this.styleSettings,
     this.calendarSettings,
     this.layoutSettings,
-    this.daySettings,
-    this.weekSettings,
-    this.paySettings,
-    this.monthSettings,
-    this.quarterSettings,
-    this.yearSettings,
+    this.periodSettings,
+
+    // this.daySettings,
+    // this.weekSettings,
+    // this.paySettings,
+    // this.monthSettings,
+    // this.quarterSettings,
+    // this.yearSettings,
   ];
 }
 
@@ -49,11 +52,11 @@ class styleSettings extends FormattingSettingsCard {
   uid: string = "styleUid";
 
   // Slices
-  themeFont = new formattingSettings.AutoDropdown({
+  themeFont = new formattingSettings.FontPicker({
     name: "themeFont",
     description: "Font for text on this slicer",
     displayName: "Theme Font",
-    value: defaultSettings.styleSettings.themeFont,
+    value: "wf_standard-font, helvetica, arial, sans-serif",
   });
   fontSize = new formattingSettings.AutoDropdown({
     name: "fontSize",
@@ -107,7 +110,8 @@ class calendarSettings extends FormattingSettingsCard {
   // Slices
   stepInit = new formattingSettings.AutoDropdown({
     name: "stepInit",
-    description: "Slider and increment step label intervals when a page is loaded",
+    description:
+      "Timeline and increment step label intervals when a page is loaded",
     displayName: "Step Level",
     value: defaultSettings.calendarSettings.stepInit,
   });
@@ -127,64 +131,56 @@ class calendarSettings extends FormattingSettingsCard {
   ];
 }
 
-class layoutSettings extends FormattingSettingsGroup {
+class timelineSettings extends FormattingSettingsGroup {
   enableSlider = new formattingSettings.ToggleSwitch({
     name: "enableSlider",
     description: "Show the button to toggle timeline",
     displayName: "Enable Timeline",
-    value: defaultSettings.layoutSettings.enableSlider,
+    value: defaultSettings.layoutSettings.timelineSettings.enableSlider,
   });
 
   showSlider = new formattingSettings.ToggleSwitch({
     name: "showSlider",
-    description: "Show the timeline by default",
-    displayName: "Timeline",
-    value: defaultSettings.layoutSettings.showSlider,
+    description: "Show the timeline at startup",
+    displayName: "Show Timeline",
+    value: defaultSettings.layoutSettings.timelineSettings.showSlider,
   });
 
   show2ndSlider = new formattingSettings.ToggleSwitch({
     name: "show2ndSlider",
     description:
-      "Show 2 sliders for mixed granularity & clarification of year for months, month for weeks, etc.",
-    displayName: "2 timeline sliders",
-    value: defaultSettings.layoutSettings.show2ndSlider,
+      "Show 2 scales for mixed period & clarification of year for months, month for weeks, etc.",
+    displayName: "2nd timeline scale",
+    value: defaultSettings.layoutSettings.timelineSettings.show2ndSlider,
   });
 
-  showHelpIcon = new formattingSettings.ToggleSwitch({
-    name: "showHelpIcon",
-    description: "Show help button for optional extended tooltips.",
-    displayName: "Help Icon",
-    value: defaultSettings.layoutSettings.showHelpIcon,
-  });
-
-  name: string = "layout";
+  name: string = "timeline";
   description: string = "Timeline controls to show or hide";
   displayName: string = "Timeline Toggle";
   analyticsPane: boolean = false;
   uid: string = "timelineUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.enableSlider;
+  topLevelSlice: formattingSettings.SimpleSlice = this.enableSlider;
 
   slices: Array<FormattingSettingsSlice> = [
     this.showSlider,
     this.show2ndSlider,
-    this.showHelpIcon,
+    // this.showHelpIcon,
   ];
 }
 class currentSettings extends FormattingSettingsGroup {
-
   showCurrent = new formattingSettings.ToggleSwitch({
     name: "showCurrent",
     description:
       "Show the Current Period Bar selector for Today, this week, this month, this year, etc.",
     displayName: "Current Periods",
-    value: defaultSettings.layoutSettings.showCurrent,
+    value: defaultSettings.layoutSettings.currentSettings.showCurrent,
   });
 
   showIconText = new formattingSettings.ToggleSwitch({
     name: "showIconText",
     description: "Show the Current Period selector icon text",
     displayName: "Current Icon Text",
-    value: defaultSettings.layoutSettings.showIconText,
+    value: defaultSettings.layoutSettings.currentSettings.showIconText,
   });
 
   showMore = new formattingSettings.ToggleSwitch({
@@ -192,75 +188,93 @@ class currentSettings extends FormattingSettingsGroup {
     description:
       "Show the Extended Period selector for YTD, YT last nonth, etc.",
     displayName: "Extended Periods",
-    value: defaultSettings.layoutSettings.showMore,
+    value: defaultSettings.layoutSettings.currentSettings.showMore,
   });
 
-  name: string = "layout2";
-  description: string = "Show the Current Period Bar selector for Today, this week, this month, this year, etc.";
+  name: string = "current";
+  description: string =
+    "Show the Current Period Bar selector for Today, this week, this month, this year, etc.";
   displayName: string = "Current Periods";
   analyticsPane: boolean = false;
   uid: string = "currentUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showCurrent;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showCurrent;
 
-  slices: Array<FormattingSettingsSlice> = [
-    this.showIconText,
-    this.showMore,
-  ];
+  slices: Array<FormattingSettingsSlice> = [this.showIconText, this.showMore];
 }
 class moveSettings extends FormattingSettingsGroup {
-
   showMove = new formattingSettings.ToggleSwitch({
     name: "showMove",
     description:
       "Show the arrows and step levels to quickly move or extend/reduce the selected period by a chosen step.",
     displayName: "Show move arrows",
-    value: defaultSettings.layoutSettings.showMove,
-
+    value: defaultSettings.layoutSettings.moveSettings.showMove,
   });
   showExpand = new formattingSettings.ToggleSwitch({
     name: "showExpand",
     description:
       "Show the arrows and step levels to quickly extend/reduce the selected period by a chosen step.",
-    displayName: "Expand arrows",
-    value: defaultSettings.layoutSettings.showExpand,
-
+    displayName: "Extend  << >>",
+    value: defaultSettings.layoutSettings.moveSettings.showExpand,
   });
 
-  name: string = "layout1";
+  name: string = "move";
   description: string = "Show move or extend selected range controls";
   displayName: string = "Move arrows";
   analyticsPane: boolean = true;
   uid: string = "moveUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showMove;
-   slices: Array<FormattingSettingsSlice> = [this.showExpand];
+  topLevelSlice: formattingSettings.SimpleSlice = this.showMove;
+  slices: Array<FormattingSettingsSlice> = [this.showExpand];
+}
+
+class helpSettings extends FormattingSettingsCard {
+  showHelpIcon = new formattingSettings.ToggleSwitch({
+    name: "showHelpIcon",
+    description: "Show help button for optional extended tooltips.",
+    displayName: "Help Toggle",
+    value: defaultSettings.layoutSettings.helpSettings.showHelpIcon,
+  });
+
+  name: string = "layout";
+  displayName: string = "Assist";
+  // Formatting settings slice
+  analyticsPane: boolean = false;
+  visible: boolean = true;
+
+  slices: Array<FormattingSettingsSlice> = [this.showHelpIcon];
 }
 
 // Formatting settings card
-class LayoutSettings extends FormattingSettingsCompositeCard {
+class layoutSettings extends FormattingSettingsCompositeCard {
   name: string = "layout";
   displayName: string = "Layout";
-    // Formatting settings slice
-
+  // Formatting settings slice
   analyticsPane: boolean = false;
   visible: boolean = true;
-  layoutGroup = new layoutSettings(Object());
+
+  layoutTimeline = new timelineSettings(Object());
   layoutMove = new moveSettings(Object());
   layoutCurrent = new currentSettings(Object());
-  groups: Array<FormattingSettingsGroup> = [this.layoutCurrent,this.layoutMove,this.layoutGroup];
+  layoutHelp = new helpSettings();
+  groups: Array<FormattingSettingsGroup> = [
+    this.layoutCurrent,
+    this.layoutMove,
+    this.layoutTimeline,
+    this.layoutHelp,
+  ];
 }
 
-class daySettings extends FormattingSettingsCard {
+class daySettings extends FormattingSettingsGroup {
   showDay = new formattingSettings.ToggleSwitch({
     name: "showDay",
     displayName: undefined,
-    value: defaultSettings.granularity.daySettings.showDay,
+    value: defaultSettings.period.daySettings.showDay,
   });
 
   fmtDay = new formattingSettings.AutoDropdown({
     name: "fmtDay",
     displayName: "Day format (Today)",
     description: "The timeline format for day step level",
-    value: defaultSettings.granularity.daySettings.fmtDay,
+    value: defaultSettings.period.daySettings.fmtDay,
   });
 
   daySkip = new formattingSettings.NumUpDown({
@@ -268,7 +282,7 @@ class daySettings extends FormattingSettingsCard {
     displayName: "Day label intervals",
     description:
       "Timeline only shows markers on days skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.daySettings.daySkip,
+    value: defaultSettings.period.daySettings.daySkip,
   });
 
   name: string = "day";
@@ -277,23 +291,23 @@ class daySettings extends FormattingSettingsCard {
   displayName: string = "Day";
   analyticsPane: boolean = false;
   uid: string = "dayUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showDay;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showDay;
 
   slices: Array<FormattingSettingsSlice> = [this.daySkip, this.fmtDay];
 }
 
-class weekSettings extends FormattingSettingsCard {
+class weekSettings extends FormattingSettingsGroup {
   showWeek = new formattingSettings.ToggleSwitch({
     name: "showWeek",
     displayName: undefined,
-    value: defaultSettings.granularity.weekSettings.showWeek,
+    value: defaultSettings.period.weekSettings.showWeek,
   });
 
   fmtWeek = new formattingSettings.AutoDropdown({
     name: "fmtWeek",
     displayName: "Week format",
     description: "The timeline format for week step level",
-    value: defaultSettings.granularity.weekSettings.fmtWeek,
+    value: defaultSettings.period.weekSettings.fmtWeek,
   });
 
   weekSkip = new formattingSettings.NumUpDown({
@@ -301,14 +315,14 @@ class weekSettings extends FormattingSettingsCard {
     displayName: "Week label intervals",
     description:
       "Timeline only shows markers on weeks skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.weekSettings.weekSkip,
+    value: defaultSettings.period.weekSettings.weekSkip,
   });
 
   weekStartDay = new formattingSettings.AutoDropdown({
     name: "weekStartDay",
     description: "The start day for each week step",
     displayName: "Week Start Day",
-    value: defaultSettings.granularity.weekSettings.weekStartDay,
+    value: defaultSettings.period.weekSettings.weekStartDay,
   });
 
   name: string = "week";
@@ -317,7 +331,7 @@ class weekSettings extends FormattingSettingsCard {
   displayName: string = "Week";
   analyticsPane: boolean = false;
   uid: string = "weekUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showWeek;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showWeek;
 
   slices: Array<FormattingSettingsSlice> = [
     this.weekStartDay,
@@ -326,18 +340,18 @@ class weekSettings extends FormattingSettingsCard {
   ];
 }
 
-class paySettings extends FormattingSettingsCard {
+class paySettings extends FormattingSettingsGroup {
   showPay = new formattingSettings.ToggleSwitch({
     name: "showPay",
     displayName: undefined,
-    value: defaultSettings.granularity.paySettings.showPay,
+    value: defaultSettings.period.paySettings.showPay,
   });
 
   fmtPay = new formattingSettings.AutoDropdown({
     name: "fmtPay",
     displayName: "Pay Period format",
     description: "The timeline format for pay step level",
-    value: defaultSettings.granularity.paySettings.fmtPay,
+    value: defaultSettings.period.paySettings.fmtPay,
   });
 
   paySkip = new formattingSettings.NumUpDown({
@@ -345,14 +359,14 @@ class paySettings extends FormattingSettingsCard {
     displayName: "Pay label intervals",
     description:
       "Timeline only shows markers on pay days skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.paySettings.paySkip,
+    value: defaultSettings.period.paySettings.paySkip,
   });
 
   payLength = new formattingSettings.NumUpDown({
     name: "payLength",
     displayName: "Pay period length",
     description: "Pay period length in days",
-    value: defaultSettings.granularity.paySettings.payLength,
+    value: defaultSettings.period.paySettings.payLength,
   });
 
   payRefDay = new formattingSettings.NumUpDown({
@@ -360,7 +374,7 @@ class paySettings extends FormattingSettingsCard {
     displayName: "Reference date DAY",
     description:
       "Pay period seed reference date from which to start the repeating period",
-    value: defaultSettings.granularity.paySettings.payRefDay,
+    value: defaultSettings.period.paySettings.payRefDay,
   });
 
   payRefMonth = new formattingSettings.AutoDropdown({
@@ -368,7 +382,7 @@ class paySettings extends FormattingSettingsCard {
     displayName: "Reference date MONTH",
     description:
       "Pay period seed reference date's month from which to start the repeating period",
-    value: defaultSettings.granularity.paySettings.payRefMonth,
+    value: defaultSettings.period.paySettings.payRefMonth,
   });
 
   payRefYear = new formattingSettings.NumUpDown({
@@ -376,7 +390,7 @@ class paySettings extends FormattingSettingsCard {
     displayName: "Reference date YEAR",
     description:
       "Pay period seed reference date's year from which to start the repeating period",
-    value: defaultSettings.granularity.paySettings.payRefYear,
+    value: defaultSettings.period.paySettings.payRefYear,
   });
 
   // feature doesn't work
@@ -386,7 +400,7 @@ class paySettings extends FormattingSettingsCard {
     displayName: "Pay period start",
     description:
       "Pay period seed reference date from which to start the repeating period",
-    value: defaultSettings.granularity.paySettings.payRefDate,
+    value: defaultSettings.period.paySettings.payRefDate,
   });
 
   name: string = "pay";
@@ -395,7 +409,7 @@ class paySettings extends FormattingSettingsCard {
   displayName: string = "Pay";
   analyticsPane: boolean = false;
   uid: string = "payUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showPay;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showPay;
 
   slices: Array<FormattingSettingsSlice> = [
     this.paySkip,
@@ -407,18 +421,18 @@ class paySettings extends FormattingSettingsCard {
   ];
 }
 
-class monthSettings extends FormattingSettingsCard {
+class monthSettings extends FormattingSettingsGroup {
   showMonth = new formattingSettings.ToggleSwitch({
     name: "showMonth",
     displayName: undefined,
-    value: defaultSettings.granularity.monthSettings.showMonth,
+    value: defaultSettings.period.monthSettings.showMonth,
   });
 
   fmtMonth = new formattingSettings.AutoDropdown({
     name: "fmtMonth",
     displayName: "Month Period format",
     description: "The timeline format for month step level",
-    value: defaultSettings.granularity.monthSettings.fmtMonth,
+    value: defaultSettings.period.monthSettings.fmtMonth,
   });
 
   monthSkip = new formattingSettings.NumUpDown({
@@ -426,7 +440,7 @@ class monthSettings extends FormattingSettingsCard {
     displayName: "Month label intervals",
     description:
       "Timeline only shows markers on months skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.monthSettings.monthSkip,
+    value: defaultSettings.period.monthSettings.monthSkip,
   });
 
   name: string = "month";
@@ -435,23 +449,23 @@ class monthSettings extends FormattingSettingsCard {
   displayName: string = "Month";
   analyticsPane: boolean = false;
   uid: string = "monthUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showMonth;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showMonth;
 
   slices: Array<FormattingSettingsSlice> = [this.monthSkip, this.fmtMonth];
 }
 
-class quarterSettings extends FormattingSettingsCard {
+class quarterSettings extends FormattingSettingsGroup {
   showQuarter = new formattingSettings.ToggleSwitch({
     name: "showQuarter",
     displayName: undefined,
-    value: defaultSettings.granularity.quarterSettings.showQuarter,
+    value: defaultSettings.period.quarterSettings.showQuarter,
   });
 
   fmtQuarter = new formattingSettings.AutoDropdown({
     name: "fmtQuarter",
     displayName: "Quarter Period format",
     description: "The timeline format for quarter step level",
-    value: defaultSettings.granularity.quarterSettings.fmtQuarter,
+    value: defaultSettings.period.quarterSettings.fmtQuarter,
   });
 
   quarterSkip = new formattingSettings.NumUpDown({
@@ -459,7 +473,7 @@ class quarterSettings extends FormattingSettingsCard {
     displayName: "Quarter label intervals",
     description:
       "Timeline only shows markers on quarter boundaries skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.quarterSettings.quarterSkip,
+    value: defaultSettings.period.quarterSettings.quarterSkip,
   });
 
   name: string = "quarter";
@@ -468,23 +482,23 @@ class quarterSettings extends FormattingSettingsCard {
   displayName: string = "Quarter";
   analyticsPane: boolean = false;
   uid: string = "quarterUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showQuarter;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showQuarter;
 
   slices: Array<FormattingSettingsSlice> = [this.quarterSkip, this.fmtQuarter];
 }
 
-class yearSettings extends FormattingSettingsCard {
+class yearSettings extends FormattingSettingsGroup {
   showYear = new formattingSettings.ToggleSwitch({
     name: "showYear",
     displayName: undefined,
-    value: defaultSettings.granularity.yearSettings.showYear,
+    value: defaultSettings.period.yearSettings.showYear,
   });
 
   fmtYear = new formattingSettings.AutoDropdown({
     name: "fmtYear",
     displayName: "Year Period format",
     description: "The timeline format for year step level",
-    value: defaultSettings.granularity.yearSettings.fmtYear,
+    value: defaultSettings.period.yearSettings.fmtYear,
   });
 
   yearSkip = new formattingSettings.NumUpDown({
@@ -492,14 +506,14 @@ class yearSettings extends FormattingSettingsCard {
     displayName: "Year label intervals",
     description:
       "Timeline only shows markers on years skipped by the number - 0 shows today only",
-    value: defaultSettings.granularity.yearSettings.yearSkip,
+    value: defaultSettings.period.yearSettings.yearSkip,
   });
 
   yearStartMonth = new formattingSettings.AutoDropdown({
     name: "yearStartMonth",
     description: "Set the start month for the [Fiscal] year",
     displayName: "Fiscal Year Start",
-    value: defaultSettings.granularity.yearSettings.yearStartMonth,
+    value: defaultSettings.period.yearSettings.yearStartMonth,
   });
 
   name: string = "year";
@@ -508,11 +522,34 @@ class yearSettings extends FormattingSettingsCard {
   displayName: string = "Year";
   analyticsPane: boolean = false;
   uid: string = "yearUid";
-   topLevelSlice: formattingSettings.SimpleSlice = this.showYear;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showYear;
 
   slices: Array<FormattingSettingsSlice> = [
     this.yearStartMonth,
     this.yearSkip,
     this.fmtYear,
+  ];
+}
+
+class periodSettings extends FormattingSettingsCompositeCard {
+  name: string = "period";
+  displayName: string = "Granularity";
+  // Formatting settings slice
+  analyticsPane: boolean = false;
+  visible: boolean = true;
+
+  periodDay                         = new daySettings(Object());
+  periodWeek                        = new weekSettings(Object());
+  periodPay                         = new paySettings(Object());
+  periodMonth                       = new monthSettings(Object());
+  periodQuarter                     = new quarterSettings(Object());
+  periodYear                        = new yearSettings(Object());
+  groups: Array<FormattingSettingsGroup> = [
+this.periodDay,
+this.periodWeek,
+this.periodPay,
+this.periodMonth,
+this.periodQuarter,
+this.periodYear
   ];
 }

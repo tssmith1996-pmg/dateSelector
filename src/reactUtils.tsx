@@ -1,128 +1,5 @@
 /* * /
 import * as React from "react";
-import { createRoot, Root } from "react-dom/client";
-import powerbi from "powerbi-visuals-api";
-
-// import IVisual = powerbi.extensibility.visual.IVisual;
-
-import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
-import { dateRange } from "./interface";
-
-interface ContainerProps {
-  component: React.ComponentType<any>;
-  handleVal?: (data: Partial<VisualUpdateOptions>) => void;
-}
-
-type ContainerState = Readonly<{
-  data: Partial<VisualUpdateOptions>;
-}>;
-
-const initialState: ContainerState = {
-  data: {},
-};
-
-export class ReactContainer extends React.Component<
-  ContainerProps,
-  ContainerState
-> {
-  private static subscriptions: Array<(data: ContainerState) => void> = [];
-
-  private static subscribe(callback: (data: ContainerState) => void) {
-    ReactContainer.subscriptions.push(callback);
-    return ReactContainer.createUnsubscribeCallback(
-      ReactContainer.subscriptions.length - 1
-    );
-  }
-
-  private static createUnsubscribeCallback = (i: number) => {
-    return () => {
-      delete ReactContainer.subscriptions[i];
-    };
-  };
-
-  public static update(newData: ContainerState) {
-    ReactContainer.subscriptions.forEach((updateCallback) => {
-      updateCallback(newData);
-    });
-  }
-
-  public unsubscribe: () => void;
-
-  public state: ContainerState = initialState;
-
-  public constructor(props: ContainerProps) {
-    super(props);
-    this.state = initialState;
-    this.update = this.update.bind(this);
-  }
-
-  public update(newData: ContainerState) {
-    this.setState({ data: { ...this.state.data, ...newData } }, () => {
-      console.log("reactContainer state : ", this.state.data)
-      if (this.props.handleVal) {
-        this.props.handleVal(this.state.data);
-      }
-    });
-  }
-  public componentWillMount() {
-    this.unsubscribe = ReactContainer.subscribe(this.update);
-  }
-
-  public componentWillUnmount() {
-    this.unsubscribe();
-  }
-  // public componentDidMount() {
-  //   this.unsubscribe = ReactContainer.subscribe(this.update);
-  // }
-
-  render() {
-    const props = { ...this.state.data, handleVal: this.props.handleVal };
-    const Component = this.props.component;
-    return <Component {...props} />;
-  }
-}
-
-export abstract class ReactVisual {
-  protected reactTarget: HTMLElement;
-  protected reactRenderer: React.ComponentType;
-  protected reactContainers: React.ComponentType[];
-  protected root: Root | null = null;
-
-  protected updateReactContainers: (data: any) => void = ReactContainer.update;
-
-  protected createReactContainer(
-    component: React.ComponentType,
-    handleVal?: (dates: dateRange) => void
-  ) {
-    return (props: any) =>
-      React.createElement(ReactContainer, {
-        component,
-        handleVal,
-        ...props,
-      });
-  }
-
-  protected reactMount(): void {
-    this.root = createRoot(this.reactTarget);
-    this.root.render(React.createElement(this.reactRenderer));
-  }
-
-  public renderer: () => React.ElementType;
-
-  constructor(options: VisualConstructorOptions) {
-    this.reactTarget = options.element;
-  }
-  protected reactUnmount(): void {
-    if (this.root) {
-      this.root.unmount();
-      this.root = null;
-    }
-  }
-}
-/*
-
-import * as React from "react";
 import { useState, useEffect, useCallback } from "react";
 import { createRoot, Root } from 'react-dom/client';
 import powerbi from 'powerbi-visuals-api';
@@ -215,13 +92,18 @@ export abstract class ReactVisual {
 
 */
 import * as React from "react";
+// import { useState, useEffect, useCallback } from "react";
 import { createRoot, Root } from "react-dom/client";
 import powerbi from "powerbi-visuals-api";
+
+// Import VisualUpdateOptions and VisualConstructorOptions from powerbi
+import VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
+import VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 
 // Utility Component
 interface ContainerProps {
   component: React.ComponentType<any>;
-  data: Partial<powerbi.extensibility.visual.VisualUpdateOptions>;
+  data: Partial<VisualUpdateOptions>;
   onFilterChanged?: (data: any) => void;
 }
 
@@ -238,9 +120,18 @@ export abstract class ReactVisual {
   protected reactRenderer: React.ComponentType<any>;
   protected root: Root | null = null;
 
-  constructor(options: powerbi.extensibility.visual.VisualConstructorOptions) {
+  constructor(options: VisualConstructorOptions) {
     this.reactTarget = options.element;
   }
+
+  protected reactMount(): void {
+    if (!this.root) {
+      this.root = createRoot(this.reactTarget);
+    }
+    this.root.render(React.createElement(this.reactRenderer));
+  }
+
+  public renderer: () => React.ElementType;
 
   protected updateReactContainers: (data: any) => void = (data) => {
     if (this.root) {
@@ -253,10 +144,6 @@ export abstract class ReactVisual {
       React.createElement(ReactContainer, { component, ...props, onFilterChanged });
   }
 
-  protected reactMount(): void {
-    this.root = createRoot(this.reactTarget);
-    this.root.render(React.createElement(this.reactRenderer));
-  }
 
   protected reactUnmount(): void {
     if (this.root) {

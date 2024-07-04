@@ -60,7 +60,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
     backgroundColor: theme.palette.text.primary,
     border: theme.palette.text.primary,
     color: theme.palette.background.paper,
-    fontSize: 8, fontWeight: 400,
+    fontSize: 10, fontWeight: 300,
     maxWidth: 250
   },
   [`& .${tooltipClasses.arrow}`]: {

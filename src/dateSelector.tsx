@@ -17,10 +17,7 @@ import IColorPalette = powerbi.extensibility.IColorPalette;
 import IVisualEventService = powerbi.extensibility.IVisualEventService;
 
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
-import {
-  IFilterColumnTarget,
-  AdvancedFilter,
-} from "powerbi-models";
+import { IFilterColumnTarget, AdvancedFilter } from "powerbi-models";
 
 import { VisualState, dateRange, dateCardProps } from "./interface";
 
@@ -29,7 +26,7 @@ import { mapOptionsToState, optionsAreValid } from "./optionsMapper";
 
 import tinycolor from "tinycolor2";
 import DateRangeCard from "./components/daterangecard";
-import isEqual from "lodash.isequal";
+// import isEqual from "lodash.isequal";
 
 export class DateSelector extends ReactVisual implements IVisual {
   private visualHost: IVisualHost;
@@ -89,11 +86,10 @@ export class DateSelector extends ReactVisual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-
+        console.log("update")
     if (optionsAreValid(options)) {
       try {
         this.events.renderingStarted(options);
-
         // Get Settings
         this.formattingSettings =
           this.formattingSettingsService.populateFormattingSettingsModel(
@@ -101,15 +97,15 @@ export class DateSelector extends ReactVisual implements IVisual {
             options.dataViews[0]
           );
 
-        this.state = mapOptionsToState(options, this.formattingSettings);
+        this.state = mapOptionsToState(options, this.formattingSettings, this.initialised);
         const { settings } = this.state;
+                this.initialised = true;
 
-        const refresh: boolean = !isEqual(settings, this.lastSettings);
+        // const refresh: boolean =  !isEqual(settings, this.lastSettings);
+        this.applyDateFilter(settings.dates);
+        this.updateReactContainers(settings);
 
-        if (refresh) {
-          this.applyDateFilter(settings.dates);
-          this.updateReactContainers(settings);
-        }
+        this.lastSettings = settings;
 
         this.events.renderingFinished(options);
       } catch (e) {
@@ -123,13 +119,13 @@ export class DateSelector extends ReactVisual implements IVisual {
   }
 
   // Apply the filter
-  public applyDateFilter = (dates: dateRange): void => {
-
-    const isFilterChanged: boolean = this.lastFilter === undefined ||
+  public applyDateFilter = (dates: dateRange, viaUpdate?: boolean ): void => {
+    const isFilterChanged: boolean =
+      this.lastFilter === undefined ||
       String(this.lastFilter.start) !== String(dates.start) ||
       String(this.lastFilter.end) !== String(dates.end);
 
-      if (isFilterChanged) {
+    if (isFilterChanged) {
       this.visualHost.applyJsonFilter(
         this.createFilter(
           dates.start,
@@ -146,8 +142,9 @@ export class DateSelector extends ReactVisual implements IVisual {
       this.lastFilter = dates;
       this.state.settings.dates = dates;
       this.lastSettings = this.state.settings;
-      this.updateReactContainers(this.state.settings);
     }
+    // console.log("dateSelector", this.state.settings, viaUpdate)
+    if (viaUpdate !== true) this.updateReactContainers(this.state.settings);
   };
 
   // Create the filter

@@ -49,17 +49,25 @@ export interface Settings {
     fmtDate?: string;
   };
   layoutSettings?: {
-    enableSlider?: boolean;
-    showSlider?: boolean;
-    show2ndSlider?: boolean;
-    showCurrent?: boolean;
-    showIconText?: boolean;
-    showMore?: boolean;
-    showMove?: boolean;
-    showExpand?: boolean;
-    showHelpIcon?: boolean;
+    timelineSettings: {
+      enableSlider?: boolean;
+      showSlider?: boolean;
+      show2ndSlider?: boolean;
+    };
+    currentSettings: {
+      showCurrent?: boolean;
+      showIconText?: boolean;
+      showMore?: boolean;
+    };
+    moveSettings: {
+      showMove?: boolean;
+      showExpand?: boolean;
+    };
+    helpSettings: {
+      showHelpIcon?: boolean;
+    };
   };
-  granularity?: {
+  period?: {
     daySettings?: {
       showDay?: boolean;
       fmtDay?: string;
@@ -172,8 +180,9 @@ export interface dateCardProps {
   showIconText?: boolean;
   // boolean value indicating whether to constrain to a single day
   singleDay?: boolean;
-  // boolean value indicating whether to show arrows to move/extend by period step
+  // boolean value indicating whether to show arrows to move/expand by period step
   showMove?: boolean;
+  showExpand?: boolean;
   // boolean value indicating whether to show timeline toggle button
   enableSlider?: boolean;
 
@@ -202,6 +211,7 @@ export interface topRowProps {
   current: any;
   singleDay?: boolean;
   showMove?: boolean;
+  showExpand?: boolean;
   enableSlider?: boolean;
 }
 
@@ -217,6 +227,7 @@ export interface DateMoveProps {
   render?: number;
   handleVal?: (val) => void;
   singleDay?: boolean;
+  showExpand?: boolean;
 }
 
 export interface stepProps {

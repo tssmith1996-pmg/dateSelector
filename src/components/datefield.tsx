@@ -2,6 +2,12 @@ import * as React from "react";
 import TextField from "@mui/material/TextField";
 import { useTheme } from "@mui/material/styles";
 import { hexToCSSFilter } from "hex-to-css-filter";
+import {
+  textMeasurementService as tms,
+  interfaces,
+} from "powerbi-visuals-utils-formattingutils";
+import TextProperties = interfaces.TextProperties;
+import { pixelConverter } from "powerbi-visuals-utils-typeutils";
 
 interface DateFieldProps {
   id: "start" | "end";
@@ -28,8 +34,9 @@ export const DateField: React.FC<DateFieldProps> = ({
   onFocus,
   doUpdate,
   underline,
-  max,min,
-  type = "date"
+  max,
+  min,
+  type = "date",
 }) => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -44,17 +51,27 @@ export const DateField: React.FC<DateFieldProps> = ({
   };
 
   const theme = useTheme();
-
+  const textProperties: TextProperties = {
+    text: value,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: pixelConverter.toString(theme.typography.fontSize)
+  };
+  // console.log("h: ",tms.measureSvgTextHeight(textProperties),
+  //   "h-estimate: " , tms.estimateSvgTextHeight(textProperties),"w: ",
+  //   tms.measureSvgTextWidth(textProperties),"fontSize",theme.typography.fontSize
+  // );
   return (
     <TextField
       id={id}
       sx={{
         "& input[type='date']::-webkit-calendar-picker-indicator": {
-          height: theme.typography.fontSize,
-          filter: theme.palette.primary.main ? hexToCSSFilter(theme.palette.primary.main).filter : "",
+          filter: theme.palette.primary.main
+            ? hexToCSSFilter(theme.palette.primary.main).filter
+            : "",
         },
-         width: theme.typography.fontSize * 7.8,
-        // width: 90,
+        //  width: theme.typography.fontSize * 8,
+        paddingTop: "3px",
+        width: tms.measureSvgTextWidth(textProperties) + theme.typography.fontSize * 3.25,
       }}
       variant="standard"
       size="small"
@@ -67,7 +84,7 @@ export const DateField: React.FC<DateFieldProps> = ({
       placeholder={"yyyy-MM-dd"}
       inputProps={{
         max,
-        min
+        min,
       }}
       InputProps={{
         disableUnderline: underline,

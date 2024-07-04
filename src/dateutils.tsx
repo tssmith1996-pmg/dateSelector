@@ -271,7 +271,7 @@ export const getInitRange = (
   startRange: string,
   weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6 = 0,
   yearStartMonth: number = 0,
-  rangeScope: dateRange = { start: null, end: null },
+  rangeScope: dateRange,
   rtn: string = ""
 ) => {
   const _rnge = {

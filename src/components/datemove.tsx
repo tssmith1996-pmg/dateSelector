@@ -10,7 +10,7 @@ import { DateMoveProps } from "../interface";
 import RngeTooltip from "./rngetooltip";
 
 export default function DateMove(props: DateMoveProps) {
-  const { dates, stepValue, bf, vertical, reverse, handleVal } =
+  const { dates, stepValue, bf, vertical, reverse, handleVal, showExpand } =
     props;
   // viz,
 
@@ -52,30 +52,33 @@ export default function DateMove(props: DateMoveProps) {
   useHotkeys("shift", () => setCtrl(true), { keydown: true }, [ctrl]);
   useHotkeys("shift", () => setCtrl(false), { keyup: true }, [ctrl]);
 
+  // console.log("datemove",showExpand);
+
   return (
     <>
       {/* {viz && ( */}
-        <Grid
-          container
-          direction={reverse ? "row-reverse" : vertical ? "column" : "row"}
-        >
-          <Box>
-            <RngeTooltip
-              title={undefined}
-              topRow={mve.topRow1}
-              detailRow={mve.detailRow1}
-              placement={mve.placement}
+      <Grid
+        container
+        direction={reverse ? "row-reverse" : vertical ? "column" : "row"}
+      >
+        <Box>
+          <RngeTooltip
+            title={undefined}
+            topRow={mve.topRow1}
+            detailRow={mve.detailRow1}
+            placement={mve.placement}
+          >
+            <IconButton
+              key={mve.iconLabel + reverse + vertical + stepValue}
+              aria-label={mve.iconLabel + " a " + stepValue}
+              size="small"
+              onClick={() => handleClick(bf)}
             >
-              <IconButton
-                key={mve.iconLabel + reverse + vertical + stepValue}
-                aria-label={mve.iconLabel + " a " + stepValue}
-                size="small"
-                onClick={() => handleClick(bf)}
-              >
-                {mve.iconT}
-              </IconButton>
-            </RngeTooltip>
-          </Box>
+              {mve.iconT}
+            </IconButton>
+          </RngeTooltip>
+        </Box>
+        {showExpand && (
           <Box>
             <RngeTooltip
               title={undefined}
@@ -94,7 +97,8 @@ export default function DateMove(props: DateMoveProps) {
               </IconButton>
             </RngeTooltip>
           </Box>
-        </Grid>
+        )}
+      </Grid>
       {/* )} */}
     </>
   );

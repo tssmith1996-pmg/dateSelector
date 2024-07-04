@@ -9,13 +9,13 @@
         "supportUrl": "https://github.com/o221/dateSelector/issues",
         "gitHubUrl": "https://github.com/o221/dateSelector"
     },
-    "apiVersion": "5.10.0",
+    "apiVersion": "5.11.0",
     "author": {
         "name": "jro",
         "email": "josborn@tambla.com.au"
     },
     "assets": {
-        "icon": "assets/landingLogo.png"
+        "icon": "assets/TamblaIcon24.png"
     },
     "capabilities": "capabilities.json",
     "dependencies": null,

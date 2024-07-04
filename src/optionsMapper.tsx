@@ -11,14 +11,9 @@ import PrimitiveValue = powerbi.PrimitiveValue;
 
 import { interactivityFilterService } from "powerbi-visuals-utils-interactivityutils";
 import extractFilterColumnTarget = interactivityFilterService.extractFilterColumnTarget;
-// import createInteractivityFilterService = interactivityFilterService.createInteractivityFilterService;
-// import IFilterBehaviorOptions = interactivityFilterService.IFilterBehaviorOptions;
 
-import {
-  IAdvancedFilter,
-} from "powerbi-models";
+import { IAdvancedFilter } from "powerbi-models";
 
-// powerbi-visuals-utils-formattingutils
 import {
   valueFormatter as vf,
   textMeasurementService as tms,
@@ -58,41 +53,51 @@ export const optionsAreValid = (options: VisualUpdateOptions): boolean => {
 
 export const settingProps = (
   options: VisualUpdateOptions,
-  formatSettings: any
+  formatSettings: any,
+  initialised: boolean
 ): dateCardProps => {
   const {
     styleSettings: style,
     calendarSettings: calendar,
     layoutSettings: layout,
-    daySettings: day,
-    weekSettings: week,
-    paySettings: pay,
-    monthSettings: month,
-    quarterSettings: quarter,
-    yearSettings: year,
+    periodSettings : period
+    // daySettings: day,
+    // weekSettings: week,
+    // paySettings: pay,
+    // monthSettings: month,
+    // quarterSettings: quarter,
+    // yearSettings: year,
   } = formatSettings;
+
+  console.log(
+    "optionsMapper - period:",
+    period
+  );
 
   const stepInit: string = calendar.stepInit.value.toString();
   const singleDay: boolean = calendar.singleDay.value;
   const rangeScope: dateRange = mapDataView(options).category.rangeValues;
   const weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6 = getDayNum(
-    week.weekStartDay.value.valueOf()
+    period.periodWeek.weekStartDay.value.valueOf()
   );
-  const yearStartMonth: number = getNum(year.yearStartMonth.value.valueOf());
+  const yearStartMonth: number = getNum(period.periodYear.yearStartMonth.value.valueOf());
   const startRange: string = calendar.startRange.value.toString();
 
-   const startupFilter = getInitRange(
+  const startupFilter = getInitRange(
     startRange,
     weekStartDay,
     yearStartMonth,
     rangeScope
   );
-  // console.log('optionsMapper - startupFilter:', startRange, startupFilter);
-  const dte = restoreRangeFilter(options, singleDay, startupFilter);
+
+  const selectedDates =
+    initialised || startRange === "sync"
+      ? restoreRangeFilter(options, singleDay, startupFilter)
+      : startupFilter;
 
   return {
     landingOff: optionsAreValid(options),
-    dates: dte,
+    dates: selectedDates,
     rangeScope: rangeScope,
     startRange: startRange,
     weekStartDay: weekStartDay,
@@ -100,48 +105,47 @@ export const settingProps = (
     stepInit: stepInit,
     singleDay: singleDay,
     stepSkip: {
-      day: day.daySkip.value,
-      week: week.weekSkip.value,
-      pay: pay.paySkip.value,
-      month: month.monthSkip.value,
-      quarter: quarter.quarterSkip.value,
+      day: period.periodDay.daySkip.value,
+      week: period.periodWeek.weekSkip.value,
+      pay: period.periodPay.paySkip.value,
+      month: period.periodMonth.monthSkip.value,
+      quarter: period.periodQuarter.quarterSkip.value,
       year: 1,
     },
     stepViz: {
-      day: day.showDay.value,
-      week: week.showWeek.value,
-      pay: pay.showPay.value,
-      month: month.showMonth.value,
-      quarter: quarter.showQuarter.value,
-      year: year.showYear.value,
+      day: period.periodDay.showDay.value,
+      week: period.periodWeek.showWeek.value,
+      pay: period.periodPay.showPay.value,
+      month: period.periodMonth.showMonth.value,
+      quarter: period.periodQuarter.showQuarter.value,
+      year: period.periodYear.showYear.value,
     },
     stepFmt: {
-      day: day.fmtDay.value.toString(),
-      week: week.fmtWeek.value.toString(),
-      pay: pay.fmtPay.value.toString(),
-      month: month.fmtMonth.value.toString(),
-      quarter: quarter.fmtQuarter.value.toString(),
-      year: year.fmtYear.value.toString(),
+      day: period.periodDay.fmtDay.value.toString(),
+      week: period.periodWeek.fmtWeek.value.toString(),
+      pay: period.periodPay.fmtPay.value.toString(),
+      month: period.periodMonth.fmtMonth.value.toString(),
+      quarter: period.periodQuarter.fmtQuarter.value.toString(),
+      year: period.periodYear.fmtYear.value.toString(),
     },
     payProps: {
       desc: "Pay-Period",
       ref: new Date(
-        pay.payRefYear.value,
-        getNum(pay.payRefMonth.value.valueOf()),
-        pay.payRefDay.value
+        period.periodPay.payRefYear.value,
+        getNum(period.periodPay.payRefMonth.value.valueOf()),
+        period.periodPay.payRefDay.value
       ),
-      len: pay.payLength.value,
+      len: period.periodPay.payLength.value,
     },
-    showHelpIcon: layout.layoutGroup.showHelpIcon.value,
+    showHelpIcon: layout.layoutHelp.showHelpIcon.value,
     showMove: layout.layoutMove.showMove.value,
+    showExpand: layout.layoutMove.showExpand.value,
     showCurrent: layout.layoutCurrent.showCurrent.value,
     vizOpt: layout.layoutCurrent.showMore.value,
     showIconText: layout.layoutCurrent.showIconText.value,
-    enableSlider: layout.layoutGroup.enableSlider.value,
-    showSlider:
-      !layout.layoutGroup.showSlider.value &&
-      layout.layoutGroup.enableSlider.value,
-    show2ndSlider: layout.layoutGroup.show2ndSlider.value,
+    enableSlider: layout.layoutTimeline.enableSlider.value,
+    showSlider: layout.layoutTimeline.showSlider.value,
+    show2ndSlider: layout.layoutTimeline.show2ndSlider.value,
     themeColor: style.themeColor.value.value.valueOf(),
     themeFont: style.themeFont.value,
     themeMode: style.themeMode.value,
@@ -251,13 +255,13 @@ const restoreRangeFilter = (
         (filter as IAdvancedFilter).conditions !== undefined
       );
     });
-//     console.log(
-// "/***************************************************************** */",
-//       "optionsMapper - Filter at load:",
-//       filter,
-//       startRange,
-//       startupFilter,
-// "/***************************************************************** */"
+    //     console.log(
+    // "/***************************************************************** */",
+    //       "optionsMapper - Filter at load:",
+    //       filter,
+    //       startRange,
+    //       startupFilter,
+    // "/***************************************************************** */"
     // );
     if (filter) {
       const target = filter.target as { table: string; column: string };
@@ -304,11 +308,16 @@ export const mapViewport = (viewport: IViewport): ViewportData => ({
 
 export const mapOptionsToState = (
   options: VisualUpdateOptions,
-  formatSettings: any
+  formatSettings: any,
+  initialised: boolean
 ): VisualState => {
   // const dataView: DataView = options.dataViews[0];
   const dataViewPartial: Partial<VisualState> = mapDataView(options);
-  const props: dateCardProps = settingProps(options, formatSettings);
+  const props: dateCardProps = settingProps(
+    options,
+    formatSettings,
+    initialised
+  );
   return {
     category: dataViewPartial.category,
     viewport: mapViewport(options.viewport),

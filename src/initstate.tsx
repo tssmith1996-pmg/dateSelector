@@ -1,11 +1,11 @@
 import { Settings, dateCardProps } from "./interface";
 //import { defaultSettings } from "./vinitsettings";
- import { startOfToday } from "date-fns";
-  //,startOfYear, endOfYear
+import { startOfToday } from "date-fns";
+//,startOfYear, endOfYear
 
 export const defaultSettings: Settings = {
   general: {
-    rangeScope: {start: null,end: null},
+    rangeScope: { start: null, end: null },
   },
   styleSettings: {
     fmtDate: "d-MM-yyyy",
@@ -27,17 +27,25 @@ export const defaultSettings: Settings = {
     fmtDate: "EEE, d MMM yy",
   },
   layoutSettings: {
-    enableSlider: true,
-    showSlider: false,
-    show2ndSlider: true,
-    showCurrent: true,
-    showIconText: false,
-    showMore: false,
-    showMove: true,
-    showExpand: true,
-    showHelpIcon: false,
+    timelineSettings: {
+      enableSlider: true,
+      showSlider: false,
+      show2ndSlider: false,
+    },
+    currentSettings: {
+      showCurrent: true,
+      showIconText: false,
+      showMore: false,
+    },
+    moveSettings: {
+      showMove: true,
+      showExpand: true,
+    },
+    helpSettings: {
+      showHelpIcon: false,
+    },
   },
-  granularity: {
+  period: {
     daySettings: {
       showDay: true,
       fmtDay: "d-MMM",
@@ -78,17 +86,22 @@ export const defaultSettings: Settings = {
   },
 };
 
-const { general, granularity, calendarSettings, styleSettings, layoutSettings } =
-  defaultSettings;
+const {
+  general,
+  period,
+  calendarSettings,
+  styleSettings,
+  layoutSettings,
+} = defaultSettings;
 
-  const {
+const {
   daySettings,
   weekSettings,
   paySettings,
   monthSettings,
   quarterSettings,
   yearSettings,
-} = granularity;
+} = period;
 
 export const initialState: dateCardProps = {
   landingOff: general.landingOff,
@@ -133,13 +146,14 @@ export const initialState: dateCardProps = {
   themeFont: styleSettings.themeFont,
   themeMode: styleSettings.themeMode,
   fontSize: styleSettings.fontSize,
-  showCurrent: layoutSettings.showCurrent,
-  showHelpIcon: layoutSettings.showHelpIcon,
-  vizOpt: layoutSettings.showMore,
-  showIconText: layoutSettings.showIconText,
+  showCurrent: layoutSettings.currentSettings.showCurrent,
+  showHelpIcon: layoutSettings.helpSettings.showHelpIcon,
+  vizOpt: layoutSettings.currentSettings.showMore,
+  showIconText: layoutSettings.currentSettings.showIconText,
   singleDay: calendarSettings.singleDay,
-  showSlider: layoutSettings.showSlider,
-  show2ndSlider: layoutSettings.show2ndSlider,
-  showMove: layoutSettings.showMove,
-  enableSlider: layoutSettings.enableSlider,
+  enableSlider: layoutSettings.timelineSettings.enableSlider,
+  showSlider: layoutSettings.timelineSettings.showSlider,
+  show2ndSlider: layoutSettings.timelineSettings.show2ndSlider,
+  showMove: layoutSettings.moveSettings.showMove,
+  showExpand: layoutSettings.moveSettings.showExpand
 };
