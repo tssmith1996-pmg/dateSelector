@@ -244,7 +244,7 @@ export const month = (
 export const quarter = (i: number): dateRange => {
   return {
     start: startOfQuarter(subQuarters(startOfToday(), i)),
-    end: endOfQuarter(subQuarters(startOfToday(), i)),
+    end: endOfQuarter(subQuarters(endOfToday(), i)),
   };
 };
 
@@ -259,8 +259,8 @@ export const year = (i: number, yearStartMonth: number): dateRange => {
     ),
     end: subMonths(
       subMonths(
-        addMonths(endOfYear(startOfToday()), yearStartMonth),
-        Number(format(startOfToday(), "L")) <= yearStartMonth ? 12 : 0
+        addMonths(endOfYear(endOfToday()), yearStartMonth),
+        Number(format(endOfToday(), "L")) <= yearStartMonth ? 12 : 0
       ),
       i * 12
     ),
@@ -486,7 +486,7 @@ export const Increment = (
   weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6,
   yearStartMonth: number,
   payProps?: any,
-  vizOpt?: boolean,
+  showMore?: boolean,
   scope?: Interval
 ) => {
   const _rnge = getInitRange("today", weekStartDay, yearStartMonth, { start: null, end: null }, "matrix" );
@@ -535,7 +535,7 @@ export const Increment = (
     },
     {
       tip: "", step: null,
-      show: (stepViz.day || stepViz.year) && vizOpt,
+      show: (stepViz.day || stepViz.year) && showMore,
       thisPeriod: periodThis.more, //"more",
       thisRange: null,
       icon: (
@@ -617,11 +617,12 @@ export const stepMajor: Record<Step, Step> = {
 //   len: length of pay period
 // },
 
-function eachPaydayOfInterval(range, pay) {
+function eachPaydayOfInterval(range: dateRange, pay) {
   const result = subDays(
     range.start,
     differenceInDays(range.start, pay.ref) % pay.len
   );
+
   return eachDayOfInterval(
     { start: result, end: range.end },
     { step: pay.len }
@@ -743,7 +744,7 @@ export const inputParms = (dates: dateRange, rangeScope: dateRange) => {
     rangeScope
   );
   const _endInRange: boolean = isWithinInterval(
-    startOfDay(dates.end),
+    endOfDay(dates.end),
     rangeScope
   );
   try {

@@ -30,7 +30,7 @@ export const defaultSettings: Settings = {
     timelineSettings: {
       enableSlider: true,
       showSlider: false,
-      show2ndSlider: false,
+      show2ndSlider: true,
     },
     currentSettings: {
       showCurrent: true,
@@ -148,7 +148,7 @@ export const initialState: dateCardProps = {
   fontSize: styleSettings.fontSize,
   showCurrent: layoutSettings.currentSettings.showCurrent,
   showHelpIcon: layoutSettings.helpSettings.showHelpIcon,
-  vizOpt: layoutSettings.currentSettings.showMore,
+  showMore: layoutSettings.currentSettings.showMore,
   showIconText: layoutSettings.currentSettings.showIconText,
   singleDay: calendarSettings.singleDay,
   enableSlider: layoutSettings.timelineSettings.enableSlider,

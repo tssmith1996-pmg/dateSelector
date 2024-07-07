@@ -22,11 +22,10 @@ import {compareAsc} from "date-fns"
 export default function DateRangeCard(props: dateCardProps) {
   const {
     landingOff, dates, rangeScope, weekStartDay, yearStartMonth, stepInit, stepSkip, stepViz,
-    vizOpt, stepFmt, payProps, themeColor, themeFont, themeMode, fontSize, showCurrent,
+    showMore, stepFmt, payProps, themeColor, themeFont, themeMode, fontSize, showCurrent,
     showIconText, show2ndSlider, showSlider, showHelpIcon, singleDay, showMove, enableSlider, onFilterChanged,showExpand
   } = props;
 
-  // console.log(props)
     // console.log("drc",showExpand);
 
   if (landingOff) {
@@ -43,14 +42,8 @@ export default function DateRangeCard(props: dateCardProps) {
 
     const current = React.useMemo(() => {
       return Increment(
-        stepViz,
-        weekStartDay,
-        yearStartMonth,
-        payProps,
-        vizOpt,
-        rangeScope
-      );
-    }, [stepViz, weekStartDay, yearStartMonth, payProps, vizOpt, rangeScope]);
+        stepViz, weekStartDay, yearStartMonth, payProps, showMore, rangeScope      );
+    }, [stepViz, weekStartDay, yearStartMonth, payProps, showMore, rangeScope]);
 
     React.useEffect(() => {
       setOpenSlider(showSlider);
@@ -68,10 +61,8 @@ export default function DateRangeCard(props: dateCardProps) {
       onFilterChanged({ start: x[0], end: x[1] });
     };
 
-
     dateMoveKeys(onChangeVal, stepValue, dates, current);
     useHotkeys("s", () => toggleSlider(), [openSlider]);
-
 
     return (
       <>
@@ -89,7 +80,7 @@ export default function DateRangeCard(props: dateCardProps) {
               stepValue={stepValue}
               handleClick={() => setStepOpen(!stepOpen)}
               setStepOpen={setStepOpen}
-              vizOpt={vizOpt}
+              showMore={showMore}
               showCurrent={showCurrent}
               showIconText={showIconText}
               setStepValue={setStepValue}

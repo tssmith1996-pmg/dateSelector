@@ -20,7 +20,7 @@ const TopRow: React.FC<topRowProps> = ({
   handleClick,
   setStepValue,
   setStepOpen,
-  vizOpt,
+  showMore,
   showCurrent,
   showIconText,
   current,
@@ -72,7 +72,7 @@ const TopRow: React.FC<topRowProps> = ({
           <Box>
             <UseCurrent
               rangeScope={rangeScope}
-              vizOpt={vizOpt}
+              showMore={showMore}
               showCurrent={showCurrent}
               showIconText={showIconText}
               handleStep={setStepValue}

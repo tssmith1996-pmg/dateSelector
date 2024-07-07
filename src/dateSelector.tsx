@@ -19,6 +19,9 @@ import IVisualEventService = powerbi.extensibility.IVisualEventService;
 import { ColorHelper } from "powerbi-visuals-utils-colorutils";
 import { IFilterColumnTarget, AdvancedFilter } from "powerbi-models";
 
+import DataView = powerbi.DataView;
+import IViewport = powerbi.IViewport;
+
 import { VisualState, dateRange, dateCardProps } from "./interface";
 
 import { ReactVisual } from "./reactUtils";
@@ -26,7 +29,7 @@ import { mapOptionsToState, optionsAreValid } from "./optionsMapper";
 
 import tinycolor from "tinycolor2";
 import DateRangeCard from "./components/daterangecard";
-// import isEqual from "lodash.isequal";
+import isEqual from "lodash.isequal";
 
 export class DateSelector extends ReactVisual implements IVisual {
   private visualHost: IVisualHost;
@@ -35,6 +38,9 @@ export class DateSelector extends ReactVisual implements IVisual {
   // formatiing panel
   private formattingSettings: VisualSettingsModel;
   private formattingSettingsService: FormattingSettingsService;
+
+  private currentViewport: IViewport;
+  private dataView: DataView;
 
   private colorPalette: IColorPalette;
   private colorHelper: ColorHelper;
@@ -57,6 +63,8 @@ export class DateSelector extends ReactVisual implements IVisual {
     this.initializeVisualProperties(options);
     this.initializeReact();
     this.formattingSettingsService = new FormattingSettingsService();
+    // const localizationManager = options.host.createLocalizationManager();
+    // this.formattingSettingsService = new FormattingSettingsService(localizationManager);
   }
 
   protected initializeVisualProperties(options: VisualConstructorOptions) {
@@ -86,26 +94,40 @@ export class DateSelector extends ReactVisual implements IVisual {
   }
 
   public update(options: VisualUpdateOptions) {
-        console.log("update")
     if (optionsAreValid(options)) {
       try {
         this.events.renderingStarted(options);
-        // Get Settings
-        this.formattingSettings =
-          this.formattingSettingsService.populateFormattingSettingsModel(
-            VisualSettingsModel,
-            options.dataViews[0]
+
+        const existingDataView = this.dataView;
+        this.dataView = options.dataViews[0];
+        const getSettings: boolean = !(isEqual(existingDataView, this.dataView) && this.initialised);
+
+        if (getSettings) {
+          this.formattingSettings =
+            this.formattingSettingsService.populateFormattingSettingsModel(
+              VisualSettingsModel,
+              options.dataViews[0]
+            );
+
+          this.state = mapOptionsToState(
+            options,
+            this.formattingSettings,
+            this.initialised
+          );
+          const { settings } = this.state;
+
+          const refresh: boolean = !(
+            isEqual(settings, this.lastSettings) && this.initialised
           );
 
-        this.state = mapOptionsToState(options, this.formattingSettings, this.initialised);
-        const { settings } = this.state;
-                this.initialised = true;
+          if (refresh) {
+            this.applyDateFilter(settings.dates);
+            this.updateReactContainers(settings);
+            this.initialised = true;
+          }
 
-        // const refresh: boolean =  !isEqual(settings, this.lastSettings);
-        this.applyDateFilter(settings.dates);
-        this.updateReactContainers(settings);
-
-        this.lastSettings = settings;
+          this.lastSettings = settings;
+        }
 
         this.events.renderingFinished(options);
       } catch (e) {
@@ -119,7 +141,7 @@ export class DateSelector extends ReactVisual implements IVisual {
   }
 
   // Apply the filter
-  public applyDateFilter = (dates: dateRange, viaUpdate?: boolean ): void => {
+  public applyDateFilter = (dates: dateRange): void => {
     const isFilterChanged: boolean =
       this.lastFilter === undefined ||
       String(this.lastFilter.start) !== String(dates.start) ||
@@ -141,10 +163,9 @@ export class DateSelector extends ReactVisual implements IVisual {
 
       this.lastFilter = dates;
       this.state.settings.dates = dates;
+      this.updateReactContainers(this.state.settings);
       this.lastSettings = this.state.settings;
     }
-    // console.log("dateSelector", this.state.settings, viaUpdate)
-    if (viaUpdate !== true) this.updateReactContainers(this.state.settings);
   };
 
   // Create the filter
@@ -172,97 +193,8 @@ export class DateSelector extends ReactVisual implements IVisual {
    * This method is called once every time we open properties pane or when the user edit any format property.
    */
   public getFormattingModel(): powerbi.visuals.FormattingModel {
-    // console.log(this.formattingSettings);
     return this.formattingSettingsService.buildFormattingModel(
       this.formattingSettings
     );
   }
-
-  // private restoreRangeFilter = (options: VisualUpdateOptions) => {
-  //   const { startRange, weekStartDay, yearStartMonth, rangeScope, singleDay } =
-  //     this.state.settings;
-  //   const startupFilter = getInitRange(
-  //     startRange,
-  //     weekStartDay,
-  //     yearStartMonth,
-  //     rangeScope
-  //   );
-  //   const jsonFilters: powerbi.IFilter[] = options.jsonFilters;
-  //   const dataView: powerbi.DataView = options.dataViews[0];
-  //   if (
-  //     // startRange === "sync" &&
-  //     jsonFilters &&
-  //     dataView.metadata &&
-  //     dataView.metadata.columns &&
-  //     dataView.metadata.columns[0]
-  //   ) {
-  //     const filter = jsonFilters.find((filter): filter is IAdvancedFilter => {
-  //       return (
-  //         (filter as IAdvancedFilter).target !== undefined &&
-  //         (filter as IAdvancedFilter).logicalOperator !== undefined &&
-  //         (filter as IAdvancedFilter).conditions !== undefined
-  //       );
-  //     });
-  //     /***************************************************************** */
-  //     console.log(
-  //       "optionsMapper - Filter at load:",
-  //       filter,
-  //       startRange,
-  //       startupFilter
-  //     );
-  //     /***************************************************************** */
-  //     this.initialised = true;
-  //     if (filter) {
-  //       const target = filter.target as { table: string; column: string };
-  //       const source: string[] = String(
-  //         dataView.metadata.columns[0].queryName
-  //       ).split(".");
-  //       if (
-  //         source &&
-  //         source[0] &&
-  //         source[1] &&
-  //         filter.logicalOperator === "And" &&
-  //         target.table === source[0] &&
-  //         target.column === source[1]
-  //       ) {
-  //         const greaterThan = filter.conditions.find(
-  //           (cond) => cond.operator === "GreaterThanOrEqual"
-  //         );
-  //         const lessThan = filter.conditions.find(
-  //           (cond) => cond.operator === "LessThanOrEqual"
-  //         );
-  //         if (greaterThan && lessThan) {
-  //           const range = {
-  //             min: greaterThan.value,
-  //             max: lessThan.value,
-  //           };
-  //           return {
-  //             start: this.parseDate(range.min),
-  //             end: singleDay
-  //               ? this.parseDate(range.min)
-  //               : this.parseDate(range.max),
-  //           };
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return {
-  //     start: startupFilter.start,
-  //     end: singleDay ? startupFilter.start : startupFilter.end,
-  //   };
-  // };
-  // private parseDate = (value: any): Date | null => {
-  //   const typeOfValue: string = typeof value;
-  //   let date: Date = value;
-  //   if (typeOfValue === "number") {
-  //     date = new Date(value, 0);
-  //   }
-  //   if (typeOfValue === "string") {
-  //     date = new Date(value);
-  //   }
-  //   if (date && date instanceof Date && date.toString() !== "Invalid Date") {
-  //     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  //   }
-  //   return null;
-  // };
 }

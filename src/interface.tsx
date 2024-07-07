@@ -135,7 +135,7 @@ export interface dateCardProps {
   stepPeriod?: string;
 
   // boolean value indicating whether to display visualization options for the date range
-  vizOpt?: boolean;
+  showMore?: boolean;
 
   // payment-related object representing payment-related properties
   payProps?: pay;
@@ -182,6 +182,7 @@ export interface dateCardProps {
   singleDay?: boolean;
   // boolean value indicating whether to show arrows to move/expand by period step
   showMove?: boolean;
+  // boolean value indicating whether to show arrows to expand by period step
   showExpand?: boolean;
   // boolean value indicating whether to show timeline toggle button
   enableSlider?: boolean;
@@ -205,7 +206,7 @@ export interface topRowProps {
   handleClick: () => void;
   setStepValue: (value: string) => void;
   setStepOpen: (value: boolean) => void;
-  vizOpt: boolean;
+  showMore: boolean;
   showCurrent: boolean;
   showIconText: boolean;
   current: any;
@@ -250,7 +251,7 @@ export interface UseCurrentProps {
   showCurrent?: boolean;
   stepValue?: string;
   showIconText?: boolean;
-  vizOpt?: boolean;
+  showMore?: boolean;
   current: any;
   handleVal?: (val: any) => void;
   handleStep?: (newValue: string) => void;

@@ -20,12 +20,6 @@ export class VisualSettingsModel extends FormattingSettingsModel {
   styleSettings = new styleSettings();
   calendarSettings = new calendarSettings();
   layoutSettings = new layoutSettings();
-  // daySettings = new daySettings();
-  // weekSettings = new weekSettings();
-  // paySettings = new paySettings();
-  // monthSettings = new monthSettings();
-  // quarterSettings = new quarterSettings();
-  // yearSettings = new yearSettings();
   periodSettings = new periodSettings();
 
   // Add formatting settings card to cards list in model
@@ -34,13 +28,6 @@ export class VisualSettingsModel extends FormattingSettingsModel {
     this.calendarSettings,
     this.layoutSettings,
     this.periodSettings,
-
-    // this.daySettings,
-    // this.weekSettings,
-    // this.paySettings,
-    // this.monthSettings,
-    // this.quarterSettings,
-    // this.yearSettings,
   ];
 }
 
@@ -94,8 +81,7 @@ class styleSettings extends FormattingSettingsCard {
 
 class calendarSettings extends FormattingSettingsCard {
   name: string = "calendar";
-  description: string =
-    "Calendar stuff like Year Setup (Financial/Calendar), Week start day, etc.";
+  description: string = "Range startup settings and optional sync override.";
   displayName: string = "Range options";
   analyticsPane: boolean = false;
   uid: string = "calendarUid";
@@ -103,7 +89,7 @@ class calendarSettings extends FormattingSettingsCard {
   startRange = new formattingSettings.AutoDropdown({
     name: "startRange",
     description:
-      "Default date range when a page is loaded - predominant unless 'Sync'",
+      "Default date range when the current page is loaded - dominates unless 'Default', which respects Sync & Bookmark settings.",
     displayName: "Start Range",
     value: defaultSettings.calendarSettings.startRange,
   });
@@ -111,7 +97,7 @@ class calendarSettings extends FormattingSettingsCard {
   stepInit = new formattingSettings.AutoDropdown({
     name: "stepInit",
     description:
-      "Timeline and increment step label intervals when a page is loaded",
+      "Timeline and increment step label intervals when the current page is loaded",
     displayName: "Step Level",
     value: defaultSettings.calendarSettings.stepInit,
   });
@@ -149,7 +135,7 @@ class timelineSettings extends FormattingSettingsGroup {
   show2ndSlider = new formattingSettings.ToggleSwitch({
     name: "show2ndSlider",
     description:
-      "Show 2 scales for mixed period & clarification of year for months, month for weeks, etc.",
+      "Show 2 scales for contextualising year for months, month for weeks, etc.",
     displayName: "2nd timeline scale",
     value: defaultSettings.layoutSettings.timelineSettings.show2ndSlider,
   });
@@ -205,14 +191,14 @@ class moveSettings extends FormattingSettingsGroup {
   showMove = new formattingSettings.ToggleSwitch({
     name: "showMove",
     description:
-      "Show the arrows and step levels to quickly move or extend/reduce the selected period by a chosen step.",
+      "Show the arrows and step levels to quickly move, extend or reduce the selected range forwards or backwards by the chosen step granularity.",
     displayName: "Show move arrows",
     value: defaultSettings.layoutSettings.moveSettings.showMove,
   });
   showExpand = new formattingSettings.ToggleSwitch({
     name: "showExpand",
     description:
-      "Show the arrows and step levels to quickly extend/reduce the selected period by a chosen step.",
+      "Show the arrows and step levels to quickly extend/reduce the selected period by the chosen step granularity.",
     displayName: "Extend  << >>",
     value: defaultSettings.layoutSettings.moveSettings.showExpand,
   });
@@ -243,7 +229,6 @@ class helpSettings extends FormattingSettingsCard {
   slices: Array<FormattingSettingsSlice> = [this.showHelpIcon];
 }
 
-// Formatting settings card
 class layoutSettings extends FormattingSettingsCompositeCard {
   name: string = "layout";
   displayName: string = "Layout";
@@ -538,18 +523,18 @@ class periodSettings extends FormattingSettingsCompositeCard {
   analyticsPane: boolean = false;
   visible: boolean = true;
 
-  periodDay                         = new daySettings(Object());
-  periodWeek                        = new weekSettings(Object());
-  periodPay                         = new paySettings(Object());
-  periodMonth                       = new monthSettings(Object());
-  periodQuarter                     = new quarterSettings(Object());
-  periodYear                        = new yearSettings(Object());
+  periodDay = new daySettings(Object());
+  periodWeek = new weekSettings(Object());
+  periodPay = new paySettings(Object());
+  periodMonth = new monthSettings(Object());
+  periodQuarter = new quarterSettings(Object());
+  periodYear = new yearSettings(Object());
   groups: Array<FormattingSettingsGroup> = [
-this.periodDay,
-this.periodWeek,
-this.periodPay,
-this.periodMonth,
-this.periodQuarter,
-this.periodYear
+    this.periodDay,
+    this.periodWeek,
+    this.periodPay,
+    this.periodMonth,
+    this.periodQuarter,
+    this.periodYear,
   ];
 }

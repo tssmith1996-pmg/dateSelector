@@ -11,7 +11,7 @@ import DateIntervalPicker from "./dateintervalpicker";
 export default function UseCurrent(props: UseCurrentProps) {
   const {
     rangeScope,
-    vizOpt,
+    showMore,
     showCurrent,
     showIconText,
     current,
@@ -49,7 +49,7 @@ export default function UseCurrent(props: UseCurrentProps) {
                     { inclusive: true }
                   );
                   return item.show && x && y;
-                } else return vizOpt;
+                } else return showMore;
               })
               .map((item, index: number) => (
                 <DateIntervalPicker
