@@ -53,7 +53,6 @@
             }
         },
         "general": {
-            "displayName": "General",
             "displayNameKey": "Visual_General",
             "properties": {
                 "selected": {
@@ -71,18 +70,18 @@
         "style": {
             "properties": {
                 "themeMode": {
-                    "displayName": "Mode",
-                    "description": "Theme mode dark background",
                     "type": {
                         "enumeration": [
                             {
                                 "displayName": "Light",
                                 "description": "Light background",
+                                "displayNameKey": "Style_Mode_Light",
                                 "value": "light"
                             },
                             {
                                 "displayName": "Dark",
                                 "description": "Dark background",
+                                "displayNameKey": "Style_Mode_Dark",
                                 "value": "dark"
                             }
                         ]
@@ -105,12 +104,12 @@
                             {
                                 "value": "EEE, d MMM yy",
                                 "displayName": "dd MMM yyyy",
-                                "displayNameKey": "Visual_Text_DMY"
+                                "displayNameKey": "fmtDate_DMY"
                             },
                             {
                                 "value": "EEE, MMM d yy",
                                 "displayName": "MMM d yy",
-                                "displayNameKey": "Visual_Text_YMD"
+                                "displayNameKey": "fmtDate_MDY"
                             }
                         ]
                     }
@@ -227,7 +226,7 @@
                         "enumeration": [
                             {
                                 "value": "sync",
-                                "displayName": "default",
+                                "displayName": "Default",
                                 "displayNameKey": "startRange_Sync"
                             },
                             {
@@ -399,25 +398,21 @@
                     }
                 },
                 "showHelpIcon": {
-                    "displayNameKey": "showHelpIcon",
                     "type": {
                         "bool": true
                     }
                 },
                 "showCurrent": {
-                    "displayNameKey": "showCurrent",
                     "type": {
                         "bool": true
                     }
                 },
                 "showIconText": {
-                    "displayNameKey": "showIconText",
                     "type": {
                         "bool": true
                     }
                 },
                 "showMore": {
-                    "displayNameKey": "showMore",
                     "type": {
                         "bool": true
                     }
@@ -442,7 +437,6 @@
                     }
                 },
                 "daySkip": {
-                    "displayNameKey": "daySkip",
                     "type": {
                         "numeric": true
                     }
@@ -455,34 +449,33 @@
                             {
                                 "value": "d",
                                 "displayName": "1, 2, ..., 31",
-                                "displayNameKey": "Visual_Text_D"
+                                "displayNameKey": "fmtDay_D"
                             },
                             {
                                 "value": "dd",
                                 "displayName": "01, 02, ..., 31",
-                                "displayNameKey": "Visual_Text_Dd"
+                                "displayNameKey": "fmtDay_Dd"
                             },
                             {
                                 "value": "do",
                                 "displayName": "1st, 2nd, ..., 31st",
-                                "displayNameKey": "Visual_Text_Do"
+                                "displayNameKey": "fmtDay_Do"
                             },
                             {
                                 "value": "d-MMM",
                                 "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "Visual_Text_Ddmmm"
+                                "displayNameKey": "fmtDay_Ddmmm"
                             },
                             {
                                 "value": "d.MMMMM",
                                 "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "Visual_Text_Wdm"
+                                "displayNameKey": "fmtDay_Wdm"
                             }
                         ]
                     }
                 }
             ,
                 "showWeek": {
-                    "displayNameKey": "showWeek",
                     "type": {
                         "bool": true
                     }
@@ -529,66 +522,58 @@
                     }
                 },
                 "weekSkip": {
-                    "displayNameKey": "weekSkip",
                     "type": {
                         "numeric": true
                     }
                 },
                 "fmtWeek": {
-                    "displayName": "Week format",
-                    "displayNameKey": "fmtWeek",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "w",
                                 "displayName": "1, 2, ..., 53",
-                                "displayNameKey": "Visual_Text_W"
+                                "displayNameKey": "fmtWeek_W"
                             },
                             {
                                 "value": "wo",
                                 "displayName": "1st, 2nd, ..., 53th",
-                                "displayNameKey": "Visual_Text_Wo"
+                                "displayNameKey": "fmtWeek_Wo"
                             },
                             {
                                 "value": "d-MMM",
                                 "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "Visual_Text_Wdmmm"
+                                "displayNameKey": "fmtWeek_Wdmmm"
                             },
                             {
                                 "value": "d.MMMMM",
                                 "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "Visual_Text_Wdm"
+                                "displayNameKey": "fmtWeek_Wdm"
                             }
                         ]
                     }
                 },
                 "showYear": {
-                    "displayNameKey": "showYear",
                     "type": {
                         "bool": true
                     }
                 },
                 "showQuarter": {
-                    "displayNameKey": "showQuarter",
                     "type": {
                         "bool": true
                     }
                 },
                 "showPay": {
-                    "displayNameKey": "showPay",
                     "type": {
                         "bool": true
                     }
                 },
                 "quarterSkip": {
-                    "displayNameKey": "quarterSkip",
                     "type": {
                         "numeric": true
                     }
                 }
  ,
                 "paySkip": {
-                    "displayNameKey": "paySkip",
                     "type": {
                         "numeric": true
                     }
@@ -609,159 +594,150 @@
                             {
                                 "value": "0",
                                 "displayName": "January",
-                                "displayNameKey": "Visual_Month_January"
+                                "displayNameKey": "yearStartMonth"
                             },
                             {
                                 "value": "1",
                                 "displayName": "February",
-                                "displayNameKey": "Visual_Month_February"
+                                "displayNameKey": "yearStartMonth_February"
                             },
                             {
                                 "value": "2",
                                 "displayName": "March",
-                                "displayNameKey": "Visual_Month_March"
+                                "displayNameKey": "yearStartMonth_March"
                             },
                             {
                                 "value": "3",
                                 "displayName": "April",
-                                "displayNameKey": "Visual_Month_April"
+                                "displayNameKey": "yearStartMonth_April"
                             },
                             {
                                 "value": "4",
                                 "displayName": "May",
-                                "displayNameKey": "Visual_Month_May"
+                                "displayNameKey": "yearStartMonth_May"
                             },
                             {
                                 "value": "5",
                                 "displayName": "June",
-                                "displayNameKey": "Visual_Month_June"
+                                "displayNameKey": "yearStartMonth_June"
                             },
                             {
                                 "value": "6",
                                 "displayName": "July",
-                                "displayNameKey": "Visual_Month_July"
+                                "displayNameKey": "yearStartMonth_July"
                             },
                             {
                                 "value": "7",
                                 "displayName": "August",
-                                "displayNameKey": "Visual_Month_August"
+                                "displayNameKey": "yearStartMonth_August"
                             },
                             {
                                 "value": "8",
                                 "displayName": "September",
-                                "displayNameKey": "Visual_Month_September"
+                                "displayNameKey": "yearStartMonth_September"
                             },
                             {
                                 "value": "9",
                                 "displayName": "October",
-                                "displayNameKey": "Visual_Month_October"
+                                "displayNameKey": "yearStartMonth_October"
                             },
                             {
                                 "value": "10",
                                 "displayName": "November",
-                                "displayNameKey": "Visual_Month_November"
+                                "displayNameKey": "yearStartMonth_November"
                             },
                             {
                                 "value": "11",
                                 "displayName": "December",
-                                "displayNameKey": "Visual_Month_December"
+                                "displayNameKey": "yearStartMonth_December"
                             }
                         ]
                     }
                 },
                 "payRefDate": {
-                    "displayNameKey": "payRefDate",
                     "type": {
                         "text": true
                     }
                 },
                 "fmtPay": {
-                    "displayName": "Pay Period format",
-                    "displayNameKey": "fmtPay",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "d-MMM",
                                 "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "Visual_Text_Wdmmm"
+                                "displayNameKey": "fmtPay_Wdmmm"
                             },
                             {
                                 "value": "w",
                                 "displayName": "1, 2, ..., 53",
-                                "displayNameKey": "Visual_Text_W"
+                                "displayNameKey": "fmtPay_W"
                             },
                             {
                                 "value": "wo",
                                 "displayName": "1st, 2nd, ..., 53th",
-                                "displayNameKey": "Visual_Text_Wo"
+                                "displayNameKey": "fmtPay_Wo"
                             },
                             {
                                 "value": "d.MMMMM",
                                 "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "Visual_Text_Wdm"
+                                "displayNameKey": "fmtPay_Wdm"
                             }
                         ]
                     }
                 }
 ,                "showMonth": {
-                    "displayNameKey": "showMonth",
                     "type": {
                         "bool": true
                     }
                 },
                 "monthSkip": {
-                    "displayNameKey": "monthSkip",
                     "type": {
                         "numeric": true
                     }
                 },
                 "fmtMonth": {
-                    "displayName": "Month format",
-                    "displayNameKey": "fmtMonth",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "M",
                                 "displayName": "1, 2, ..., 12",
-                                "displayNameKey": "Visual_Text_M"
+                                "displayNameKey": "fmtMonth_M"
                             },
                             {
                                 "value": "MM",
                                 "displayName": "01, 02, ..., 12",
-                                "displayNameKey": "Visual_Text_Mm"
+                                "displayNameKey": "fmtMonth_Mm"
                             },
                             {
                                 "value": "MMMMM",
                                 "displayName": "J, F, ..., D",
-                                "displayNameKey": "Visual_Text_MMMMM"
+                                "displayNameKey": "fmtMonth_MMMMM"
                             },
                             {
                                 "value": "MMM",
                                 "displayName": "Jan, Feb, ..., Dec",
-                                "displayNameKey": "Visual_Text_MMM"
+                                "displayNameKey": "fmtMonth_MMM"
                             },
                             {
                                 "value": "MMMM",
                                 "displayName": "January, ..., December",
-                                "displayNameKey": "Visual_Text_MMMM"
+                                "displayNameKey": "fmtMonth_MMMM"
                             }
                         ]
                     }
                 }
 ,                "fmtQuarter": {
-                    "displayName": "Quarter format",
-                    "displayNameKey": "fmtQuater",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "QQQ",
                                 "displayName": "Q1, Q2, Q3, Q4",
-                                "displayNameKey": "Visual_Text_QQQ"
+                                "displayNameKey": "fmtQuarter_QQQ"
                             },
                             {
                                 "value": "yy-QQQ",
                                 "displayName": "20-Q1, 20-Q2, ... 21-Q4",
-                                "displayNameKey": "Visual_Text_Yy"
+                                "displayNameKey": "fmtQuarter_yy_QQQ"
                             }
                         ]
                     }
@@ -772,86 +748,83 @@
                             {
                                 "value": "0",
                                 "displayName": "January",
-                                "displayNameKey": "Visual_Month_January"
+                                "displayNameKey": "yearStartMonth_January"
                             },
                             {
                                 "value": "1",
                                 "displayName": "February",
-                                "displayNameKey": "Visual_Month_February"
+                                "displayNameKey": "yearStartMonth_February"
                             },
                             {
                                 "value": "2",
                                 "displayName": "March",
-                                "displayNameKey": "Visual_Month_March"
+                                "displayNameKey": "yearStartMonth_March"
                             },
                             {
                                 "value": "3",
                                 "displayName": "April",
-                                "displayNameKey": "Visual_Month_April"
+                                "displayNameKey": "yearStartMonth_April"
                             },
                             {
                                 "value": "4",
                                 "displayName": "May",
-                                "displayNameKey": "Visual_Month_May"
+                                "displayNameKey": "yearStartMonth_May"
                             },
                             {
                                 "value": "5",
                                 "displayName": "June",
-                                "displayNameKey": "Visual_Month_June"
+                                "displayNameKey": "yearStartMonth_June"
                             },
                             {
                                 "value": "6",
                                 "displayName": "July",
-                                "displayNameKey": "Visual_Month_July"
+                                "displayNameKey": "yearStartMonth_July"
                             },
                             {
                                 "value": "7",
                                 "displayName": "August",
-                                "displayNameKey": "Visual_Month_August"
+                                "displayNameKey": "yearStartMonth_August"
                             },
                             {
                                 "value": "8",
                                 "displayName": "September",
-                                "displayNameKey": "Visual_Month_September"
+                                "displayNameKey": "yearStartMonth_September"
                             },
                             {
                                 "value": "9",
                                 "displayName": "October",
-                                "displayNameKey": "Visual_Month_October"
+                                "displayNameKey": "yearStartMonth_October"
                             },
                             {
                                 "value": "10",
                                 "displayName": "November",
-                                "displayNameKey": "Visual_Month_November"
+                                "displayNameKey": "yearStartMonth_November"
                             },
                             {
                                 "value": "11",
                                 "displayName": "December",
-                                "displayNameKey": "Visual_Month_December"
+                                "displayNameKey": "yearStartMonth_December"
                             }
                         ]
                     }
                 },
                 "fmtYear": {
-                    "displayName": "Year format",
-                    "displayNameKey": "fmtYear",
                     "type": {
                         "enumeration": [
                             {
                                 "value": "yyyy",
                                 "displayName": "yyyy - 2017, 2020",
-                                "displayNameKey": "Visual_Text_yyyy"
+                                "displayNameKey": "fmtYear_yyyy"
                             },
                             {
                                 "value": "yy",
                                 "displayName": "yy - 00, 17, ... 20",
-                                "displayNameKey": "Visual_Text_Yy"
+                                "displayNameKey": "fmtYear_Yy"
                             }
                         ]
                     }
                 },
                 "yearSkip": {
-                    "displayNameKey": "yearSkip",
                     "type": {
                         "numeric": true
                     }
