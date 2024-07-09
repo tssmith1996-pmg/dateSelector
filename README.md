@@ -43,10 +43,12 @@ The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dis
 
  #### Start-up state
   * Slicer opens in configured *pre-set* state
-     * Today, YTD, etc.
+     * *default* behaves like any typical visual.
+     * Today, YTD, This Month, Last week, etc.
      * or ...
 Can be synced with last  page viewed
      * With *pre-set* range there's *no sync respected* on the pre-set pages.
+     * Bookmarks are respected after pre-set ranges
  #### Short cut keys
   * when slider is active use fast shortcuts
  #### Help
