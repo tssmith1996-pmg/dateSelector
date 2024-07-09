@@ -57,7 +57,8 @@ export default function DateRangeCard(props: dateCardProps) {
     };
 
     const onChangeVal = (filter: [Date, Date]) => {
-      const x = filter.sort(compareAsc);
+      const y = singleDay?[filter[0],filter[0]]:filter;
+      const x = y.sort(compareAsc);
       onFilterChanged({ start: x[0], end: x[1] });
     };
 
