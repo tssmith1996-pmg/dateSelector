@@ -8,6 +8,7 @@ type Props = TooltipProps & {
   shortCut?: string;
   topRow?: string;
   detailRow?: string;
+  infoRow?: string;
   detailFlag?: boolean;
 };
 
@@ -18,6 +19,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
     topRow,
     detailRow,
     detailFlag = useHelpContext().showHelp ,
+    infoRow,
     ...rest
   } = props;
 
@@ -50,6 +52,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
           <>
             <div><b>{detailFlag && detailRow  && (`${topRow}`)}</b></div>
             <div>{detailFlag && detailRow ? (`${detailRow}`) : `${topRow}`}</div>
+            <div style={{fontStyle: "italic"}}>{ infoRow ? (`${infoRow}`) : ``}</div>
           </>
         )
       }
@@ -60,7 +63,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
     backgroundColor: theme.palette.text.primary,
     border: theme.palette.text.primary,
     color: theme.palette.background.paper,
-    fontSize: 10, fontWeight: 300,
+    // fontWeight: 300,
     maxWidth: 250
   },
   [`& .${tooltipClasses.arrow}`]: {

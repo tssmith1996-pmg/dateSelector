@@ -15,7 +15,7 @@ export default function DateRange(props: DateRangeProps) {
   const { dates, rangeScope, handleVal, singleDay } = props;
 
   const [underline, setUnderline] = useState(true);
-    const [startText, setStartText] = useState<string>(() =>
+  const [startText, setStartText] = useState<string>(() =>
     format(dates.start, "yyyy-MM-dd")
   );
   const [endText, setEndText] = useState<string>(() =>
@@ -35,7 +35,7 @@ export default function DateRange(props: DateRangeProps) {
   };
 
   const dateSpan = inputParms(dates, rangeScope);
-  const topRow = useHelpContext().showHelp ? "Enter Range" : dateSpan.string;
+  const topRow = useHelpContext().showHelp ? "Selected Range" : dateSpan.string;
 
   const doUpdate = (id: "start" | "end", value: string) => {
     const dte: Date = parse(value, "yyyy-MM-dd", new Date());
@@ -50,15 +50,19 @@ export default function DateRange(props: DateRangeProps) {
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    doUpdate(e.target.id as "start" | "end", e.target.value);  };
+    doUpdate(e.target.id as "start" | "end", e.target.value);
+  };
 
-    const toggleUnderline = () => setUnderline((prev) => !prev);
+  const toggleUnderline = () => setUnderline((prev) => !prev);
 
   return (
-    <div onMouseEnter={toggleUnderline} onMouseLeave={toggleUnderline}>      <RngeTooltip
+    <div onMouseEnter={toggleUnderline} onMouseLeave={toggleUnderline}>
+      {" "}
+      <RngeTooltip
         title={undefined}
         topRow={topRow}
         detailRow={dateSpan.string}
+        infoRow={dateSpan.info}
         placement="bottom"
       >
         <Grid container spacing={0.5} paddingLeft={0.3}>
@@ -73,7 +77,7 @@ export default function DateRange(props: DateRangeProps) {
               doUpdate={doUpdate}
               onChange={handleInput}
               onFocus={() => setUnderline(true)}
-             />
+            />
           </Grid>
           {!singleDay && (
             <>

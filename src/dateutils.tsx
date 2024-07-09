@@ -740,31 +740,35 @@ export const inputParms = (dates: dateRange, rangeScope: dateRange) => {
       ? endOfDay(dates.end)
       : endOfDay(rangeScope.end);
   const _startInRange: boolean = isWithinInterval(
-    startOfDay(dates.start),
+    endOfDay(dates.start),
     rangeScope
   );
   const _endInRange: boolean = isWithinInterval(
-    endOfDay(dates.end),
+    startOfDay(dates.end),
     rangeScope
   );
   try {
     const noDays = differenceInDays(_end, _start);
+    const _startDate = format(_start, "EEE, d MMM yy");
+    const _endDate = format(_end, "EEE, d MMM yy");
     const _startStory =
       (_startInRange
-        ? ""
-        : " [" + format(dates.start, "EEE, d MMM yy") + "] ") +
-      format(_start, "EEE, d MMM yy");
+        ? _startDate
+        :  format(dates.start, "EEE, d MMM yy") ); // + _startDate;
     const _endStory =
-      (_endInRange ? "" : " [" + format(dates.end, "EEE, d MMM yy") + "] ") +
-      format(_end, "EEE, d MMM yy");
+      (_endInRange ? _endDate :  format(dates.end, "EEE, d MMM yy") ); // + _endDate;
     return {
       string:
-        (noDays > 0 ? formatDistance(_start, _end)
-          .toLowerCase()
-          .replace(/\b\w/g, (s) => s.toUpperCase()) +
-        " from " + _startStory + " to " : " ") +
-        _endStory +
-        (_startInRange && _endInRange ? `` : `. [Selection exceeds scope]`),
+        (noDays > 0
+          ? formatDistance(_start, _end)
+              .toLowerCase()
+              .replace(/\b\w/g, (s) => s.toUpperCase()) +
+            " from " +
+            _startDate +
+            " to "
+          : " ") +
+        _endDate , info:
+        (_startInRange && _endInRange ? `` : ' ['+ _startStory +' - '+ _endStory +' exceeds scope].' ),
       duration: formatDistance(_start, _end),
       fmDoW: format(dates.start, "EEEE"),
       toDoW: format(dates.end, "EEE"),
