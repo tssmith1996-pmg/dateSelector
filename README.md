@@ -43,10 +43,12 @@ The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dis
 
  #### Start-up state
   * Slicer opens in configured *pre-set* state
-     * Today, YTD, etc.
+     * *default* behaves like any typical visual.
+     * Today, YTD, This Month, Last week, etc.
      * or ...
 Can be synced with last  page viewed
      * With *pre-set* range there's *no sync respected* on the pre-set pages.
+     * Bookmarks are respected after pre-set ranges
  #### Short cut keys
   * when slider is active use fast shortcuts
  #### Help
@@ -64,7 +66,7 @@ Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/d
 5. Click on the visual and select "Add."
 
 ## Usage
-To use the DateSelector visual, add it to your report canvas and connect it to the relevant data fields. Users can then use the visual to select a date range and filter data accordingly.
+To use the DateSelector visual, add it to your report canvas and connect it to the relevant date field. Users can then use the visual to select a date range and filter data accordingly. Often the ther need not touch the visual because the wanted date is pre-set.
 
 ## Example
 A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20selector%20doc.pbix) Download it and open with Power BI Desktop.
