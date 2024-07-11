@@ -30,6 +30,7 @@ import { mapOptionsToState, optionsAreValid } from "./optionsMapper";
 import tinycolor from "tinycolor2";
 import DateRangeCard from "./components/daterangecard";
 import isEqual from "lodash.isequal";
+import '../assets/visual.less';
 
 export class DateSelector extends ReactVisual implements IVisual {
   private visualHost: IVisualHost;
@@ -115,7 +116,7 @@ export class DateSelector extends ReactVisual implements IVisual {
             this.initialised
           );
           const { settings } = this.state;
-
+          // console.log(">>>>>>>>>>>>>>>>>>>> dateSelector - font", settings.themeFont )
           const refresh: boolean = !(
             isEqual(settings, this.lastSettings) && this.initialised
           );
