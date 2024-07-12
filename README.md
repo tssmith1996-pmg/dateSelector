@@ -7,6 +7,7 @@ The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dis
 - Allows users to select a range of dates with a compact user-friendly interface.
 - Enables users to filter data based on the selected date range.
 - Simple and intuitive design, easy to use.
+- Configurable to show or hide buttons with the simplest representation being a single date picker.
 
 ### Anatomy
 
