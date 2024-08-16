@@ -199,7 +199,7 @@ export const day = (
  * Get the week interval a number of weeks from the given date.
  *
  * @param i - The number of weeks to be subtracted.
- * @param w - The start day of the week - Sun is 0; Sat is 6.
+ * @param weekStartDay - The start day of the week - Sun is 0; Sat is 6.
  * @param startBaseDate - The starting date - default is Today.
  * @param full - is last full week required.
  *
@@ -213,18 +213,20 @@ export const day = (
  */
 export const week = (
   i: number,
-  w: 0 | 1 | 2 | 3 | 4 | 5 | 6,
+  weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6,
   startBaseDate: Date = startOfToday(),
   full?: boolean
 ): dateRange => {
-  // if (full) {console.log(full, getDay(startBaseDate),w,startBaseDate)}
-  const j = full ? (w === getDay(subDays(startBaseDate,1)) ? i : i + 1) : i;
+  //  if (full) {
+  //    console.log(full, getDay(subDays(startBaseDate,1)),"w:", weekStartDay, startBaseDate);
+  //  }
+  const j = full ? (weekStartDay === getDay(addDays(startBaseDate,1)) ? i : i + 1) : i;
   return {
     start: startOfWeek(subWeeks(startBaseDate, j), {
-      weekStartsOn: w,
+      weekStartsOn: weekStartDay,
     }),
     end: endOfWeek(subWeeks(startBaseDate, j), {
-      weekStartsOn: w,
+      weekStartsOn: weekStartDay,
     }),
   };
 };
