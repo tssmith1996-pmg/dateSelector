@@ -32,6 +32,7 @@ import {
   dateCardProps,
   dateRange,
 } from "./interface";
+
 import { getInitRange } from "./dateutils";
 import { startOfDay, endOfDay } from "date-fns";
 
@@ -45,7 +46,7 @@ export const optionsAreValid = (options: VisualUpdateOptions): boolean => {
       !options.dataViews[0]?.metadata?.columns?.length ||
       !options.dataViews[0].categorical.categories[0].source.type.dateTime
     );
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -79,6 +80,7 @@ export const settingProps = (
 
   const stepInit: string = calendar.stepInit.value.toString();
   const singleDay: boolean = calendar.singleDay.value;
+  const limitToScope: boolean = calendar.limitToScope.value;
   const rangeScope: dateRange = mapDataView(options).category.rangeValues;
   const weekStartDay: 0 | 1 | 2 | 3 | 4 | 5 | 6 = getDayNum(
     week.weekStartDay.value.valueOf()
@@ -107,6 +109,7 @@ export const settingProps = (
     yearStartMonth: yearStartMonth,
     stepInit: stepInit,
     singleDay: singleDay,
+    limitToScope: limitToScope,
     stepSkip: {
       day: day.daySkip.value,
       week: week.weekSkip.value,

@@ -110,10 +110,19 @@ class calendarSettings extends FormattingSettingsCard {
     value: defaultSettings.calendarSettings.singleDay,
   });
 
+  limitToScope = new formattingSettings.ToggleSwitch({
+    name: "limitToScope",
+    description:
+      "Only allow selection within the scope of the date range limits. When false, any date can be selected and the `Current Periods` icons will always show.",
+    displayName: "Limit Dates to Scope",
+    value: defaultSettings.calendarSettings.limitToScope,
+  });
+
   slices: Array<FormattingSettingsSlice> = [
     this.singleDay,
+    this.limitToScope,
     this.startRange,
-    this.stepInit,
+    this.stepInit
   ];
 }
 
@@ -172,7 +181,7 @@ class currentSettings extends FormattingSettingsGroup {
   showMore = new formattingSettings.ToggleSwitch({
     name: "showMore",
     description:
-      "Show the Extended Period selector for YTD, YT last nonth, etc.",
+      "Show the Extended Period selector for YTD, YT last month, etc.",
     displayName: "Extended Periods",
     value: defaultSettings.layoutSettings.currentSettings.showMore,
   });

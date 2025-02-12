@@ -28,75 +28,75 @@ export default function StepsMenu(props: stepProps) {
     }
   };
 
-  return (
-    <>
-      {viz && (
-        <Box p={0}>
-          {/* <Typography variant="caption" display="block" gutterBottom pl={0}>
-        {"Step level - " + periodTip[stepValue]}
-      </Typography> */}
-          <ToggleButtonGroup
-            value={stepValue}
-            size="small"
-            aria-label="outlined button group"
-            exclusive
-          >
-            {actions
-              .filter((value) => {
-                return value.show === true && value.tip !== "";
-              })
-              .map((action, index) => (
-                <ToggleButton
-                  key={action.tip + index}
-                  value={action.step}
-                  onClick={(e) => {
-                    handleClick(e, action.step);
-                  }}
+  return (<>
+    {viz && (
+      <Box sx={{
+        p: 0
+      }}>
+        {/* <Typography variant="caption" display="block" gutterBottom pl={0}>
+      {"Step level - " + periodTip[stepValue]}
+    </Typography> */}
+        <ToggleButtonGroup
+          value={stepValue}
+          size="small"
+          aria-label="outlined button group"
+          exclusive
+        >
+          {actions
+            .filter((value) => {
+              return value.show === true && value.tip !== "";
+            })
+            .map((action, index) => (
+              <ToggleButton
+                key={action.tip + index}
+                value={action.step}
+                onClick={(e) => {
+                  handleClick(e, action.step);
+                }}
+              >
+                <RngeTooltip
+                  title={undefined}
+                  topRow={
+                    action.tip +
+                    ` steps (` +
+                    action.step.charAt(0).toLocaleUpperCase() +
+                    `)`
+                  }
+                  // detailRow={detailRow}
+                  placement="bottom-end"
                 >
-                  <RngeTooltip
-                    title={undefined}
-                    topRow={
-                      action.tip +
-                      ` steps (` +
-                      action.step.charAt(0).toLocaleUpperCase() +
-                      `)`
-                    }
-                    // detailRow={detailRow}
-                    placement="bottom-end"
-                  >
-                    <Badge
-                      sx={{
-                        "& .MuiBadge-badge": {
-                          right: -2,
-                          top: -1
-                        }
-                      }}
-                      badgeContent={
-                        <Typography
-                          variant="overline"
-                          sx={{ fontSize: 8, textTransform: "none" }}
-                        >
-                          {
-                            <span>
-                              {action.step.charAt(0).toLocaleUpperCase()}
-                            </span>
-                          }
-                        </Typography>
+                  <Badge
+                    sx={{
+                      "& .MuiBadge-badge": {
+                        right: -2,
+                        top: -1
                       }
-                      //color="primary"
-                      anchorOrigin={{
-                        vertical: "top",
-                        horizontal: "right"
-                      }}
-                    >
-                      {action.icon}
-                    </Badge>
-                  </RngeTooltip>
-                </ToggleButton>
-              ))}
-          </ToggleButtonGroup>
-        </Box>
-      )}
-    </>
-  );
+                    }}
+                    badgeContent={
+                      <Typography
+                        variant="overline"
+                        sx={{ fontSize: 8, textTransform: "none" }}
+                      >
+                        {
+                          <span>
+                            {action.step.charAt(0).toLocaleUpperCase()}
+                          </span>
+                        }
+                      </Typography>
+                    }
+                    //color="primary"
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right"
+                    }}
+                  >
+                    {action.icon}
+                  </Badge>
+                </RngeTooltip>
+              </ToggleButton>
+            ))}
+        </ToggleButtonGroup>
+      </Box>
+    )}
+  </>);
 }

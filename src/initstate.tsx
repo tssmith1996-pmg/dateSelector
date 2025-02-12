@@ -25,6 +25,7 @@ export const defaultSettings: Settings = {
     stepInit: "day",
     payLength: 14,
     fmtDate: "EEE, d MMM yy",
+    limitToScope: false,
   },
   layoutSettings: {
     timelineSettings: {

@@ -30,7 +30,7 @@ export const styleB = {
   },
   "& .MuiSlider-mark": {
     top: 20,
-    height: 11,
+    height: 13,
     width: 1.1,
     borderRadius: "0%",
     opacity: 0.3,
@@ -45,7 +45,7 @@ export const styleB = {
   "& .MuiSlider-track": {
     top: 27,
     height: 13,
-    opacity: 0.2,
+    opacity: 0.05,
     borderRadius: "0%",
     "&:hover": {
       boxShadow: "0 0 0 2px rgba(58, 133, 137, 0.16)",

@@ -206,7 +206,7 @@ export const day = (
  * @returns The week interval with the weeks subtracted
  *
  * @example
- * // This week starting monday, from Wed, 20 Mar 24:
+ * // This full week starting monday, from Wed, 20 Mar 24:
  * const result = week(0, 1, new Date(2024, 3, 20), 1)
  * //=> {start: Mon Mar 18 2024 00:00:00,
  * //      end: Sun Mar 24 2024 00:00:00}

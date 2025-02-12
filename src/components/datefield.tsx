@@ -61,7 +61,7 @@ export const DateField: React.FC<DateFieldProps> = ({
   //   tms.measureSvgTextWidth(textProperties),"fontSize",theme.typography.fontSize
   // );
   return (
-    <TextField
+    (<TextField
       id={id}
       sx={{
         "& input[type='date']::-webkit-calendar-picker-indicator": {
@@ -82,14 +82,16 @@ export const DateField: React.FC<DateFieldProps> = ({
       onBlur={onBlur}
       onFocus={onFocus}
       placeholder={"yyyy-MM-dd"}
-      inputProps={{
-        max,
-        min,
-      }}
-      InputProps={{
-        disableUnderline: underline,
-      }}
       onKeyDown={handleKeyPress}
-    />
+      slotProps={{
+        input: {
+          disableUnderline: underline,
+        },
+
+        htmlInput: {
+          max,
+          min,
+        }
+      }} />)
   );
 };

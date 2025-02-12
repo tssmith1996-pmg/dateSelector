@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useMemo, useEffect, useState } from "react";
 import IconButton from "@mui/material/IconButton";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import Box from "@mui/material/Box";
 import debounce from "lodash.debounce";
 import { useHotkeys } from "react-hotkeys-hook";

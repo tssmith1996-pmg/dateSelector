@@ -27,44 +27,44 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
   intervalValue,
   stepValue,
 }) => {
-  return (
-    <>
-      <RngeTooltip
-        title={undefined}
-        topRow={`Extend ${stepValue}s from today`}
-        detailRow={`Set the date range by extending ${stepValue}s forward (+) or backward (-) from today. Click away to save & close.`}
-        placement="left"
-      >
-        <TextField
-          variant="standard"
-          inputProps={{
+  return (<>
+    <RngeTooltip
+      title={undefined}
+      topRow={`Extend ${stepValue}s from today`}
+      detailRow={`Set the date range by extending ${stepValue}s forward (+) or backward (-) from today. Click away to save & close.`}
+      placement="left"
+    >
+      <TextField
+        variant="standard"
+        type="number"
+        onChange={handleInputChange}
+        sx={{ width: 76 }}
+        value={intervalValue}
+        size="small"
+        onKeyDown={(ev) => {
+          if (ev.key === "Enter") {
+            handleClose();
+            ev.preventDefault();
+          }
+        }}
+        slotProps={{
+          htmlInput: {
             style: { fontSize: 14, display: "flex", flexWrap: "wrap" },
-          }}
-          type="number"
-          onChange={handleInputChange}
-          sx={{ width: 76 }}
-          value={intervalValue}
-          size="small"
-          onKeyDown={(ev) => {
-            if (ev.key === "Enter") {
-              handleClose();
-              ev.preventDefault();
-            }
-          }}
-        />
-      </RngeTooltip>
-      <RngeTooltip title="Save & Close" placement="top">
-        <IconButton size="small" onClick={handleClose}>
-          <CheckIcon style={{ fontSize: 14 }} color="primary" />
-        </IconButton>
-      </RngeTooltip>
-      <RngeTooltip title="Reset to 0" placement="top">
-        <IconButton size="small" onClick={() => setIntervalValue(0)}>
-          <RefreshIcon style={{ fontSize: 14 }} color="primary" />
-        </IconButton>
-      </RngeTooltip>
-    </>
-  );
+          }
+        }}
+      />
+    </RngeTooltip>
+    <RngeTooltip title="Save & Close" placement="top">
+      <IconButton size="small" onClick={handleClose}>
+        <CheckIcon style={{ fontSize: 14 }} color="primary" />
+      </IconButton>
+    </RngeTooltip>
+    <RngeTooltip title="Reset to 0" placement="top">
+      <IconButton size="small" onClick={() => setIntervalValue(0)}>
+        <RefreshIcon style={{ fontSize: 14 }} color="primary" />
+      </IconButton>
+    </RngeTooltip>
+  </>);
 };
 
 interface DateIntervalPickerProps {
