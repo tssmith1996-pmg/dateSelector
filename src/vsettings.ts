@@ -225,12 +225,12 @@ class helpSettings extends FormattingSettingsCard {
   showHelpIcon = new formattingSettings.ToggleSwitch({
     name: "showHelpIcon",
     description: "Show help button for optional extended tooltips.",
-    displayName: "Help Toggle",
+    displayName: "Detail Toggle",
     value: defaultSettings.layoutSettings.helpSettings.showHelpIcon,
   });
 
   name: string = "layout";
-  displayName: string = "Assist";
+  displayName: string = "Tooltip Assist";
   // Formatting settings slice
   analyticsPane: boolean = false;
   visible: boolean = true;

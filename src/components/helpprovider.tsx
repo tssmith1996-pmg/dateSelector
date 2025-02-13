@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import IconButton from "@mui/material/IconButton";
-import { HelpOutline } from "@mui/icons-material";
-import InfoOutlined from "@mui/icons-material/InfoOutlined";
+import { Chat, ChatBubbleOutlineOutlined } from "@mui/icons-material";
+// import Chat from "@mui/icons-material/InfoOutlined";
 import Tooltip from "@mui/material/Tooltip";
 // import Typography from "@mui/material/Typography";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -9,7 +9,7 @@ import { HELP_PROVIDER } from "../constants";
 
 const HelpContext = React.createContext({
   showKey: false,
-  showHelp: false,
+  showHelp: true,
 toggleHelp: () => {/* show or hide help messages*/},
 });
 
@@ -18,7 +18,7 @@ const { TopRowInfo, DetailRowInfo, TopRowHelp, DetailRowHelp } = HELP_PROVIDER;
 export const useHelpContext = () => useContext(HelpContext);
 
 export const HelpProvider = ({ children, showHelpIcon }) => {
-  const [showHelp, setShowHelp] = useState(false);
+  const [showHelp, setShowHelp] = useState(true);
   const [showKey, setShowKey] = useState(false);
 
   const toggleHelp = (): void => {
@@ -34,7 +34,7 @@ export const HelpProvider = ({ children, showHelpIcon }) => {
   useHotkeys("alt", () => setShowKey(false), { keyup: true }, [showKey]);
 
   return (
-    <HelpContext.Provider value={value}>
+    (<HelpContext.Provider value={value}>
       {showHelpIcon && (
         <Tooltip
           arrow
@@ -56,8 +56,7 @@ export const HelpProvider = ({ children, showHelpIcon }) => {
             )
           }
           placement="left"
-          // open={showHelp}
-          componentsProps={{
+          slotProps={{
             tooltip: {
               sx: {
                 backgroundColor: (theme) =>
@@ -78,14 +77,14 @@ export const HelpProvider = ({ children, showHelpIcon }) => {
             onClick={toggleHelp}
           >
             {showHelp ? (
-              <InfoOutlined style={{ fontSize: 16 }} />
+              <Chat style={{ fontSize: 16 }} />
             ) : (
-              <HelpOutline style={{ fontSize: 16 }} />
+              <ChatBubbleOutlineOutlined style={{ fontSize: 16 }} />
             )}
           </IconButton>
         </Tooltip>
       )}
       {children}
-    </HelpContext.Provider>
+    </HelpContext.Provider>)
   );
 };
