@@ -11,6 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import CheckIcon from "@mui/icons-material/Check";
 import RngeTooltip from "./rngetooltip";
+import TopRow from "./toprow";
 
 interface IntervalParmsProps {
   setIntervalValue: (value: number) => void;
@@ -36,6 +37,7 @@ const IntervalParms: React.FC<IntervalParmsProps> = ({
     >
       <TextField
         variant="standard"
+        label={`Today -/+ ${stepValue}s`}
         type="number"
         onChange={handleInputChange}
         sx={{ width: 76 }}

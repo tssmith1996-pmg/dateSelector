@@ -120,7 +120,7 @@ class calendarSettings extends FormattingSettingsCard {
 
   slices: Array<FormattingSettingsSlice> = [
     this.singleDay,
-    this.limitToScope,
+    // this.limitToScope,
     this.startRange,
     this.stepInit
   ];

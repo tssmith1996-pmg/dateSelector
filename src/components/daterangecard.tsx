@@ -11,7 +11,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import { SetTheme } from "./settheme";
 import { useHotkeys } from "react-hotkeys-hook";
 import TopRow from "./toprow";
-// import Timeline from "./timeline";
 import RangeSlider from "./rangeslider";
 import { dateCardProps } from "../interface";
 import { dateMoveKeys } from "./datemovekeys";
@@ -21,7 +20,6 @@ import LandingPage from "./landingpage";
 import { compareAsc } from "date-fns";
 
 export default function DateRangeCard(props: dateCardProps) {
-  // console.log("drc",showExpand);
 
   if (props.landingOff) {
     const theme = SetTheme({
@@ -79,18 +77,7 @@ export default function DateRangeCard(props: dateCardProps) {
         <ThemeProvider theme={theme}>
           <HelpProvider showHelpIcon={props.showHelpIcon}>
             <TopRow
-              dates={props.dates}
-              rangeScope={props.rangeScope}
-              payProps={props.payProps}
-              stepViz={props.stepViz}
-              showMore={props.showMore}
-              showCurrent={props.showCurrent}
-              showIconText={props.showIconText}
-              singleDay={props.singleDay}
-              limitToScope={props.limitToScope}
-              showMove={props.showMove}
-              showExpand={props.showExpand}
-              enableSlider={props.enableSlider}
+              {...props}
               openSlider={openSlider}
               toggleSlider={toggleSlider}
               stepOpen={stepOpen}
@@ -111,19 +98,11 @@ export default function DateRangeCard(props: dateCardProps) {
                   }}
                 >
                   <RangeSlider
-                    dates={props.dates}
-                    payProps={props.payProps}
-                    rangeScope={props.rangeScope}
-                    stepFmt={props.stepFmt}
-                    stepSkip={props.stepSkip}
-                    weekStartDay={props.weekStartDay}
-                    yearStartMonth={props.yearStartMonth}
+                    {...props}
                     stepValue={stepValue}
                     handleVal={onChangeVal}
-                    show2ndSlider={props.show2ndSlider}
-                    singleDay={props.singleDay}
                   />
-                </Grid>{" "}
+                </Grid>
               </Grid>
             </Zoom>
           </HelpProvider>
