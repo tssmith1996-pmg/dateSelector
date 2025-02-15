@@ -144,6 +144,7 @@ export const settingProps = (
       len: pay.payLength.value,
     },
     showHelpIcon: help.showHelpIcon.value,
+    showTooltip: help.showTooltip.value,
     showMove: move.showMove.value,
     showExpand: move.showExpand.value,
     showCurrent: current.showCurrent.value,

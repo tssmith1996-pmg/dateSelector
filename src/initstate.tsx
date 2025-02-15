@@ -44,6 +44,7 @@ export const defaultSettings: Settings = {
     },
     helpSettings: {
       showHelpIcon: false,
+      showTooltip: true,
     },
   },
   period: {

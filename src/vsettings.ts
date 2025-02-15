@@ -122,7 +122,7 @@ class calendarSettings extends FormattingSettingsCard {
     this.singleDay,
     // this.limitToScope,
     this.startRange,
-    this.stepInit
+    this.stepInit,
   ];
 }
 
@@ -213,7 +213,8 @@ class moveSettings extends FormattingSettingsGroup {
   });
 
   name: string = "move";
-  description: string = "Show move or extend selected range controls";
+  description: string = ///"Show move or extend selected range controls";
+    "Show the arrows and step levels to quickly move, extend or reduce the selected range forwards or backwards by the chosen step granularity.";
   displayName: string = "Move arrows";
   analyticsPane: boolean = true;
   uid: string = "moveUid";
@@ -221,20 +222,26 @@ class moveSettings extends FormattingSettingsGroup {
   slices: Array<FormattingSettingsSlice> = [this.showExpand];
 }
 
-class helpSettings extends FormattingSettingsCard {
+class helpSettings extends FormattingSettingsGroup {
   showHelpIcon = new formattingSettings.ToggleSwitch({
     name: "showHelpIcon",
     description: "Show help button for optional extended tooltips.",
     displayName: "Detail Toggle",
     value: defaultSettings.layoutSettings.helpSettings.showHelpIcon,
   });
+  showTooltip = new formattingSettings.ToggleSwitch({
+    name: "showTooltip",
+    displayName: "Detail Toggle",
+    value: defaultSettings.layoutSettings.helpSettings.showHelpIcon,
+  });
 
-  name: string = "layout";
+  name: string = "tooltip";
+  description: "Show or hide tooltips.";
   displayName: string = "Tooltip Assist";
-  // Formatting settings slice
-  analyticsPane: boolean = false;
-  visible: boolean = true;
-
+  uid: string = "tooltipUid";
+  analyticsPane: boolean = true;
+  // visible: boolean = true;
+  topLevelSlice: formattingSettings.SimpleSlice = this.showTooltip;
   slices: Array<FormattingSettingsSlice> = [this.showHelpIcon];
 }
 
@@ -248,7 +255,7 @@ class layoutSettings extends FormattingSettingsCompositeCard {
   layoutTimeline = new timelineSettings(Object());
   layoutMove = new moveSettings(Object());
   layoutCurrent = new currentSettings(Object());
-  layoutHelp = new helpSettings();
+  layoutHelp = new helpSettings(Object());
   groups: Array<FormattingSettingsGroup> = [
     this.layoutCurrent,
     this.layoutMove,

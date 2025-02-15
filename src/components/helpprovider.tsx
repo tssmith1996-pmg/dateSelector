@@ -10,6 +10,7 @@ import { HELP_PROVIDER } from "../constants";
 const HelpContext = React.createContext({
   showKey: false,
   showHelp: true,
+  showTooltip: true,
 toggleHelp: () => {/* show or hide help messages*/},
 });
 
@@ -17,29 +18,31 @@ const { TopRowInfo, DetailRowInfo, TopRowHelp, DetailRowHelp } = HELP_PROVIDER;
 
 export const useHelpContext = () => useContext(HelpContext);
 
-export const HelpProvider = ({ children, showHelpIcon }) => {
-  const [showHelp, setShowHelp] = useState(true);
-  const [showKey, setShowKey] = useState(false);
+export const HelpProvider = ({ children, showHelpIcon ,showTooltip }) => {
+  // const [showHelp, setShowHelp] = useState(true);
+  // const [showKey, setShowKey] = useState(false);
 
-  const toggleHelp = (): void => {
-    setShowHelp(!showHelp);
+  // const toggleHelp = (): void => {
+  //   setShowHelp(showHelp);
+  // };
+  const showHelp = showHelpIcon;
+  const showKey = false;
+  const toggleHelp = () => {};
+    const value = { showKey, showHelp, toggleHelp, showTooltip};
 
-  };
-
-  const value = { showKey, showHelp, toggleHelp };
-  useHotkeys("escape", () => setShowHelp(false));
-  useHotkeys(["h"], () => setShowHelp(true));
-  // useHotkeys(["alt"], () => toggleKey());
-  useHotkeys("alt", () => setShowKey(true), { keydown: true }, [showKey]);
-  useHotkeys("alt", () => setShowKey(false), { keyup: true }, [showKey]);
+  // useHotkeys("escape", () => setShowHelp(false));
+  // useHotkeys(["h"], () => setShowHelp(true));
+  // // useHotkeys(["h"], () => toggleHelp());
+  // useHotkeys("alt", () => setShowKey(true), { keydown: true }, [showKey]);
+  // useHotkeys("alt", () => setShowKey(false), { keyup: true }, [showKey]);
 
   return (
     (<HelpContext.Provider value={value}>
-      {showHelpIcon && (
+      {/* {showHelpIcon && (
         <Tooltip
           arrow
           title={
-            showHelp ? (
+            showHelpIcon ? (
               <>
                 <div>
                   <b>{TopRowInfo}</b>
@@ -83,7 +86,7 @@ export const HelpProvider = ({ children, showHelpIcon }) => {
             )}
           </IconButton>
         </Tooltip>
-      )}
+      )} */}
       {children}
     </HelpContext.Provider>)
   );

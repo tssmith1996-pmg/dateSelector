@@ -65,6 +65,7 @@ export interface Settings {
       showExpand?: boolean;
     };
     helpSettings: {
+      showTooltip?: boolean;
       showHelpIcon?: boolean;
     };
   };
@@ -183,8 +184,9 @@ export interface dateCardProps {
   // value representing the theme mode to use
   themeMode?: any; //'light' | 'dark'
 
-  // boolean value indicating whether to show the help icon
+  // boolean values to show tooltip datail level
   showHelpIcon?: boolean;
+  showTooltip?: boolean;
 
   // boolean value indicating whether to show the icon text
   showIconText?: boolean;

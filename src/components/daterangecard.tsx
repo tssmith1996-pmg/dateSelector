@@ -20,7 +20,6 @@ import LandingPage from "./landingpage";
 import { compareAsc } from "date-fns";
 
 export default function DateRangeCard(props: dateCardProps) {
-
   if (props.landingOff) {
     const theme = SetTheme({
       themeMode: props.themeMode,
@@ -75,7 +74,10 @@ export default function DateRangeCard(props: dateCardProps) {
     return (
       <>
         <ThemeProvider theme={theme}>
-          <HelpProvider showHelpIcon={props.showHelpIcon}>
+          <HelpProvider
+            showHelpIcon={props.showHelpIcon}
+            showTooltip={props.showTooltip}
+          >
             <TopRow
               {...props}
               openSlider={openSlider}
