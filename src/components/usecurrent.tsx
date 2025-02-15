@@ -17,7 +17,7 @@ export default function UseCurrent(props: UseCurrentProps) {
     current,
     stepValue,
     singleDay,
-    handleVal,
+    handleVal,limitToScope
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
@@ -28,80 +28,82 @@ export default function UseCurrent(props: UseCurrentProps) {
     const _val = val === "today" ? "day" : val;
     props.handleStep(_val);
   };
-  return (
-    <>
-      {showCurrent && (
-        <Box pl={0}>
-          <ButtonGroup
-            key={"tbg"}
-            size="small"
-            aria-label="outlined button group"
-            // exclusive
-          >
-            {current
-              .filter((item) => {
-                if (item.thisRange !== null) {
-                  // console.log(item.thisRange," : ",item.thisPeriod)
-                  const x = ttl ? item.tip !== "" : item.tip === "";
-                  const y = areIntervalsOverlapping(
-                    item.thisRange,
-                    rangeScope,
-                    { inclusive: true }
-                  );
-                  return item.show && x && y;
-                } else return showMore;
-              })
-              .map((item, index: number) => (
-                <DateIntervalPicker
-                  handleVal={handleDate}
-                  stepValue={item.step}
-                  key={"dip" + item.thisRange + index}
+  return (<>
+    {showCurrent && (
+      <Box sx={{
+        pl: 0
+      }}>
+        <ButtonGroup
+          key={"tbg"}
+          size="small"
+          aria-label="outlined button group"
+          // exclusive
+        >
+          {current
+            .filter((item) => {
+              if (item.thisRange !== null) {
+                // console.log(item.thisRange," : ",item.thisPeriod)
+                const x = ttl ? item.tip !== "" : item.tip === "";
+                const y = (!limitToScope) && areIntervalsOverlapping(
+                  item.thisRange,
+                  rangeScope,
+                  { inclusive: true }
+                );
+                return item.show && x && y;
+              } else return showMore;
+            })
+            .map((item, index: number) => (
+              <DateIntervalPicker
+                handleVal={handleDate}
+                stepValue={item.step}
+                key={"dip" + item.thisRange + index}
+              >
+                <RngeTooltip
+                  title={undefined}
+                  key={"rtt" + item.thisRange + index}
+                  detailRow={
+                    item.tip !== ""
+                      ? `Set the date range to ${item.thisPeriod.toLowerCase()}. Right click for ${item.tip.toLowerCase()}s from today.`
+                      : ``
+                  }
+                  placement="bottom"
+                  topRow={
+                    item.thisPeriod +
+                    (item.tip.toLowerCase() === stepValue ? " (T)" : "")
+                  }
                 >
-                  <RngeTooltip
-                    title={undefined}
-                    key={"rtt" + item.thisRange + index}
-                    detailRow={
-                      item.tip !== ""
-                        ? `Set the date range to ${item.thisPeriod.toLowerCase()}. Right click for ${item.tip.toLowerCase()}s from today.`
-                        : ``
-                    }
-                    placement="bottom"
-                    topRow={
-                      item.thisPeriod +
-                      (item.tip.toLowerCase() === stepValue ? " (T)" : "")
-                    }
+                  <IconButton
+                    size="small"
+                    color="primary"
+                    key={"tbn" + item.thisRange + index}
+                    value={item.tip.toLowerCase().trim()}
+                    onMouseDown={() => {
+                      if (item.thisRange) {
+                        handleDate(item.thisRange);
+                        handleStep(item.step);
+                      } else {
+                        setTtl(!ttl);
+                      }
+                    }}
                   >
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      key={"tbn" + item.thisRange + index}
-                      value={item.tip.toLowerCase().trim()}
-                      onMouseDown={() => {
-                        if (item.thisRange) {
-                          handleDate(item.thisRange);
-                          handleStep(item.step);
-                        } else {
-                          setTtl(!ttl);
-                        }
-                      }}
-                    >
-                      {item.icon}{" "}
-                      {showIconText && (
-                        <Typography
-                          key={"typ" + item.thisRange + index}
-                          color="text.primary"
-                          variant="caption"
-                        >
-                          {item.thisPeriod}
-                        </Typography>
-                      )}
-                    </IconButton>
-                  </RngeTooltip>
-                </DateIntervalPicker>
-              ))}
-          </ButtonGroup>
-        </Box>
-      )}
-    </>
-  );
+                    {item.icon}{" "}
+                    {showIconText && (
+                      <Typography
+                        key={"typ" + item.thisRange + index}
+                        variant="caption"
+                        sx={{
+                          color: "text.primary"
+                        }}
+                      >
+                        {item.thisPeriod}
+                      </Typography>
+                    )}
+                  </IconButton>
+                </RngeTooltip>
+              </DateIntervalPicker>
+            ))}
+        </ButtonGroup>
+      </Box>
+    )}
+  </>);
 }

@@ -40,7 +40,7 @@ export class DateSelector extends ReactVisual implements IVisual {
   private formattingSettings: VisualSettingsModel;
   private formattingSettingsService: FormattingSettingsService;
 
-  private currentViewport: IViewport;
+  // private currentViewport: IViewport;
   private dataView: DataView;
 
   private colorPalette: IColorPalette;

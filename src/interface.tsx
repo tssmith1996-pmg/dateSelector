@@ -23,13 +23,13 @@ export interface CategoryData {
 }
 
 export interface Settings {
-  general: {
+  general?: {
     dates?: dateRange; // date range object representing the selected date range
     rangeScope?: dateRange; // date range object representing the scope of available dates to choose from
     landingOff?: boolean; // boolean value indicating whether to display landing page
     filter?: any;
   };
-  styleSettings: {
+  styleSettings?: {
     fmtDate?: string;
     themeColor?: string;
     themeMode?: any;
@@ -43,6 +43,7 @@ export interface Settings {
   };
   calendarSettings?: {
     singleDay?: boolean;
+    limitToScope?: boolean;
     startRange?: string;
     stepInit?: string;
     payLength?: number;
@@ -64,6 +65,7 @@ export interface Settings {
       showExpand?: boolean;
     };
     helpSettings: {
+      showTooltip?: boolean;
       showHelpIcon?: boolean;
     };
   };
@@ -106,9 +108,18 @@ export interface Settings {
       yearSkip?: number;
     };
   };
+  action?: {
+    handleVal?: (val: any) => void;
+    onFilterChanged?: (val: dateRange) => void;
+    setStepValue?: (value: string) => void;
+    setStepOpen?: (value: boolean) => void;
+    toggleSlider?: () => void;
+
+  };
 }
 
 export interface dateCardProps {
+
   // date range object representing the selected date range
   dates?: dateRange;
 
@@ -173,26 +184,46 @@ export interface dateCardProps {
   // value representing the theme mode to use
   themeMode?: any; //'light' | 'dark'
 
-  // boolean value indicating whether to show the help icon
+  // boolean values to show tooltip datail level
   showHelpIcon?: boolean;
+  showTooltip?: boolean;
 
   // boolean value indicating whether to show the icon text
   showIconText?: boolean;
+
   // boolean value indicating whether to constrain to a single day
   singleDay?: boolean;
+
+  // boolean value indicating whether to constrain slelction to date range scope
+  limitToScope?: boolean;
+
   // boolean value indicating whether to show arrows to move/expand by period step
   showMove?: boolean;
+
   // boolean value indicating whether to show arrows to expand by period step
   showExpand?: boolean;
+
   // boolean value indicating whether to show timeline toggle button
   enableSlider?: boolean;
 
+  stepOpen?: boolean;
+  stepValue?: string;
+  current?: any;
   // function to handle the selected value(s)
   handleVal?: (val: any) => void;
+  handleClick?: () => void;
   onFilterChanged?: (val: dateRange) => void;
+  setStepValue?: (value: string) => void;
+  setStepOpen?: (value: boolean) => void;
+
+  //extras for topRow
+  openSlider?: boolean;
+  toggleSlider?: () => void;
+
 }
 
 export interface topRowProps {
+  props: dateCardProps;
   openSlider: boolean;
   landingOff?: boolean;
   toggleSlider: () => void;
@@ -211,6 +242,7 @@ export interface topRowProps {
   showIconText: boolean;
   current: any;
   singleDay?: boolean;
+  limitToScope?: boolean;
   showMove?: boolean;
   showExpand?: boolean;
   enableSlider?: boolean;
@@ -228,6 +260,7 @@ export interface DateMoveProps {
   render?: number;
   handleVal?: (val) => void;
   singleDay?: boolean;
+  limitToScope?: boolean;
   showExpand?: boolean;
 }
 
@@ -257,6 +290,7 @@ export interface UseCurrentProps {
   handleStep?: (newValue: string) => void;
   handleViz?: (viz: boolean) => void;
   singleDay?: boolean;
+  limitToScope?: boolean;
 }
 
 export interface DateRangeProps {
@@ -265,6 +299,7 @@ export interface DateRangeProps {
   handleVal?: (val) => void;
   fmtDate?: string;
   singleDay?: boolean;
+  limitToScope?: boolean;
 }
 
 export interface SliderProps {

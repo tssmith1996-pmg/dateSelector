@@ -221,6 +221,11 @@
                         "bool": true
                     }
                 },
+                "limitToScope": {
+                    "type": {
+                        "bool": true
+                    }
+                },
                 "startRange": {
                     "type": {
                         "enumeration": [
@@ -398,6 +403,11 @@
                     }
                 },
                 "showHelpIcon": {
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "showTooltip": {
                     "type": {
                         "bool": true
                     }

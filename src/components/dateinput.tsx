@@ -1,5 +1,5 @@
 import * as React from "react";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import Zoom from "@mui/material/Zoom";
 import DateMove from "./datemove";
 import DateRange from "./daterange";
@@ -19,37 +19,52 @@ function DateInput({
   handleStep,
   handleViz,
   singleDay,
-  showMove,showExpand,
+  limitToScope,
+  showMove,
+  showExpand,
 }) {
   return (
     <>
-      <Grid xs="auto" paddingRight={1} >
+      <Grid
+        size="auto"
+        sx={{
+          paddingRight: 1,
+        }}
+      >
         <DateRange
           dates={dates}
           rangeScope={rangeScope}
           handleVal={handleVal}
           singleDay={singleDay}
+          limitToScope={limitToScope}
         />
       </Grid>
       {showMove && (
-        <>
+        <Grid container>
           <Zoom in={showMove}>
-          <Grid xs="auto">
-            <DateMove
-              dates={dates}
-              rangeScope={rangeScope}
-              stepValue={stepValue}
-              payProps={payProps}
-              handleVal={handleVal}
-              bf={"b"}
-              vertical={false}
-              reverse={true}
-              viz={openSlider}
-              singleDay={singleDay}
-              showExpand={showExpand}
-            />
-          </Grid></Zoom>
-          <Grid xs="auto" paddingRight={1}>
+            <Grid size="auto">
+              <DateMove
+                dates={dates}
+                rangeScope={rangeScope}
+                stepValue={stepValue}
+                payProps={payProps}
+                handleVal={handleVal}
+                bf={"b"}
+                vertical={false}
+                reverse={true}
+                viz={openSlider}
+                singleDay={singleDay}
+                limitToScope={limitToScope}
+                showExpand={showExpand}
+              />
+            </Grid>
+          </Zoom>
+          <Grid
+            size="auto"
+            sx={{
+              paddingRight: 1,
+            }}
+          >
             <StepToggle
               stepViz={stepViz}
               stepValue={stepValue}
@@ -60,7 +75,7 @@ function DateInput({
             />
           </Grid>
           <Zoom in={stepOpen}>
-            <Grid xs="auto">
+            <Grid size="auto">
               <StepsMenu
                 stepViz={stepViz}
                 stepValue={stepValue}
@@ -72,7 +87,7 @@ function DateInput({
             </Grid>
           </Zoom>
           {/* <Zoom in={openSlider}> */}
-          <Grid xs="auto">
+          <Grid size="auto">
             <DateMove
               dates={dates}
               rangeScope={rangeScope}
@@ -85,11 +100,11 @@ function DateInput({
               viz={openSlider}
               singleDay={singleDay}
               showExpand={showExpand}
-              />
+            />
           </Grid>
           {/* </Zoom> */}
-        </>
-       )}
+        </Grid>
+      )}
     </>
   );
 }

@@ -1,13 +1,13 @@
 import * as React from "react";
 import Box from "@mui/material/Box";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import Zoom from "@mui/material/Zoom";
 import DateInput from "./dateinput";
 import UseCurrent from "./usecurrent";
 import ToggleSliderButton from "./togglesliderbutton";
-import { topRowProps } from "../interface";
+import { dateCardProps } from "../interface";
 
-const TopRow: React.FC<topRowProps> = ({
+const TopRow: React.FC<dateCardProps> = ({
   openSlider,
   toggleSlider,
   dates,
@@ -25,17 +25,24 @@ const TopRow: React.FC<topRowProps> = ({
   showIconText,
   current,
   singleDay,
-  showMove,showExpand,
+  limitToScope,
+  showMove,
+  showExpand,
   enableSlider,
 }) => {
   return (
-    <Grid container rowSpacing={0.3} paddingLeft={0.3} xs={12}>
+    <Grid
+      container
+      direction="row"
+      rowSpacing={0.3}
+      size={12}
+      sx={{
+        paddingLeft: 0.3,
+      }}
+    >
       {enableSlider && (
         <Grid
-          xs="auto"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
+          size="auto"
         >
           <ToggleSliderButton
             openSlider={openSlider}
@@ -43,12 +50,6 @@ const TopRow: React.FC<topRowProps> = ({
           />
         </Grid>
       )}
-      <Grid
-        xs="auto"
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-      >
         <DateInput
           dates={dates}
           rangeScope={rangeScope}
@@ -62,29 +63,31 @@ const TopRow: React.FC<topRowProps> = ({
           handleStep={setStepValue}
           handleViz={setStepOpen}
           singleDay={singleDay}
+          limitToScope={limitToScope}
           showMove={showMove}
           showExpand={showExpand}
         />
+      <Grid size="auto">
+        {!stepOpen && (
+          <Zoom in={!stepOpen}>
+            <Box>
+              <UseCurrent
+                rangeScope={rangeScope}
+                showMore={showMore}
+                showCurrent={showCurrent}
+                showIconText={showIconText}
+                handleStep={setStepValue}
+                handleVal={handleVal}
+                current={current}
+                stepValue={stepValue}
+                singleDay={singleDay}
+                limitToScope={limitToScope}
+                />
+            </Box>
+          </Zoom>
+        )}
       </Grid>
-      <Grid xs="auto">
-      {!stepOpen && (
-        <Zoom in={!stepOpen}>
-          <Box>
-            <UseCurrent
-              rangeScope={rangeScope}
-              showMore={showMore}
-              showCurrent={showCurrent}
-              showIconText={showIconText}
-              handleStep={setStepValue}
-              handleVal={handleVal}
-              current={current}
-              stepValue={stepValue}
-              singleDay={singleDay}
-            />
-          </Box>
-        </Zoom>)}
-      </Grid>
-      <Grid xs>
+      <Grid size="grow">
         <Box></Box>
       </Grid>
     </Grid>

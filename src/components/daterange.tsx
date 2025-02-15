@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import { useTheme } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
 import Remove from "@mui/icons-material/Remove";
@@ -12,7 +12,7 @@ import RngeTooltip from "./rngetooltip";
 import { DateRangeProps } from "../interface";
 
 export default function DateRange(props: DateRangeProps) {
-  const { dates, rangeScope, handleVal, singleDay } = props;
+  const { dates, rangeScope, handleVal, singleDay, limitToScope } = props;
 
   const [underline, setUnderline] = useState(true);
   const [startText, setStartText] = useState<string>(() =>
@@ -56,7 +56,7 @@ export default function DateRange(props: DateRangeProps) {
   const toggleUnderline = () => setUnderline((prev) => !prev);
 
   return (
-    <div onMouseEnter={toggleUnderline} onMouseLeave={toggleUnderline}>
+    (<div onMouseEnter={toggleUnderline} onMouseLeave={toggleUnderline}>
       {" "}
       <RngeTooltip
         title={undefined}
@@ -65,8 +65,10 @@ export default function DateRange(props: DateRangeProps) {
         infoRow={dateSpan.info}
         placement="bottom"
       >
-        <Grid container spacing={0.5} paddingLeft={0.3}>
-          <Grid xs="auto">
+        <Grid container spacing={0.5} sx={{
+          paddingLeft: 0.3
+        }}>
+          <Grid >
             <DateField
               id="start"
               value={startText}
@@ -87,7 +89,7 @@ export default function DateRange(props: DateRangeProps) {
                   color="disabled"
                 />
               </IconButton>
-              <Grid xs="auto">
+              <Grid>
                 <DateField
                   id="end"
                   value={endText}
@@ -104,6 +106,6 @@ export default function DateRange(props: DateRangeProps) {
           )}
         </Grid>
       </RngeTooltip>
-    </div>
+    </div>)
   );
 }
