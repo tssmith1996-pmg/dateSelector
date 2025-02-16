@@ -17,12 +17,12 @@ function ToggleSliderButton({
   toggleSlider,
 }: ToggleSliderButtonProps) {
   const topRow = React.useMemo(
-    () => (openSlider ? TopRowClosed : TopRowOpen) + TopRowEnd,
+    () => (openSlider ? TopRowOpen : TopRowClosed) + TopRowEnd,
     [openSlider]
   );
 
   const detailRow = React.useMemo(
-    () => (openSlider ? DetailRowClosed : DetailRowOpen),
+    () => (openSlider ? DetailRowOpen : DetailRowClosed),
     [openSlider]
   );
 

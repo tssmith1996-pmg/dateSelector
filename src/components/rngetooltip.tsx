@@ -36,7 +36,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
   };
 
   return (
-    <Tooltip
+    (<Tooltip
       {...rest}
       classes={{ popper: className }}
       arrow={showKey && shortCut ? false : true}
@@ -44,7 +44,7 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
       onClose={handleClose}
       onOpen={handleOpen}
       title={
-        showKey && shortCut ? (
+       useHelpContext().showTooltip && (showKey && shortCut ? (
           shortCut
         ) : title !== undefined ? (
           title
@@ -54,9 +54,9 @@ const RngeTooltip = styled(({ className, ...props }: Props) => {
             <div>{detailFlag && detailRow ? (`${detailRow}`) : `${topRow}`}</div>
             <div style={{fontStyle: "italic"}}>{ infoRow ? (`${infoRow}`) : ``}</div>
           </>
-        )
+        ))
       }
-    />
+    />)
   );
 })(({ theme }) => ({
   [`& .${tooltipClasses.tooltip}`]: {
