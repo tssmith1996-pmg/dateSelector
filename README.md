@@ -77,7 +77,7 @@ To use the DateSelector visual, add it to your report canvas and connect it to t
 A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20selector%20doc.pbix) Download it and open with Power BI Desktop.
 
 ## Version
-The current version of the DateSelector visual is v2023.05.05.
+The current version of the DateSelector visual is v3.2025.02.16.
 
 ## Limitations
 The DateSelector visual currently supports only English language. Internationalisation is not yet planned.
