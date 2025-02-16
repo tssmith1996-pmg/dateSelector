@@ -25,6 +25,10 @@ The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dis
 
 ![Date Range Selector Shortcut Keys](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector4.png?raw=true "Date Range Selector Shortcut Keys")
 
+### Layout Options
+
+![Layout Options](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector5.png?raw=true "Layout Options")
+
  ****
 
  ## Summary
