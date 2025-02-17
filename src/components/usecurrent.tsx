@@ -21,13 +21,23 @@ export default function UseCurrent(props: UseCurrentProps) {
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
+  const [activeRange, setActiveRange] = React.useState<dateRange | null>(null);
+
   const handleDate = (val: dateRange) => {
     handleVal([val.start, singleDay ? val.start : val.end]);
+    setActiveRange(val);
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
     props.handleStep(_val);
+    setActiveRange(null);
   };
+
+  const isActiveRange = (range: dateRange) => {
+    if (!activeRange) return false;
+    return activeRange.start.getDate() === range.start.getDate() && activeRange.end.getDate() === range.end.getDate();
+  };
+
   return (<>
     {showCurrent && (
       <Box sx={{
@@ -44,7 +54,7 @@ export default function UseCurrent(props: UseCurrentProps) {
               if (item.thisRange !== null) {
                 // console.log(item.thisRange," : ",item.thisPeriod)
                 const x = ttl ? item.tip !== "" : item.tip === "";
-                const y = (!limitToScope) && areIntervalsOverlapping(
+                const y = (!limitToScope) || areIntervalsOverlapping(
                   item.thisRange,
                   rangeScope,
                   { inclusive: true }
@@ -85,6 +95,12 @@ export default function UseCurrent(props: UseCurrentProps) {
                         setTtl(!ttl);
                       }
                     }}
+                    sx={{
+                      '&:hover': {
+                        fontWeight: 'bold'
+                      },
+                      fontWeight: isActiveRange(item.thisRange) ? "bold" : "normal"
+                    }}
                   >
                     {item.icon}{" "}
                     {showIconText && (
@@ -92,7 +108,11 @@ export default function UseCurrent(props: UseCurrentProps) {
                         key={"typ" + item.thisRange + index}
                         variant="caption"
                         sx={{
-                          color: "text.primary"
+                          color: "text.primary",
+                          '&:hover': {
+                          fontWeight: 'bold'
+                            },
+                          fontWeight: isActiveRange(item.thisRange) ? "bold" : "normal"
                         }}
                       >
                         {item.thisPeriod}
