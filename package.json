@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "pbiviz": "pbiviz",
-    "start": "pbiviz start",
+    "start": "pbiviz start --host 0.0.0.0",
     "package": "pbiviz package",
     "eslint": "npx eslint ."
   },

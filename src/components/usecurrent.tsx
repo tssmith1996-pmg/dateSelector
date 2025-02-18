@@ -34,6 +34,7 @@ export default function UseCurrent(props: UseCurrentProps) {
   };
 
   const isActiveRange = (range: dateRange) => {
+    console.log(range)
     if (!activeRange) return false;
     return activeRange.start.getDate() === range.start.getDate() && activeRange.end.getDate() === range.end.getDate();
   };
