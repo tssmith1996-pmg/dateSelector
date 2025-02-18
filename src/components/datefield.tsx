@@ -85,7 +85,7 @@ export const DateField: React.FC<DateFieldProps> = ({
       onKeyDown={handleKeyPress}
       slotProps={{
         input: {
-          disableUnderline: underline,
+          disableUnderline: true,
         },
 
         htmlInput: {
