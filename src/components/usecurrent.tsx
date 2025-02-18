@@ -44,7 +44,7 @@ export default function UseCurrent(props: UseCurrentProps) {
               if (item.thisRange !== null) {
                 // console.log(item.thisRange," : ",item.thisPeriod)
                 const x = ttl ? item.tip !== "" : item.tip === "";
-                const y = (!limitToScope) && areIntervalsOverlapping(
+                const y = (!limitToScope) || areIntervalsOverlapping(
                   item.thisRange,
                   rangeScope,
                   { inclusive: true }
