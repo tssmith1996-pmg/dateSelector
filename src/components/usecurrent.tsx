@@ -21,8 +21,13 @@ export default function UseCurrent(props: UseCurrentProps) {
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
+  const [selectedRange, setSelectedRange] = React.useState<dateRange | null>(null);
+
   const handleDate = (val: dateRange) => {
+    setSelectedRange(val); // Set selected range
     handleVal([val.start, singleDay ? val.start : val.end]);
+
+    console.log(selectedRange)
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
@@ -92,7 +97,8 @@ export default function UseCurrent(props: UseCurrentProps) {
                         key={"typ" + item.thisRange + index}
                         variant="caption"
                         sx={{
-                          color: "text.primary"
+                          color: "text.primary",
+                          fontWeight: selectedRange === item.thisRange ? 'bold' : 'normal' // Apply bold style if selected
                         }}
                       >
                         {item.thisPeriod}
