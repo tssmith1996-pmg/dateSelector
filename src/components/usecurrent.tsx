@@ -25,10 +25,6 @@ export default function UseCurrent(props: UseCurrentProps) {
 
   const handleDate = (val: dateRange) => {
     handleVal([val.start, singleDay ? val.start : val.end]);
-    console.log(dates.start)
-    console.log(dates.end)
-    console.log(val.start)
-    console.log(val.end)
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
