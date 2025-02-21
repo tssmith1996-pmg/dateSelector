@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { areIntervalsOverlapping } from "date-fns/areIntervalsOverlapping";
 import Typography from "@mui/material/Typography";
-import { UseCurrentProps, dateRange } from "../interface";
+import { UseCurrentProps, dateRange, Settings, dateCardProps } from "../interface";
 import RngeTooltip from "./rngetooltip";
 import DateIntervalPicker from "./dateintervalpicker";
 
@@ -17,22 +17,30 @@ export default function UseCurrent(props: UseCurrentProps) {
     current,
     stepValue,
     singleDay,
-    handleVal,limitToScope
+    handleVal,limitToScope,
+    dates
   } = props;
 
   const [ttl, setTtl] = React.useState(true);
-  const [selectedRange, setSelectedRange] = React.useState<dateRange | null>(null);
 
   const handleDate = (val: dateRange) => {
-    setSelectedRange(val); // Set selected range
     handleVal([val.start, singleDay ? val.start : val.end]);
-
-    console.log(selectedRange)
+    console.log(dates.start)
+    console.log(dates.end)
+    console.log(val.start)
+    console.log(val.end)
   };
   const handleStep = (val: string) => {
     const _val = val === "today" ? "day" : val;
     props.handleStep(_val);
   };
+
+  const isSelectedRange = (itemRange: dateRange, selectedRange: dateRange) => {
+    // Compare the start and end dates of the ranges
+    return itemRange.start.getTime() === selectedRange.start.getTime() &&
+           itemRange.end.getTime() === selectedRange.end.getTime();
+  };
+
   return (<>
     {showCurrent && (
       <Box sx={{
@@ -98,7 +106,10 @@ export default function UseCurrent(props: UseCurrentProps) {
                         variant="caption"
                         sx={{
                           color: "text.primary",
-                          fontWeight: selectedRange === item.thisRange ? 'bold' : 'normal' // Apply bold style if selected
+                          fontWeight: isSelectedRange(item.thisRange, dates) ? 'bold' : 'normal', // Apply bold style if selected
+                          "&:hover": {
+                            fontWeight: 'bold', // Apply bold when hovered
+                          }
                         }}
                       >
                         {item.thisPeriod}

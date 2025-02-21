@@ -82,6 +82,7 @@ const TopRow: React.FC<dateCardProps> = ({
                 stepValue={stepValue}
                 singleDay={singleDay}
                 limitToScope={limitToScope}
+                dates={dates}
                 />
             </Box>
           </Zoom>

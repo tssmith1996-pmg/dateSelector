@@ -291,6 +291,7 @@ export interface UseCurrentProps {
   handleViz?: (viz: boolean) => void;
   singleDay?: boolean;
   limitToScope?: boolean;
+  dates?: dateRange;
 }
 
 export interface DateRangeProps {
