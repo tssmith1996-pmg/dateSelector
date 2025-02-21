@@ -4,7 +4,7 @@ import IconButton from "@mui/material/IconButton";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import { areIntervalsOverlapping } from "date-fns/areIntervalsOverlapping";
 import Typography from "@mui/material/Typography";
-import { UseCurrentProps, dateRange, Settings, dateCardProps } from "../interface";
+import { UseCurrentProps, dateRange } from "../interface";
 import RngeTooltip from "./rngetooltip";
 import DateIntervalPicker from "./dateintervalpicker";
 
@@ -32,9 +32,14 @@ export default function UseCurrent(props: UseCurrentProps) {
   };
 
   const isSelectedRange = (itemRange: dateRange, selectedRange: dateRange) => {
+    // Check if both inputs are valid date ranges
+    if (!itemRange || !selectedRange || !itemRange.start || !itemRange.end || !selectedRange.start || !selectedRange.end) {
+      return false;
+    }
+
     // Compare the start and end dates of the ranges
     return itemRange.start.getTime() === selectedRange.start.getTime() &&
-           itemRange.end.getTime() === selectedRange.end.getTime();
+          itemRange.end.getTime() === selectedRange.end.getTime();
   };
 
   return (<>
@@ -59,7 +64,9 @@ export default function UseCurrent(props: UseCurrentProps) {
                   { inclusive: true }
                 );
                 return item.show && x && y;
-              } else return showMore;
+              } else 
+              console.log('ShowMore:', showMore);
+              return showMore;
             })
             .map((item, index: number) => (
               <DateIntervalPicker
