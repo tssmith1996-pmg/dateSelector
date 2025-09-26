@@ -1,27 +1,18 @@
 {
-    "compilerOptions": {
-        "allowJs": false,
-        "emitDecoratorMetadata": true,
-        "allowSyntheticDefaultImports": true,
-        "experimentalDecorators": true,
-        "target": "es6",
-        "sourceMap": true,
-        "outDir": "./.tmp/build/",
-        "moduleResolution": "node",
-        "declaration": true,
-        "lib": [
-            "es2015",
-            "dom"
-        ],
-        "jsx": "react",
-        "types": [
-            "react",
-            "react-dom"
-        ]
-    },
-    "files": [
-        "./src/dateSelector.tsx",
-        "./src/optionsMapper.tsx",
-        "./src/reactUtils.tsx"
-    ]
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "outDir": "./.tmp/build/",
+    "lib": ["dom", "es2020"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["powerbi-visuals-api", "jest", "node"],
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
+  },
+  "include": ["src/**/*", "test/**/*"],
+  "exclude": ["node_modules", "dist", ".tmp"]
 }

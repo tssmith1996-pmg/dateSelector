@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Ocean",
+  "description": "Cool blues inspired by northern waters.",
+  "tokens": {
+    "background": "#F2F8FF",
+    "foreground": "#0F2A43",
+    "accent": "#3E8ED0",
+    "chipBackground": "#D6E9FF",
+    "chipForeground": "#0F2A43",
+    "weekendBackground": "#E4F1FF"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Gilded",
+  "description": "Luxurious gold and ink palette.",
+  "tokens": {
+    "background": "#FCF5E8",
+    "foreground": "#2B1E13",
+    "accent": "#C38A23",
+    "chipBackground": "#F1DEB6",
+    "chipForeground": "#2B1E13",
+    "weekendBackground": "#F8EAD2"
+  }
+}

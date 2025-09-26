@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Dusk",
+  "description": "Evening gradients with violet accents.",
+  "tokens": {
+    "background": "#F5F3FF",
+    "foreground": "#2A1F3E",
+    "accent": "#7A5CFF",
+    "chipBackground": "#E2DAFF",
+    "chipForeground": "#2A1F3E",
+    "weekendBackground": "#ECE6FF"
+  }
+}

@@ -1,845 +1,215 @@
 {
-    "supportsHighlight": true,
-    "supportsSynchronizingFilterState": true,
-    "supportsKeyboardFocus": true,
-    "supportsLandingPage": true,
-    "supportsEmptyDataView": true,
-    "advancedEditModeSupport": 2,
-    "privileges": [],
-    "dataRoles": [
-        {
-            "displayName": "Date field",
-            "name": "dateInput",
-            "kind": "Grouping",
-            "displayNameKey": "Role_Date_Input"
-        }
-    ],
-    "dataViewMappings": [
-        {
-            "conditions": [
-                {
-                    "dateInput": {
-                        "max": 1
-                    }
-                }
-            ],
-            "categorical": {
-                "categories": {
-                    "for": {
-                        "in": "dateInput"
-                    },
-                    "dataReductionAlgorithm": {
-                        "sample": {
-                            "count": 1
-                        }
-                    }
-                }
-            }
-        }
-    ],
-    "objects": {
-        "granularity": {
-            "properties": {
-                "myNumericSlice": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "myAnotherNumericSlice": {
-                    "type": {
-                        "numeric": true
-                    }
-                }
-            }
-        },
-        "general": {
-            "displayNameKey": "Visual_General",
-            "properties": {
-                "selected": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "filter": {
-                    "type": {
-                        "filter": true
-                    }
-                }
-            }
-        },
-        "style": {
-            "properties": {
-                "themeMode": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "displayName": "Light",
-                                "description": "Light background",
-                                "displayNameKey": "Style_Mode_Light",
-                                "value": "light"
-                            },
-                            {
-                                "displayName": "Dark",
-                                "description": "Dark background",
-                                "displayNameKey": "Style_Mode_Dark",
-                                "value": "dark"
-                            }
-                        ]
-                    }
-                },
-                "themeColor": {
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "fmtDate": {
-                    "displayName": "Date message format",
-                    "displayNameKey": "fmtDate",
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "EEE, d MMM yy",
-                                "displayName": "dd MMM yyyy",
-                                "displayNameKey": "fmtDate_DMY"
-                            },
-                            {
-                                "value": "EEE, MMM d yy",
-                                "displayName": "MMM d yy",
-                                "displayNameKey": "fmtDate_MDY"
-                            }
-                        ]
-                    }
-                },
-                "fontSize": {
-                    "displayName": "Font Size",
-                    "type": {
-                        "enumeration": [
-                            {
-                                "displayName": "8",
-                                "description": "8",
-                                "value": "8"
-                            },
-                            {
-                                "displayName": "9",
-                                "description": "9",
-                                "value": "9"
-                            },
-                            {
-                                "displayName": "10",
-                                "description": "10",
-                                "value": "10"
-                            },
-                            {
-                                "displayName": "11",
-                                "description": "11",
-                                "value": "11"
-                            },
-                            {
-                                "displayName": "12",
-                                "description": "12",
-                                "value": "12"
-                            },
-                            {
-                                "displayName": "13",
-                                "description": "13",
-                                "value": "13"
-                            },
-                            {
-                                "displayName": "14",
-                                "description": "14",
-                                "value": "14"
-                            },
-                            {
-                                "displayName": "15",
-                                "description": "15",
-                                "value": "15"
-                            },
-                            {
-                                "displayName": "16",
-                                "description": "16",
-                                "value": "16"
-                            }
-                        ]
-                    }
-                },
-                "fontFamily": {
-                    "type": {
-                        "formatting": {
-                            "fontFamily": true
-                        }
-                    }
-                },
-                "fontBold": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "fontUnderline": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "fontItalic": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "fontColor": {
-                    "type": {
-                        "fill": {
-                            "solid": {
-                                "color": true
-                            }
-                        }
-                    }
-                },
-                "lineAlignment": {
-                    "type": {
-                        "formatting": {
-                            "alignment": true
-                        }
-                    }
-                },
-                "themeFont": {
-                    "displayName": "Font",
-                    "type": {
-                        "formatting": {
-                            "fontFamily": true
-                        }
-                    }
-                }
-            }
-        },
-        "calendar": {
-            "properties": {
-                "singleDay": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "limitToScope": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "startRange": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "sync",
-                                "displayName": "Default",
-                                "displayNameKey": "startRange_Sync"
-                            },
-                            {
-                                "value": "rangeScope",
-                                "displayName": "All in Scope",
-                                "displayNameKey": "startRange_All"
-                            },
-                            {
-                                "value": "today",
-                                "displayName": "Today",
-                                "displayNameKey": "startRange_Today"
-                            },
-                            {
-                                "value": "yesterday",
-                                "displayName": "Yesterday",
-                                "displayNameKey": "startRange_Yesterday"
-                            },
-                            {
-                                "value": "thisWeek",
-                                "displayName": "This Week",
-                                "displayNameKey": "startRange_This_Week"
-                            },
-                            {
-                                "value": "lastWeek",
-                                "displayName": "Last Week",
-                                "displayNameKey": "startRange_Last_Week"
-                            },
-                            {
-                                "value": "lastWeekOfScope",
-                                "displayName": "Last Full Week of Scope",
-                                "displayNameKey": "startRange_Last_Week_of_Scope"
-                            },
-                            {
-                                "value": "firstWeekOfScope",
-                                "displayName": "First Week of Scope",
-                                "displayNameKey": "startRange_First_Week_of_Scope"
-                            },
-                            {
-                                "value": "thisMonth",
-                                "displayName": "This Month",
-                                "displayNameKey": "startRange_This_Month"
-                            },
-                            {
-                                "value": "lastMonth",
-                                "displayName": "Last Month",
-                                "displayNameKey": "startRange_Last_Month"
-                            },
-                            {
-                                "value": "lastMonthOfScope",
-                                "displayName": "Last Cal. Month of Scope",
-                                "displayNameKey": "startRange_Last_Month_of_Scope"
-                            },
-                            {
-                                "value": "days30FromScopeEnd",
-                                "displayName": "Last 30 days of Scope",
-                                "displayNameKey": "startRange_Last_30days_of_Scope"
-                            },
-                            {
-                                "value": "firstMonthOfScope",
-                                "displayName": "First Month of Scope",
-                                "displayNameKey": "startRange_First_Month_of_Scope"
-                            },
-                            {
-                                "value": "thisQuarter",
-                                "displayName": "This Quarter",
-                                "displayNameKey": "startRange_This_Quarter"
-                            },
-                            {
-                                "value": "lastQuarter",
-                                "displayName": "Last Quarter",
-                                "displayNameKey": "startRange_Last_Quarter"
-                            },
-                            {
-                                "value": "thisYear",
-                                "displayName": "This Year",
-                                "displayNameKey": "startRange_This_Year"
-                            },
-                            {
-                                "value": "lastYear",
-                                "displayName": "Last Year",
-                                "displayNameKey": "startRange_Last_Year"
-                            },
-                            {
-                                "value": "ytToday",
-                                "displayName": "Year to Today",
-                                "displayNameKey": "startRange_ytToday"
-                            },
-                            {
-                                "value": "ytdToday",
-                                "displayName": "Year to Date",
-                                "displayNameKey": "startRange_ytdToday"
-                            },
-                            {
-                                "value": "ytdLastMonth",
-                                "displayName": "YTD (end last month)",
-                                "displayNameKey": "startRange_ytdLastMonth"
-                            },
-                            {
-                                "value": "ytdThisMonth",
-                                "displayName": "YTD (end this month)",
-                                "displayNameKey": "startRange_ytdThisMonth"
-                            },
-                            {
-                                "value": "yearToLastMonth",
-                                "displayName": "Year to end last month",
-                                "displayNameKey": "startRange_YearToLastMonth"
-                            },
-                            {
-                                "value": "yearToThisMonth",
-                                "displayName": "Year to end this month",
-                                "displayNameKey": "startRange_YearToThisMonth"
-                            }
-                        ]
-                    }
-                },
-                "stepInit": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "day",
-                                "displayName": "Day",
-                                "displayNameKey": "Step_Day"
-                            },
-                            {
-                                "value": "week",
-                                "displayName": "Week",
-                                "displayNameKey": "Step_Week"
-                            },
-                            {
-                                "value": "pay",
-                                "displayName": "Pay",
-                                "displayNameKey": "Step_Pay"
-                            },
-                            {
-                                "value": "month",
-                                "displayName": "Month",
-                                "displayNameKey": "Step_Month"
-                            },
-                            {
-                                "value": "quarter",
-                                "displayName": "Quarter",
-                                "displayNameKey": "Step_Quarter"
-                            },
-                            {
-                                "value": "year",
-                                "displayName": "Year",
-                                "displayNameKey": "Step_Year"
-                            }
-                        ]
-                    }
-                }
-            }
-        },
-        "layout": {
-            "properties": {
-                "showSlider": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "enableSlider": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "show2ndSlider": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showHelpIcon": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showTooltip": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showCurrent": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showIconText": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showMore": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showMove": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showExpand": {
-                    "type": {
-                        "bool": true
-                    }
-                }
-            }
-        },
-        "period": {
-            "properties": {
-                "showDay": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "daySkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "fmtDay": {
-                    "displayName": "Day format",
-                    "displayNameKey": "fmtDay",
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "d",
-                                "displayName": "1, 2, ..., 31",
-                                "displayNameKey": "fmtDay_D"
-                            },
-                            {
-                                "value": "dd",
-                                "displayName": "01, 02, ..., 31",
-                                "displayNameKey": "fmtDay_Dd"
-                            },
-                            {
-                                "value": "do",
-                                "displayName": "1st, 2nd, ..., 31st",
-                                "displayNameKey": "fmtDay_Do"
-                            },
-                            {
-                                "value": "d-MMM",
-                                "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "fmtDay_Ddmmm"
-                            },
-                            {
-                                "value": "d.MMMMM",
-                                "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "fmtDay_Wdm"
-                            }
-                        ]
-                    }
-                }
-            ,
-                "showWeek": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "weekStartDay": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "0",
-                                "displayName": "Sunday",
-                                "displayNameKey": "Visual_Day_Sunday"
-                            },
-                            {
-                                "value": "1",
-                                "displayName": "Monday",
-                                "displayNameKey": "Visual_Day_Monday"
-                            },
-                            {
-                                "value": "2",
-                                "displayName": "Tuesday",
-                                "displayNameKey": "Visual_Day_Tuesday"
-                            },
-                            {
-                                "value": "3",
-                                "displayName": "Wednesday",
-                                "displayNameKey": "Visual_Day_Wednesday"
-                            },
-                            {
-                                "value": "4",
-                                "displayName": "Thursday",
-                                "displayNameKey": "Visual_Day_Thursday"
-                            },
-                            {
-                                "value": "5",
-                                "displayName": "Friday",
-                                "displayNameKey": "Visual_Day_Friday"
-                            },
-                            {
-                                "value": "6",
-                                "displayName": "Saturday",
-                                "displayNameKey": "Visual_Day_Saturday"
-                            }
-                        ]
-                    }
-                },
-                "weekSkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "fmtWeek": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "w",
-                                "displayName": "1, 2, ..., 53",
-                                "displayNameKey": "fmtWeek_W"
-                            },
-                            {
-                                "value": "wo",
-                                "displayName": "1st, 2nd, ..., 53th",
-                                "displayNameKey": "fmtWeek_Wo"
-                            },
-                            {
-                                "value": "d-MMM",
-                                "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "fmtWeek_Wdmmm"
-                            },
-                            {
-                                "value": "d.MMMMM",
-                                "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "fmtWeek_Wdm"
-                            }
-                        ]
-                    }
-                },
-                "showYear": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showQuarter": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "showPay": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "quarterSkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                }
- ,
-                "paySkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "payLength": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "payRefDay": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "payRefMonth": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "0",
-                                "displayName": "January",
-                                "displayNameKey": "yearStartMonth"
-                            },
-                            {
-                                "value": "1",
-                                "displayName": "February",
-                                "displayNameKey": "yearStartMonth_February"
-                            },
-                            {
-                                "value": "2",
-                                "displayName": "March",
-                                "displayNameKey": "yearStartMonth_March"
-                            },
-                            {
-                                "value": "3",
-                                "displayName": "April",
-                                "displayNameKey": "yearStartMonth_April"
-                            },
-                            {
-                                "value": "4",
-                                "displayName": "May",
-                                "displayNameKey": "yearStartMonth_May"
-                            },
-                            {
-                                "value": "5",
-                                "displayName": "June",
-                                "displayNameKey": "yearStartMonth_June"
-                            },
-                            {
-                                "value": "6",
-                                "displayName": "July",
-                                "displayNameKey": "yearStartMonth_July"
-                            },
-                            {
-                                "value": "7",
-                                "displayName": "August",
-                                "displayNameKey": "yearStartMonth_August"
-                            },
-                            {
-                                "value": "8",
-                                "displayName": "September",
-                                "displayNameKey": "yearStartMonth_September"
-                            },
-                            {
-                                "value": "9",
-                                "displayName": "October",
-                                "displayNameKey": "yearStartMonth_October"
-                            },
-                            {
-                                "value": "10",
-                                "displayName": "November",
-                                "displayNameKey": "yearStartMonth_November"
-                            },
-                            {
-                                "value": "11",
-                                "displayName": "December",
-                                "displayNameKey": "yearStartMonth_December"
-                            }
-                        ]
-                    }
-                },
-                "payRefDate": {
-                    "type": {
-                        "text": true
-                    }
-                },
-                "fmtPay": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "d-MMM",
-                                "displayName": "d-MMM - 1-Jan, ..., 31-Mar",
-                                "displayNameKey": "fmtPay_Wdmmm"
-                            },
-                            {
-                                "value": "w",
-                                "displayName": "1, 2, ..., 53",
-                                "displayNameKey": "fmtPay_W"
-                            },
-                            {
-                                "value": "wo",
-                                "displayName": "1st, 2nd, ..., 53th",
-                                "displayNameKey": "fmtPay_Wo"
-                            },
-                            {
-                                "value": "d.MMMMM",
-                                "displayName": "d.MMMMM - 1.J, ..., 31.M",
-                                "displayNameKey": "fmtPay_Wdm"
-                            }
-                        ]
-                    }
-                }
-,                "showMonth": {
-                    "type": {
-                        "bool": true
-                    }
-                },
-                "monthSkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                },
-                "fmtMonth": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "M",
-                                "displayName": "1, 2, ..., 12",
-                                "displayNameKey": "fmtMonth_M"
-                            },
-                            {
-                                "value": "MM",
-                                "displayName": "01, 02, ..., 12",
-                                "displayNameKey": "fmtMonth_Mm"
-                            },
-                            {
-                                "value": "MMMMM",
-                                "displayName": "J, F, ..., D",
-                                "displayNameKey": "fmtMonth_MMMMM"
-                            },
-                            {
-                                "value": "MMM",
-                                "displayName": "Jan, Feb, ..., Dec",
-                                "displayNameKey": "fmtMonth_MMM"
-                            },
-                            {
-                                "value": "MMMM",
-                                "displayName": "January, ..., December",
-                                "displayNameKey": "fmtMonth_MMMM"
-                            }
-                        ]
-                    }
-                }
-,                "fmtQuarter": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "QQQ",
-                                "displayName": "Q1, Q2, Q3, Q4",
-                                "displayNameKey": "fmtQuarter_QQQ"
-                            },
-                            {
-                                "value": "yy-QQQ",
-                                "displayName": "20-Q1, 20-Q2, ... 21-Q4",
-                                "displayNameKey": "fmtQuarter_yy_QQQ"
-                            }
-                        ]
-                    }
-                },
-                "yearStartMonth": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "0",
-                                "displayName": "January",
-                                "displayNameKey": "yearStartMonth_January"
-                            },
-                            {
-                                "value": "1",
-                                "displayName": "February",
-                                "displayNameKey": "yearStartMonth_February"
-                            },
-                            {
-                                "value": "2",
-                                "displayName": "March",
-                                "displayNameKey": "yearStartMonth_March"
-                            },
-                            {
-                                "value": "3",
-                                "displayName": "April",
-                                "displayNameKey": "yearStartMonth_April"
-                            },
-                            {
-                                "value": "4",
-                                "displayName": "May",
-                                "displayNameKey": "yearStartMonth_May"
-                            },
-                            {
-                                "value": "5",
-                                "displayName": "June",
-                                "displayNameKey": "yearStartMonth_June"
-                            },
-                            {
-                                "value": "6",
-                                "displayName": "July",
-                                "displayNameKey": "yearStartMonth_July"
-                            },
-                            {
-                                "value": "7",
-                                "displayName": "August",
-                                "displayNameKey": "yearStartMonth_August"
-                            },
-                            {
-                                "value": "8",
-                                "displayName": "September",
-                                "displayNameKey": "yearStartMonth_September"
-                            },
-                            {
-                                "value": "9",
-                                "displayName": "October",
-                                "displayNameKey": "yearStartMonth_October"
-                            },
-                            {
-                                "value": "10",
-                                "displayName": "November",
-                                "displayNameKey": "yearStartMonth_November"
-                            },
-                            {
-                                "value": "11",
-                                "displayName": "December",
-                                "displayNameKey": "yearStartMonth_December"
-                            }
-                        ]
-                    }
-                },
-                "fmtYear": {
-                    "type": {
-                        "enumeration": [
-                            {
-                                "value": "yyyy",
-                                "displayName": "yyyy - 2017, 2020",
-                                "displayNameKey": "fmtYear_yyyy"
-                            },
-                            {
-                                "value": "yy",
-                                "displayName": "yy - 00, 17, ... 20",
-                                "displayNameKey": "fmtYear_Yy"
-                            }
-                        ]
-                    }
-                },
-                "yearSkip": {
-                    "type": {
-                        "numeric": true
-                    }
-                }
-            }
-        }
+  "suppressDefaultTitle": true,
+  "supportsHighlight": false,
+  "supportsLandingPage": true,
+  "supportsKeyboardFocus": true,
+  "supportsEmptyDataView": true,
+  "supportsSynchronizingFilterState": true,
+  "advancedEditModeSupport": 2,
+  "dataRoles": [
+    {
+      "name": "date",
+      "kind": "Grouping",
+      "displayName": "Date",
+      "displayNameKey": "Role_Date"
     }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "date": {
+            "max": 1
+          }
+        }
+      ],
+      "categorical": {
+        "categories": {
+          "for": {
+            "in": "date"
+          },
+          "dataReductionAlgorithm": {
+            "sample": {
+              "count": 300
+            }
+          }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "general": {
+      "displayName": "General",
+      "properties": {
+        "displayMode": {
+          "displayName": "Display mode",
+          "type": {
+            "enumeration": [
+              {
+                "value": "popup",
+                "displayName": "Popup"
+              },
+              {
+                "value": "canvas",
+                "displayName": "Canvas"
+              }
+            ]
+          }
+        },
+        "selectionMode": {
+          "displayName": "Picker type",
+          "type": {
+            "enumeration": [
+              { "value": "single", "displayName": "Single date" },
+              { "value": "range", "displayName": "Range" },
+              { "value": "startOnly", "displayName": "Start only" },
+              { "value": "endOnly", "displayName": "End only" }
+            ]
+          }
+        },
+        "allowMultiple": {
+          "displayName": "Allow multiple ranges",
+          "type": {
+            "bool": true
+          }
+        },
+        "firstDayOfWeek": {
+          "displayName": "First day of week",
+          "type": {
+            "numeric": true
+          }
+        },
+        "minDate": {
+          "displayName": "Minimum date",
+          "type": {
+            "text": true
+          }
+        },
+        "maxDate": {
+          "displayName": "Maximum date",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "presets": {
+      "displayName": "Presets",
+      "properties": {
+        "showPresetBar": {
+          "displayName": "Show preset bar",
+          "type": {
+            "bool": true
+          }
+        },
+        "presetJson": {
+          "displayName": "Preset list (JSON)",
+          "type": {
+            "text": true
+          }
+        },
+        "defaultSelection": {
+          "displayName": "Default selection",
+          "type": {
+            "text": true
+          }
+        },
+        "defaultPresetKey": {
+          "displayName": "Default preset key",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "calendarStyles": {
+      "displayName": "Calendar styles",
+      "properties": {
+        "weekendStyleEnabled": {
+          "displayName": "Highlight weekends",
+          "type": {
+            "bool": true
+          }
+        },
+        "weekendColor": {
+          "displayName": "Weekend color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "holidayColor": {
+          "displayName": "Holiday marker",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "fontFamily": {
+          "displayName": "Font family",
+          "type": {
+            "text": true
+          }
+        },
+        "fontSize": {
+          "displayName": "Font size",
+          "type": {
+            "numeric": true
+          }
+        },
+        "cellPadding": {
+          "displayName": "Cell padding",
+          "type": {
+            "numeric": true
+          }
+        },
+        "borderRadius": {
+          "displayName": "Border radius",
+          "type": {
+            "numeric": true
+          }
+        },
+        "todayOutline": {
+          "displayName": "Outline today",
+          "type": {
+            "bool": true
+          }
+        },
+        "themeName": {
+          "displayName": "Theme preset",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "holidaySettings": {
+      "displayName": "Holidays",
+      "properties": {
+        "holidayList": {
+          "displayName": "Holiday list",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "state": {
+      "displayName": "State",
+      "properties": {
+        "payload": {
+          "displayName": "Persisted state",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    }
+  }
 }
