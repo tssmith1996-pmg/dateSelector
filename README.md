@@ -45,6 +45,7 @@ The canvas layout now mirrors the Power BI experience shown above. The sidebar s
 
 Use this wireframe when aligning your Power BI report canvas: place the preset column at ~220px width, reserve the top toolbar row for quick actions, and position the date fields directly above the calendar for the cleanest balance between controls and grid real estate.
 
+
 ## Project Structure
 
 ```
