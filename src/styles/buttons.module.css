@@ -1,7 +1,40 @@
 .presetBar {
   display: flex;
   gap: 0.5rem;
+}
+
+.presetBarHorizontal {
   flex-wrap: wrap;
+}
+
+.presetBarVertical {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.presetGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.presetGroupLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--preset-group-fg, #6b7280);
+}
+
+.presetGroupList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.presetBarVertical .presetGroupList {
+  flex-direction: column;
+  gap: 0.375rem;
 }
 
 .presetButton {
@@ -12,6 +45,18 @@
   color: inherit;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.presetButtonBlock {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 0.75rem;
 }
 
 .presetButton:hover {
@@ -31,4 +76,12 @@
   background: transparent;
   cursor: pointer;
   text-decoration: underline;
+}
+
+.presetBarVertical .clearButton {
+  align-self: flex-start;
+  padding: 0;
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--preset-clear-fg, #4b5563);
 }

@@ -37,6 +37,15 @@ Aurora Date Picker ships with multiple interaction patterns that adapt to report
 
 ![Always-on canvas calendar with preset buttons, weekends, and holidays](readme_files/state-canvas.svg)
 
+The canvas layout now mirrors the Power BI experience shown above. The sidebar summarizes the active selection, highlights min/max data bounds, and stacks presets vertically, while the right panel adds a toolbar with "Today", "Clear", and "Apply" actions, manual date fields, the calendar grid, and multi-range chips.
+
+#### Canvas wireframe
+
+![Annotated wireframe showing sidebar, toolbar, inputs, and calendar grid](readme_files/canvas-wireframe.svg)
+
+Use this wireframe when aligning your Power BI report canvas: place the preset column at ~220px width, reserve the top toolbar row for quick actions, and position the date fields directly above the calendar for the cleanest balance between controls and grid real estate.
+
+
 ## Project Structure
 
 ```
