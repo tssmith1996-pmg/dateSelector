@@ -13,6 +13,38 @@ Aurora Date Picker is a Power BI slicer built to deliver the rich presets, multi
 - **Accessibility** – ARIA-compliant calendar grid, keyboard navigation, and high-contrast theme options. Popup mode respects Escape and focus trapping.
 - **Power BI integration** – Uses the selection/filter API, persists state for bookmarks and sync slicer, and serializes configuration through formatting objects.
 
+## Visual States
+
+Aurora Date Picker ships with multiple interaction patterns that adapt to report layouts. The SVG mockups below mirror the Power BI rendering pipeline so you can see exactly how each state appears inside a report canvas.
+
+### Popup trigger
+
+![Popup trigger state showing compact button and summary](readme_files/state-popup-trigger.svg)
+
+### Popup · single date selection
+
+![Popup single date calendar with one day chosen](readme_files/state-single-date.svg)
+
+### Range selection preview
+
+![Range selection preview with anchor and hovered end date](readme_files/state-range-selection.svg)
+
+### Multi-range with removable chips
+
+![Multiple ranges applied with removable chips below the calendar](readme_files/state-multi-range.svg)
+
+### Canvas layout with presets
+
+![Always-on canvas calendar with preset buttons, weekends, and holidays](readme_files/state-canvas.svg)
+
+The canvas layout now mirrors the Power BI experience shown above. The sidebar summarizes the active selection, highlights min/max data bounds, and stacks presets vertically, while the right panel adds a toolbar with "Today", "Clear", and "Apply" actions, manual date fields, the calendar grid, and multi-range chips.
+
+#### Canvas wireframe
+
+![Annotated wireframe showing sidebar, toolbar, inputs, and calendar grid](readme_files/canvas-wireframe.svg)
+
+Use this wireframe when aligning your Power BI report canvas: place the preset column at ~220px width, reserve the top toolbar row for quick actions, and position the date fields directly above the calendar for the cleanest balance between controls and grid real estate.
+
 ## Project Structure
 
 ```

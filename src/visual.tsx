@@ -5,6 +5,7 @@ import { Calendar } from "./calendar/Calendar";
 import { PresetBar } from "./calendar/PresetBar";
 import { ChipsBar } from "./calendar/ChipsBar";
 import { Popup } from "./calendar/Popup";
+import shellStyles from "./styles/shell.module.css";
 import {
   CalendarLocalization,
   Chip,
@@ -94,6 +95,62 @@ const defaultFormatting: FormattingSettings = {
   themeName: undefined,
 };
 
+const formatDisplayDate = (date: Date): string => {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "2-digit",
+    day: "2-digit",
+    year: "numeric",
+  }).format(date);
+};
+
+const parseInputDate = (value: string): Date | null => {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+  const isoMatch = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (isoMatch) {
+    const [, year, month, day] = isoMatch;
+    const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+    if (parsed.getFullYear() === Number(year) && parsed.getMonth() === Number(month) - 1 && parsed.getDate() === Number(day)) {
+      return parsed;
+    }
+  }
+  const usMatch = trimmed.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (usMatch) {
+    const [, month, day, year] = usMatch;
+    const parsed = new Date(Number(year), Number(month) - 1, Number(day));
+    if (parsed.getFullYear() === Number(year) && parsed.getMonth() === Number(month) - 1 && parsed.getDate() === Number(day)) {
+      return parsed;
+    }
+  }
+  return null;
+};
+
+const clampToScope = (date: Date, scope?: DateFieldScope): Date => {
+  const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  let result = normalized;
+  if (scope?.min && result < scope.min) {
+    result = new Date(scope.min.getFullYear(), scope.min.getMonth(), scope.min.getDate());
+  }
+  if (scope?.max && result > scope.max) {
+    result = new Date(scope.max.getFullYear(), scope.max.getMonth(), scope.max.getDate());
+  }
+  return result;
+};
+
+const normalizeRangeOrder = (range: DateRange): DateRange => {
+  return range.start <= range.end ? range : { start: range.end, end: range.start };
+};
+
+const sameDay = (a: Date, b: Date): boolean => {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+};
+
 interface VisualShellProps {
   ranges: DateRange[];
   displayMode: "popup" | "canvas";
@@ -133,23 +190,144 @@ const VisualShell: React.FC<VisualShellProps> = ({
 }) => {
   const [isPopupOpen, setPopupOpen] = React.useState(displayMode === "canvas");
 
+  const primaryRange = ranges[0] ?? null;
+  const primaryRangeKey = primaryRange
+    ? `${primaryRange.start.toISOString()}-${primaryRange.end.toISOString()}`
+    : "none";
+
+  const [startInput, setStartInput] = React.useState(
+    primaryRange ? formatDisplayDate(primaryRange.start) : ""
+  );
+  const [endInput, setEndInput] = React.useState(
+    primaryRange ? formatDisplayDate(primaryRange.end) : ""
+  );
+
+  React.useEffect(() => {
+    if (!primaryRange) {
+      setStartInput("");
+      setEndInput("");
+      return;
+    }
+    setStartInput(formatDisplayDate(primaryRange.start));
+    setEndInput(formatDisplayDate(primaryRange.end));
+  }, [primaryRangeKey]);
+
   React.useEffect(() => {
     if (displayMode === "canvas") {
       setPopupOpen(true);
     }
   }, [displayMode]);
 
-  const content = (
-    <div>
-      {formatting.showPresetBar && (
-        <PresetBar
-          presets={presetOptions}
-          selectedKey={presetKey}
-          onSelect={(preset) => onPresetSelect(preset)}
-          onClear={() => onPresetSelect(null)}
-          errors={presetErrors}
+  const commitPrimaryRange = React.useCallback(
+    (range: DateRange) => {
+      const normalized = normalizeRangeOrder(range);
+      const remaining = allowMultiple ? ranges.slice(1) : [];
+      onRangesChange(allowMultiple ? [normalized, ...remaining] : [normalized]);
+      onPresetSelect(null);
+      setStartInput(formatDisplayDate(normalized.start));
+      setEndInput(formatDisplayDate(normalized.end));
+    },
+    [allowMultiple, ranges, onRangesChange, onPresetSelect]
+  );
+
+  const handleClear = React.useCallback(() => {
+    onRangesChange([]);
+    onPresetSelect(null);
+    setStartInput("");
+    setEndInput("");
+  }, [onRangesChange, onPresetSelect]);
+
+  const handleStartCommit = React.useCallback(() => {
+    const trimmed = startInput.trim();
+    if (!trimmed) {
+      handleClear();
+      return;
+    }
+    const parsed = parseInputDate(trimmed);
+    if (!parsed) {
+      setStartInput(primaryRange ? formatDisplayDate(primaryRange.start) : "");
+      return;
+    }
+    const clamped = clampToScope(parsed, scope);
+    const end = primaryRange ? primaryRange.end : clamped;
+    commitPrimaryRange({ start: clamped, end });
+  }, [startInput, handleClear, primaryRange, scope, commitPrimaryRange]);
+
+  const handleEndCommit = React.useCallback(() => {
+    const trimmed = endInput.trim();
+    if (!trimmed) {
+      handleClear();
+      return;
+    }
+    const parsed = parseInputDate(trimmed);
+    if (!parsed) {
+      setEndInput(primaryRange ? formatDisplayDate(primaryRange.end) : "");
+      return;
+    }
+    const clamped = clampToScope(parsed, scope);
+    const start = primaryRange ? primaryRange.start : clamped;
+    commitPrimaryRange({ start, end: clamped });
+  }, [endInput, handleClear, primaryRange, scope, commitPrimaryRange]);
+
+  const handleQuickPreset = React.useCallback(
+    (key: string) => {
+      const preset = presetOptions.find((item) => item.key === key);
+      if (preset) {
+        onPresetSelect(preset);
+        return;
+      }
+      if (key === "today") {
+        const today = new Date();
+        commitPrimaryRange({ start: today, end: today });
+      }
+    },
+    [presetOptions, onPresetSelect, commitPrimaryRange]
+  );
+
+  const manualInputRow = (
+    <div className={shellStyles.inputRow}>
+      <label className={shellStyles.dateField}>
+        <span className={shellStyles.dateLabel}>Start date</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="MM/DD/YYYY"
+          value={startInput}
+          className={shellStyles.dateInput}
+          onChange={(event) => setStartInput(event.target.value)}
+          onBlur={handleStartCommit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleStartCommit();
+            }
+          }}
         />
-      )}
+      </label>
+      <span className={shellStyles.rangeArrow}>→</span>
+      <label className={shellStyles.dateField}>
+        <span className={shellStyles.dateLabel}>End date</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          placeholder="MM/DD/YYYY"
+          value={endInput}
+          className={shellStyles.dateInput}
+          onChange={(event) => setEndInput(event.target.value)}
+          onBlur={handleEndCommit}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              handleEndCommit();
+            }
+          }}
+        />
+      </label>
+    </div>
+  );
+
+  const calendarPanel = (
+    <div className={shellStyles.calendarPanel}>
       <Calendar
         ranges={ranges}
         selectionMode={selectionMode}
@@ -168,27 +346,124 @@ const VisualShell: React.FC<VisualShellProps> = ({
         borderRadius={formatting.calendarBorderRadius}
         todayOutline={formatting.todayOutline}
       />
-      <ChipsBar chips={chips} onRemove={onRemoveChip} />
-      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+    </div>
+  );
+
+  const chipsBar = <ChipsBar chips={chips} onRemove={onRemoveChip} />;
+
+  if (displayMode === "canvas") {
+    const minActive = Boolean(primaryRange && scope?.min && sameDay(primaryRange.start, scope.min));
+    const maxActive = Boolean(primaryRange && scope?.max && sameDay(primaryRange.end, scope.max));
+
+    const boundClass = (active: boolean) =>
+      [shellStyles.boundItem, !active ? shellStyles.boundItemInactive : ""].filter(Boolean).join(" ");
+
+    return (
+      <div className={shellStyles.canvasShell}>
+        <aside className={shellStyles.sidebar}>
+          <div className={shellStyles.sidebarHeader}>
+            <span className={shellStyles.sidebarTitle}>Date Range</span>
+            <div className={shellStyles.sidebarSummary}>
+              {primaryRange ? formatDateRange(primaryRange) : "No selection applied"}
+            </div>
+            <div className={shellStyles.sidebarHint}>
+              {allowMultiple ? "Multiple ranges allowed" : "Single range"}
+            </div>
+          </div>
+          <div className={shellStyles.sidebarCard}>
+            <div className={shellStyles.boundLabel}>Limits</div>
+            <div className={shellStyles.boundsList}>
+              <div className={boundClass(minActive)}>
+                <span className={shellStyles.boundLabel}>Min Date</span>
+                <span>{scope?.min ? formatDisplayDate(scope.min) : "Not set"}</span>
+              </div>
+              <div className={boundClass(maxActive)}>
+                <span className={shellStyles.boundLabel}>Max Date</span>
+                <span>{scope?.max ? formatDisplayDate(scope.max) : "Not set"}</span>
+              </div>
+            </div>
+          </div>
+          {formatting.showPresetBar ? (
+            <PresetBar
+              presets={presetOptions}
+              selectedKey={presetKey}
+              onSelect={(preset) => onPresetSelect(preset)}
+              onClear={handleClear}
+              errors={presetErrors}
+              orientation="vertical"
+              showClear={false}
+            />
+          ) : null}
+        </aside>
+        <div className={shellStyles.canvasMain}>
+          <div className={shellStyles.toolbar}>
+            <label className={shellStyles.modeToggle}>
+              <input
+                type="checkbox"
+                className={shellStyles.modeCheckbox}
+                checked={selectionMode === "range"}
+                readOnly
+                aria-label="Range mode"
+              />
+              <span>Date Range</span>
+            </label>
+            <div className={shellStyles.toolbarButtons}>
+              <button
+                type="button"
+                className={shellStyles.subtleButton}
+                onClick={() => handleQuickPreset("today")}
+              >
+                Today
+              </button>
+              <button type="button" className={shellStyles.ghostButton} onClick={handleClear}>
+                Clear
+              </button>
+              <button type="button" className={shellStyles.primaryButton} onClick={onApply}>
+                Apply
+              </button>
+            </div>
+          </div>
+          {manualInputRow}
+          {calendarPanel}
+          {chipsBar}
+        </div>
+      </div>
+    );
+  }
+
+  const popupContent = (
+    <div className={shellStyles.popupStack}>
+      {formatting.showPresetBar ? (
+        <PresetBar
+          presets={presetOptions}
+          selectedKey={presetKey}
+          onSelect={(preset) => onPresetSelect(preset)}
+          onClear={handleClear}
+          errors={presetErrors}
+          orientation="horizontal"
+          showClear
+        />
+      ) : null}
+      {manualInputRow}
+      {calendarPanel}
+      {chipsBar}
+      <div className={shellStyles.popupActions}>
         <button
           type="button"
-          onClick={() => {
-            onRangesChange([]);
-            onPresetSelect(null);
-          }}
+          className={shellStyles.subtleButton}
+          onClick={() => handleQuickPreset("today")}
         >
+          Today
+        </button>
+        <button type="button" className={shellStyles.ghostButton} onClick={handleClear}>
           Clear
         </button>
-        <button type="button" onClick={onApply}>
+        <button type="button" className={shellStyles.primaryButton} onClick={onApply}>
           Apply
         </button>
       </div>
     </div>
   );
-
-  if (displayMode === "canvas") {
-    return content;
-  }
 
   return (
     <Popup
@@ -196,7 +471,7 @@ const VisualShell: React.FC<VisualShellProps> = ({
       isOpen={isPopupOpen}
       onToggle={() => setPopupOpen((prev) => !prev)}
     >
-      {content}
+      {popupContent}
     </Popup>
   );
 };
