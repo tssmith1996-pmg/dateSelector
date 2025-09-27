@@ -1,92 +1,161 @@
-# Date Selector Visual
+# Aurora Date Picker (Power BI Custom Visual)
 
-## A compact rich functionality date range filter for Power BI
-The [**DateSelector** visual](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.3.2025.02.16.pbiviz) is a date range selector designed to be used with Microsoft Power BI.
+Aurora Date Picker is a Power BI slicer built to deliver the rich presets, multi-range filtering, and styling flexibility showcased by best-in-class date pickers—while remaining lightweight and fully accessible. The visual is implemented from scratch using React, custom date-math utilities, and CSS Modules.
 
-## Features
-- Allows users to select a range of dates with a compact user-friendly interface.
-- Enables users to filter data based on the selected date range.
-- Simple and intuitive design, easy to use.
-- Configurable to show or hide buttons with the simplest representation being a single date picker.
+## Highlights
 
-### Anatomy
+- **Selection modes** – Toggle between single-date, range, start-only, or end-only entry. Optional multi-range mode renders removable chips and applies all selected periods as a unioned filter.
+- **Display flexibility** – Switch between popup trigger and always-on-canvas layouts without rebinding your field.
+- **Preset engine** – Ship built-ins such as Today, Last Week, Year to Date, and Current Year. Add custom expressions (JSON) or drive defaults from the data model via expressions like `TODAY - 6 DAYS..TODAY` or `STARTOFMONTH - 1 MONTHS`.
+- **Relative date parser** – Grammar supports `TODAY +/- N {days|weeks|months|quarters|years}`, `STARTOF{Month|Quarter|Year}`, `ENDOF…`, and combined ranges with `..` or `TO`.
+- **Holidays & weekends** – Paste comma/line-separated ISO dates with optional labels; toggle weekend styling colors.
+- **Themes & formatting** – Fifteen theme JSON presets provide instant restyling of colors and shapes. Fine-tune font, padding, border radius, and accent behavior from the formatting pane.
+- **Accessibility** – ARIA-compliant calendar grid, keyboard navigation, and high-contrast theme options. Popup mode respects Escape and focus trapping.
+- **Power BI integration** – Uses the selection/filter API, persists state for bookmarks and sync slicer, and serializes configuration through formatting objects.
 
-![Date Range Selector Anatomy](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector1.png?raw=true "Date Range Selector Anatomy")
+## Project Structure
 
-### With dual timeline showing
+```
+/ (root)
+├── package.json
+├── pbiviz.json
+├── capabilities.json
+├── tsconfig.json
+├── jest.config.cjs
+├── assets/
+│   ├── icon.svg
+│   └── themes/*.json (15 presets)
+├── src/
+│   ├── index.ts
+│   ├── visual.tsx
+│   ├── dateMath.ts
+│   ├── presets.ts
+│   ├── types.ts
+│   ├── calendar/
+│   │   ├── Calendar.tsx
+│   │   ├── CalendarGrid.tsx
+│   │   ├── DayCell.tsx
+│   │   ├── PresetBar.tsx
+│   │   ├── ChipsBar.tsx
+│   │   └── Popup.tsx
+│   └── styles/
+│       ├── calendar.module.css
+│       ├── buttons.module.css
+│       └── chips.module.css
+└── test/
+    ├── dateMath.spec.ts
+    ├── presets.spec.ts
+    ├── serialization.spec.ts
+    └── mocks/styleMock.js
+```
 
-![Date Range Selector with two level timeline](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector2.png?raw=true "Date Range Selector Timeline")
+## Getting Started
 
-### Advancd features
+1. **Install prerequisites**
+   - Node.js 18+
+   - [Power BI Visuals Tools (`pbiviz` CLI)](https://www.npmjs.com/package/powerbi-visuals-tools)
 
-![Date Range Selector Advanced Features](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector3.png?raw=true "Date Range Selector Advanced Features")
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-### Shortcut keys
+3. **Run linting and tests**
+   ```bash
+   npm run lint
+   npm test
+   ```
 
-![Date Range Selector Shortcut Keys](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector4.png?raw=true "Date Range Selector Shortcut Keys")
+4. **Launch the visual locally**
+   ```bash
+   npm start
+   ```
+   This hosts the visual with live reload. Attach `pbiviz start` to a sample report in Power BI Desktop (Developer Mode).
 
-### Layout Options
+5. **Package for distribution**
+   ```bash
+   npm run package
+   ```
+   Output `.pbiviz` artifacts land in the `dist/` folder (signed if you configure a certificate in `pbiviz.json`).
 
-![Layout Options](https://github.com/o221/dateSelector/blob/main/readme_files/Date%20Selector5.png?raw=true "Layout Options")
+## Configuration Overview
 
- ****
+### Data binding
 
- ## Summary
+Bind a single Date column to the **Date** field well. The visual respects model-supplied min/max and serializes state so bookmarks, sync slicer, and refresh scenarios keep their selections.
 
- #### Date Range Input
-  * Input via field, quick action buttons or slider
-     * The date entry is not limited to the filtered scope
-* Up to 6 levels of granularity on the slider(s)
-     * Granularity determines step size of the interactions
-     * Based on granularity - Top timeline is the primary granularity
-     * Shows selected range on two granularity levels (optional)
-     * Second timeline shows context - it is also active
-* Optional buttons for Today, This Week, etc. with optional YTD, etc.
-     * Today, etc. buttons, are hidden when the button's period is not in scope.
-* Range slider shows full scope of selected date field
-* Filters reduce the scope on any level - Visual/Page/All Pages
+### Formatting pane objects
 
- #### Start-up state
-  * Slicer opens in configured *pre-set* state
-     * *default* behaves like any typical visual.
-     * Today, YTD, This Month, Last week, etc.
-     * or ...
-Can be synced with last  page viewed
-     * With *pre-set* range there's *no sync respected* on the pre-set pages.
-     * Bookmarks are respected after pre-set ranges
- #### Short cut keys
-  * when slider is active use fast shortcuts
- #### Help
-  * Descriptive tooltip option
+- **General** – Switch between popup/canvas, selection mode, multi-range, and first-day-of-week. Optional min/max clamps accept ISO strings.
+- **Presets** – Toggle the preset bar, provide custom preset JSON, and set default preset or expression.
+- **Calendar Styles** – Adjust weekend highlighting, colors, font family/size, padding, radius, today outline, and theme preset name (matching a JSON file in `assets/themes`).
+- **Holidays** – Provide a comma/line-separated list of dates (`YYYY-MM-DD|Optional Label`).
+- **State** – Internal persisted payload (read-only) for troubleshooting bookmarks/sync slicer scenarios.
 
-## Installation
-To use the DateSelector visual, you can import it into your Power BI report by following these steps:
+### Adding custom presets
 
-Download the visual from [dist](https://github.com/o221/dateSelector/blob/main/dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.3.2025.02.16.pbiviz) and import it into Power BI using the "Import from file" option.
+Supply an array of objects in the **Preset list (JSON)** property:
 
-1. Open the report in Power BI Desktop.
-2. In the Visualizations pane, select the ellipsis (...).
-3. Select "Import from file."
-4. Select downloaded "DateSelector" file.
-5. Click on the visual and select "Add."
+```json
+[
+  { "key": "last3m", "label": "Last 3 Months", "expression": "STARTOFMONTH - 2 MONTHS..ENDOFMONTH" },
+  { "key": "qtd", "label": "Quarter to Date", "expression": "STARTOFQUARTER..TODAY" }
+]
+```
 
-## Usage
-To use the DateSelector visual, add it to your report canvas and connect it to the relevant date field. Users can then use the visual to select a date range and filter data accordingly. Often the ther need not touch the visual because the wanted date is pre-set.
+### Holiday sources
 
-## Example
-A sample Power BI model with a detailed help page is provided [here.](https://github.com/o221/dateSelector/blob/main/dist/date%20selector%20doc.pbix) Download it and open with Power BI Desktop.
+Paste text such as:
 
-## Version
-The current version of the DateSelector visual is v3.2025.02.16.
+```
+2024-01-01|New Year
+2024-05-27|Memorial Day
+2024-07-04
+```
 
-## Limitations
-The DateSelector visual currently supports only English language. Internationalisation is not yet planned.
+Each date is decorated with a marker and tooltip.
 
-## Support
-If you encounter any issues while using the DateSelector visual, please visit the [support page](https://github.com/o221/dateSelector/issues) for assistance. Alternatively add any comments or feature requests on the [discussion page](https://github.com/o221/dateSelector/discussions)
+### Themes
+
+Choose a theme name that matches one of the JSON files in `assets/themes`. The visual loads the token set at runtime to adjust colors and chip styling instantly. You can also bundle your own JSON file (matching the schema) in the same folder and reference its filename (without extension).
+
+## Demo Report Scenarios
+
+1. **Executive Overview** – Place the visual in popup mode with presets (Today, Last Week, Last 30 Days) to drive KPI cards.
+2. **Financial Close Tracker** – Use canvas mode, multi-range enabled, and a holiday list to monitor blackout periods.
+3. **Subscription Analysis** – Provide default selection `LAST 90 DAYS` with a custom preset `Rolling 6 Months`. Combine with chips to compare seasons.
+
+## Testing Philosophy
+
+- `test/dateMath.spec.ts` ensures the relative date grammar behaves as expected for anchored ranges.
+- `test/presets.spec.ts` validates preset merging and resolution, preventing duplicate keys.
+- `test/serialization.spec.ts` covers serialization of ranges/state for bookmarks and sync slicer compatibility.
+
+Run `npm test` to execute the suite via Jest + ts-jest.
+
+## Build & Packaging Commands
+
+```bash
+# install dependencies
+npm install
+
+# lint source files
+npm run lint
+
+# execute unit tests
+npm test
+
+# live development host
+npm start
+
+# production build (.pbiviz)
+npm run package
+```
 
 ## License
-The DateSelector visual is released under the MIT License. Please refer to the LICENSE file for more information.
 
-## Acknowledgments
-We would like to thank the Power BI community for their support and feedback in the development of the DateSelector visual.
+MIT License. See `LICENCE` for details.
+
+## Support
+
+Create an issue or discussion in your repository of choice, or extend the visual by editing the TypeScript/React components in `src/` and bundling via `pbiviz package`.

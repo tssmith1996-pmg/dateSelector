@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Carbon",
+  "description": "Graphite and neon scheme for tech dashboards.",
+  "tokens": {
+    "background": "#1A1C1F",
+    "foreground": "#E5E7EB",
+    "accent": "#00D1B2",
+    "chipBackground": "#26292E",
+    "chipForeground": "#E5E7EB",
+    "weekendBackground": "#212429"
+  }
+}

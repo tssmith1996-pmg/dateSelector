@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Forest",
+  "description": "Earthy greens for natural storytelling.",
+  "tokens": {
+    "background": "#F4FAF4",
+    "foreground": "#1F3B2C",
+    "accent": "#3F8B49",
+    "chipBackground": "#D9F1DE",
+    "chipForeground": "#1F3B2C",
+    "weekendBackground": "#E8F6EA"
+  }
+}

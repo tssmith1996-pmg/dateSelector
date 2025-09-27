@@ -1,0 +1,12 @@
+{
+  "name": "Aurora Ink",
+  "description": "Minimal ink-on-paper aesthetic.",
+  "tokens": {
+    "background": "#FFFFFF",
+    "foreground": "#111111",
+    "accent": "#3D3D3D",
+    "chipBackground": "#E9E9E9",
+    "chipForeground": "#111111",
+    "weekendBackground": "#F4F4F4"
+  }
+}

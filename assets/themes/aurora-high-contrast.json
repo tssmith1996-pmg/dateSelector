@@ -1,0 +1,12 @@
+{
+  "name": "Aurora High Contrast",
+  "description": "High-contrast palette for accessibility.",
+  "tokens": {
+    "background": "#000000",
+    "foreground": "#FFFFFF",
+    "accent": "#FFD500",
+    "chipBackground": "#FFFFFF",
+    "chipForeground": "#000000",
+    "weekendBackground": "#2E2E2E"
+  }
+}
