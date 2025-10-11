@@ -40,6 +40,7 @@ export interface FormattingSettings {
   selectionMode: SelectionMode;
   allowMultiple: boolean;
   firstDayOfWeek: number;
+  dualCalendarEnabled: boolean;
   minDate?: string;
   maxDate?: string;
   showPresetBar: boolean;

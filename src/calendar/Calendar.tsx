@@ -28,6 +28,9 @@ export interface CalendarProps {
   cellPadding: number;
   borderRadius: number;
   todayOutline: boolean;
+  monthsToShow?: number;
+  comparisonColumn?: React.ReactNode;
+  showRangeSummary?: boolean;
 }
 
 const getInitialMonth = (ranges: DateRange[]): Date => {
@@ -55,6 +58,9 @@ export const Calendar: React.FC<CalendarProps> = ({
   cellPadding,
   borderRadius,
   todayOutline,
+  monthsToShow = 1,
+  comparisonColumn,
+  showRangeSummary = true,
 }) => {
   const [visibleMonth, setVisibleMonth] = React.useState<Date>(() => getInitialMonth(ranges));
   const [anchorDate, setAnchorDate] = React.useState<Date | null>(null);
@@ -62,6 +68,32 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   const minDate = scope?.min;
   const maxDate = scope?.max;
+
+  const monthFormatter = React.useMemo(
+    () =>
+      new Intl.DateTimeFormat("en", {
+        month: "long",
+        year: "numeric",
+      }),
+    []
+  );
+
+  const visibleMonths = React.useMemo(
+    () =>
+      Array.from({ length: Math.max(1, monthsToShow) }, (_, index) =>
+        new Date(visibleMonth.getFullYear(), visibleMonth.getMonth() + index, 1)
+      ),
+    [visibleMonth, monthsToShow]
+  );
+
+  const isDateInView = React.useCallback(
+    (date: Date) => {
+      return visibleMonths.some(
+        (month) => month.getFullYear() === date.getFullYear() && month.getMonth() === date.getMonth()
+      );
+    },
+    [visibleMonths]
+  );
 
   React.useEffect(() => {
     if (ranges.length > 0) {
@@ -149,8 +181,13 @@ export const Calendar: React.FC<CalendarProps> = ({
       const next = new Date(focusedDate);
       next.setDate(next.getDate() + delta);
       setFocusedDate(next);
-      if (next.getMonth() !== visibleMonth.getMonth()) {
-        setVisibleMonth(new Date(next.getFullYear(), next.getMonth(), 1));
+      if (!isDateInView(next)) {
+        const lastVisibleIndex = Math.max(0, monthsToShow - 1);
+        const targetMonth =
+          next < visibleMonths[0]
+            ? new Date(next.getFullYear(), next.getMonth(), 1)
+            : new Date(next.getFullYear(), next.getMonth() - lastVisibleIndex, 1);
+        setVisibleMonth(targetMonth);
       }
     }
 
@@ -164,17 +201,90 @@ export const Calendar: React.FC<CalendarProps> = ({
     }
   };
 
-  const monthLabel = React.useMemo(() => {
-    const formatter = new Intl.DateTimeFormat("en", {
-      month: "long",
-      year: "numeric",
-    });
-    return formatter.format(visibleMonth);
-  }, [visibleMonth]);
+  const calendarClassName = [
+    styles.calendar,
+    monthsToShow > 1 ? styles.calendarMulti : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const monthColumns = visibleMonths.map((month, index) => {
+    const label = monthFormatter.format(month);
+    const showPrevButton = index === 0;
+    const showNextButton = index === visibleMonths.length - 1;
+    return (
+      <div key={`${month.getFullYear()}-${month.getMonth()}`} className={styles.monthColumn}>
+        <div className={styles.monthHeader}>
+          {showPrevButton ? (
+            <button
+              type="button"
+              className={styles.navButton}
+              aria-label={localization.aria.previousMonth}
+              onClick={() =>
+                setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
+              }
+            >
+              ‹
+            </button>
+          ) : (
+            <span className={styles.navButtonPlaceholder} aria-hidden="true" />
+          )}
+          <div className={styles.monthLabel}>{label}</div>
+          {showNextButton ? (
+            <button
+              type="button"
+              className={styles.navButton}
+              aria-label={localization.aria.nextMonth}
+              onClick={() =>
+                setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
+              }
+            >
+              ›
+            </button>
+          ) : (
+            <span className={styles.navButtonPlaceholder} aria-hidden="true" />
+          )}
+        </div>
+        <CalendarGrid
+          month={month}
+          firstDayOfWeek={firstDayOfWeek}
+          ranges={ranges}
+          anchorDate={anchorDate}
+          focusedDate={focusedDate}
+          onFocusDate={setFocusedDate}
+          onSelectDate={handleDaySelected}
+          minDate={minDate}
+          maxDate={maxDate}
+          localization={localization}
+          holidays={holidays}
+          weekendStyleEnabled={weekendStyleEnabled}
+          weekendColor={weekendColor}
+          holidayColor={holidayColor}
+          cellPadding={cellPadding}
+          borderRadius={borderRadius}
+          todayOutline={todayOutline}
+        />
+      </div>
+    );
+  });
+
+  const gridColumns = React.useMemo(() => {
+    if (comparisonColumn && monthColumns.length >= 2) {
+      const [first, ...rest] = monthColumns;
+      return [
+        first,
+        <div key="comparison" className={styles.comparisonColumn}>
+          {comparisonColumn}
+        </div>,
+        ...rest,
+      ];
+    }
+    return monthColumns;
+  }, [comparisonColumn, monthColumns]);
 
   return (
     <div
-      className={styles.calendar}
+      className={calendarClassName}
       style={{ fontFamily, fontSize }}
       role="application"
       aria-label={localization.aria.calendar}
@@ -187,49 +297,8 @@ export const Calendar: React.FC<CalendarProps> = ({
         }
       }}
     >
-      <div className={styles.calendarHeader}>
-        <button
-          type="button"
-          className={styles.navButton}
-          aria-label={localization.aria.previousMonth}
-          onClick={() =>
-            setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))
-          }
-        >
-          ‹
-        </button>
-        <div className={styles.monthLabel}>{monthLabel}</div>
-        <button
-          type="button"
-          className={styles.navButton}
-          aria-label={localization.aria.nextMonth}
-          onClick={() =>
-            setVisibleMonth((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))
-          }
-        >
-          ›
-        </button>
-      </div>
-      <CalendarGrid
-        month={visibleMonth}
-        firstDayOfWeek={firstDayOfWeek}
-        ranges={ranges}
-        anchorDate={anchorDate}
-        focusedDate={focusedDate}
-        onFocusDate={setFocusedDate}
-        onSelectDate={handleDaySelected}
-        minDate={minDate}
-        maxDate={maxDate}
-        localization={localization}
-        holidays={holidays}
-        weekendStyleEnabled={weekendStyleEnabled}
-        weekendColor={weekendColor}
-        holidayColor={holidayColor}
-        cellPadding={cellPadding}
-        borderRadius={borderRadius}
-        todayOutline={todayOutline}
-      />
-      {ranges.length > 0 && (
+      <div className={styles.monthRow}>{gridColumns}</div>
+      {showRangeSummary && ranges.length > 0 && (
         <div className={styles.rangeSummary} aria-live="polite">
           {ranges.map((range, index) => (
             <div key={`${range.start.toISOString()}-${index}`}>{formatDateRange(range)}</div>

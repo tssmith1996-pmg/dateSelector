@@ -4,7 +4,7 @@
     "displayName": "Aurora Date Picker",
     "guid": "auroraDatePickerE1F3B6A9C2DD4B31B6F83E7D9F3D5B1B",
     "visualClassName": "DatePickerVisual",
-    "version": "0.1.0",
+    "version": "0.1.0.0",
     "description": "A modern date range slicer with presets, themes, and multi-range support.",
     "supportUrl": "https://example.com/support",
     "gitHubUrl": "https://example.com/repo"

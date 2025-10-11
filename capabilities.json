@@ -73,6 +73,12 @@
             "bool": true
           }
         },
+        "dualCalendarEnabled": {
+          "displayName": "Enable dual calendar layout",
+          "type": {
+            "bool": true
+          }
+        },
         "firstDayOfWeek": {
           "displayName": "First day of week",
           "type": {
