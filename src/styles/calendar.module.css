@@ -1,8 +1,12 @@
 .calendar {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   color: var(--calendar-foreground, #1b1b1f);
+}
+
+.calendarMulti {
+  gap: 1.25rem;
 }
 
 .calendarHeader {
@@ -10,6 +14,45 @@
   align-items: center;
   justify-content: space-between;
   font-weight: 600;
+}
+
+.monthRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendarMulti .monthRow {
+  flex-direction: row;
+  align-items: stretch;
+  gap: 1.25rem;
+}
+
+.monthColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--calendar-month-bg, #ffffff);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem 1rem;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  min-width: 252px;
+}
+
+.calendarMulti .monthColumn {
+  flex: 1;
+}
+
+.monthHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.navButtonPlaceholder {
+  width: 2rem;
+  height: 2rem;
 }
 
 .navButton {
@@ -29,6 +72,11 @@
 .monthLabel {
   flex: 1;
   text-align: center;
+}
+
+.calendarMulti .monthLabel {
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 .grid {
@@ -123,6 +171,15 @@
 .rangeSummary {
   font-size: 0.85rem;
   opacity: 0.85;
+}
+
+.comparisonColumn {
+  align-self: stretch;
+  min-width: 208px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  overflow: hidden;
 }
 
 .popupWrapper {

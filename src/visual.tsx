@@ -77,6 +77,7 @@ const defaultFormatting: FormattingSettings = {
   selectionMode: "range",
   allowMultiple: true,
   firstDayOfWeek: 1,
+  dualCalendarEnabled: false,
   minDate: undefined,
   maxDate: undefined,
   showPresetBar: true,
@@ -201,6 +202,7 @@ const VisualShell: React.FC<VisualShellProps> = ({
   const [endInput, setEndInput] = React.useState(
     primaryRange ? formatDisplayDate(primaryRange.end) : ""
   );
+  const [comparisonEnabled, setComparisonEnabled] = React.useState(true);
 
   React.useEffect(() => {
     if (!primaryRange) {
@@ -326,6 +328,46 @@ const VisualShell: React.FC<VisualShellProps> = ({
     </div>
   );
 
+  const comparisonDescription = comparisonEnabled
+    ? "Review how the active range compares with a prior period."
+    : "Enable comparison to pin a reference range alongside your selection.";
+
+  const comparisonColumn = (
+    <div className={shellStyles.comparisonColumn}>
+      <div className={shellStyles.comparisonToggleRow}>
+        <div className={shellStyles.comparisonLabels}>
+          <span className={shellStyles.comparisonTitle}>Comparison</span>
+          <span className={shellStyles.comparisonStatus}>{comparisonEnabled ? "On" : "Off"}</span>
+        </div>
+        <button
+          type="button"
+          className={shellStyles.comparisonSwitch}
+          role="switch"
+          aria-checked={comparisonEnabled}
+          onClick={() => setComparisonEnabled((prev) => !prev)}
+        >
+          <span className={shellStyles.srOnly}>Toggle comparison mode</span>
+        </button>
+      </div>
+      <div className={shellStyles.comparisonDescription}>{comparisonDescription}</div>
+      <div className={shellStyles.comparisonPresets}>
+        <PresetBar
+          presets={presetOptions}
+          selectedKey={presetKey}
+          onSelect={(preset) => onPresetSelect(preset)}
+          onClear={handleClear}
+          errors={presetErrors}
+          orientation="vertical"
+          showClear={false}
+        />
+      </div>
+    </div>
+  );
+
+  const selectionSummary = ranges.map((range) => formatDateRange(range)).join(", ");
+
+  const dualCalendarActive = formatting.dualCalendarEnabled;
+
   const calendarPanel = (
     <div className={shellStyles.calendarPanel}>
       <Calendar
@@ -345,7 +387,18 @@ const VisualShell: React.FC<VisualShellProps> = ({
         cellPadding={formatting.calendarCellPadding}
         borderRadius={formatting.calendarBorderRadius}
         todayOutline={formatting.todayOutline}
+        monthsToShow={dualCalendarActive ? 2 : 1}
+        comparisonColumn={dualCalendarActive ? comparisonColumn : undefined}
+        showRangeSummary={false}
       />
+      {ranges.length > 0 ? (
+        <div className={shellStyles.selectionSummary}>
+          <span>Selected range</span>
+          <span>{selectionSummary}</span>
+        </div>
+      ) : (
+        <div className={shellStyles.selectionSummaryEmpty}>No dates selected</div>
+      )}
     </div>
   );
 
@@ -734,6 +787,10 @@ export class DatePickerVisual implements IVisual {
         typeof general?.firstDayOfWeek === "number"
           ? general?.firstDayOfWeek
           : defaultFormatting.firstDayOfWeek,
+      dualCalendarEnabled:
+        general?.dualCalendarEnabled === undefined
+          ? defaultFormatting.dualCalendarEnabled
+          : Boolean(general?.dualCalendarEnabled),
       minDate: (general?.minDate as string) ?? defaultFormatting.minDate,
       maxDate: (general?.maxDate as string) ?? defaultFormatting.maxDate,
       showPresetBar: presets?.showPresetBar === undefined ? defaultFormatting.showPresetBar : Boolean(presets?.showPresetBar),
