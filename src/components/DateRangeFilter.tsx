@@ -25,9 +25,24 @@ type DateRangeFilterProps = {
   forcePortalStrategy?: PortalStrategy;
   defaultPresetId?: string;
   defaultRange?: DateRange;
+  localeOverride?: string;
+  weekStartsOn?: number;
+  pillStyle?: "compact" | "expanded";
+  pillColors?: { background?: string; border?: string; text?: string };
+  pillFontSize?: number;
+  showPresetLabels?: boolean;
+  showQuickApply?: boolean;
+  showClear?: boolean;
 };
 
 const DEFAULT_PRESET_ID = "last7";
+
+function rangesEqual(a: DateRange | undefined, b: DateRange | undefined): boolean {
+  if (!a || !b) {
+    return false;
+  }
+  return toISODate(a.from) === toISODate(b.from) && toISODate(a.to) === toISODate(b.to);
+}
 
 function parseHashRange(): HashRange | null {
   if (typeof window === "undefined" || !window.location.hash) {
@@ -160,10 +175,6 @@ function resolveDefaultRange(
   return { range: normalized, presetId: defaultPresetId ?? DEFAULT_PRESET_ID };
 }
 
-function rangesEqual(a: DateRange, b: DateRange): boolean {
-  return toISODate(a.from) === toISODate(b.from) && toISODate(a.to) === toISODate(b.to);
-}
-
 export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   presets = PRESETS,
   dataMin,
@@ -172,15 +183,33 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   forcePortalStrategy = "auto",
   defaultPresetId,
   defaultRange,
+  localeOverride,
+  weekStartsOn,
+  pillStyle = "compact",
+  pillColors,
+  pillFontSize,
+  showPresetLabels = true,
+  showQuickApply = false,
+  showClear = true,
 }) => {
-  const locale = typeof navigator !== "undefined" ? navigator.language : "en-US";
+  const locale = localeOverride && localeOverride.trim()
+    ? localeOverride
+    : typeof navigator !== "undefined"
+      ? navigator.language
+      : "en-US";
   const anchorRef = useRef<HTMLButtonElement | null>(null);
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
   const today = useMemo(() => getToday(), []);
 
+  const dataMinTime = dataMin?.getTime();
+  const dataMaxTime = dataMax?.getTime();
+  const defaultRangeKey = defaultRange
+    ? `${defaultRange.from.getTime()}:${defaultRange.to.getTime()}`
+    : "";
+
   const initial = useMemo(
     () => computeInitialState(presets, dataMin, dataMax, defaultPresetId, defaultRange),
-    [presets, dataMin, dataMax, defaultPresetId, defaultRange],
+    [presets, dataMinTime, dataMaxTime, defaultPresetId, defaultRangeKey],
   );
 
   const [committedRange, setCommittedRange] = useState<DateRange>(initial.range);
@@ -188,15 +217,38 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const [draftRange, setDraftRange] = useState<DateRange>(initial.range);
   const [draftPresetId, setDraftPresetId] = useState(initial.presetId);
   const [open, setOpen] = useState(false);
-  const initialAppliedRef = useRef(false);
-  const previousInitialRef = useRef(initial);
+  const initialSignatureRef = useRef<string>();
+  const normalizedWeekStartsOn = useMemo(() => {
+    if (typeof weekStartsOn !== "number" || Number.isNaN(weekStartsOn)) {
+      return 1;
+    }
+    const rounded = Math.round(weekStartsOn);
+    return ((rounded % 7) + 7) % 7;
+  }, [weekStartsOn]);
 
   const commitChange = useCallback(
-    (range: DateRange, presetId: string) => {
-      setCommittedRange(range);
-      setCommittedPresetId(presetId);
+    (range: DateRange, presetId: string, options?: { force?: boolean }) => {
+      const force = options?.force ?? false;
+      let changed = force;
+      setCommittedRange((previous) => {
+        if (previous && rangesEqual(previous, range)) {
+          return previous;
+        }
+        changed = true;
+        return range;
+      });
+      setCommittedPresetId((previous) => {
+        if (previous === presetId) {
+          return previous;
+        }
+        changed = true;
+        return presetId;
+      });
       setDraftRange(range);
       setDraftPresetId(presetId);
+      if (!changed && !force) {
+        return;
+      }
       onChange(range, presetId);
       postRangeChanged(range, presetId);
       if (liveRegionRef.current) {
@@ -211,23 +263,13 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   }, [committedRange]);
 
   useEffect(() => {
-    if (initialAppliedRef.current) {
+    const signature = `${initial.presetId}:${initial.range.from.getTime()}:${initial.range.to.getTime()}`;
+    if (initialSignatureRef.current === signature) {
       return;
     }
-    initialAppliedRef.current = true;
-    commitChange(initial.range, initial.presetId);
+    initialSignatureRef.current = signature;
+    commitChange(initial.range, initial.presetId, { force: true });
   }, [commitChange, initial]);
-
-  useEffect(() => {
-    const previous = previousInitialRef.current;
-    if (
-      previous &&
-      (previous.presetId !== initial.presetId || !rangesEqual(previous.range, initial.range))
-    ) {
-      commitChange(initial.range, initial.presetId);
-    }
-    previousInitialRef.current = initial;
-  }, [initial, commitChange]);
 
   const pillLabel = useMemo(() => formatRange(committedRange.from, committedRange.to, locale), [committedRange, locale]);
 
@@ -266,6 +308,18 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     anchorRef.current?.focus();
   }, [commitChange, presets, dataMin, dataMax, today, defaultPresetId, defaultRange]);
 
+  const handleQuickApply = useCallback(() => {
+    const todayRange = ensureWithinRange(
+      normalizeRange(today, today),
+      dataMin,
+      dataMax,
+    );
+    const presetId = toPresetIdWithFallback(presets, todayRange, today);
+    commitChange(todayRange, presetId);
+    setOpen(false);
+    anchorRef.current?.focus();
+  }, [commitChange, dataMin, dataMax, presets, today]);
+
   const handleClose = useCallback(() => {
     setOpen(false);
     setDraftRange(committedRange);
@@ -292,14 +346,34 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       <button
         ref={anchorRef}
         type="button"
-        className="date-range-filter__pill"
+        className={[
+          "date-range-filter__pill",
+          pillStyle === "expanded"
+            ? "date-range-filter__pill--expanded"
+            : "date-range-filter__pill--compact",
+        ].join(" ")}
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
+        style={{
+          backgroundColor: pillColors?.background,
+          borderColor: pillColors?.border,
+          color: pillColors?.text,
+          fontSize: pillFontSize ? `${pillFontSize}px` : undefined,
+        }}
       >
-        <span className="date-range-filter__icon" aria-hidden="true" />
+        <span className="date-range-filter__icon" aria-hidden="true">
+          <svg viewBox="0 0 16 16" focusable="false" aria-hidden="true">
+            <path d="M5 1.5a.5.5 0 0 0-1 0V2h-.5A2.5 2.5 0 0 0 1 4.5v8A2.5 2.5 0 0 0 3.5 15h9A2.5 2.5 0 0 0 15 12.5v-8A2.5 2.5 0 0 0 12.5 2H12v-.5a.5.5 0 0 0-1 0V2H5V1.5Z" />
+            <path d="M14 6H2v6.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V6Z" />
+          </svg>
+        </span>
         <span className="date-range-filter__label">{pillLabel}</span>
-        <span className="date-range-filter__chevron" aria-hidden="true" />
+        <span className="date-range-filter__chevron" aria-hidden="true">
+          <svg viewBox="0 0 12 8" focusable="false" aria-hidden="true">
+            <path d="M1.41.58 6 5.17 10.59.58 12 2 6 8 0 2z" />
+          </svg>
+        </span>
       </button>
       <div ref={liveRegionRef} className="visually-hidden" aria-live="polite" />
       {open ? (
@@ -315,8 +389,13 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             dataMax={dataMax}
             onPresetSelect={handlePresetDraft}
             onApply={handleApply}
-            onClear={handleClear}
+            onClear={showClear ? handleClear : undefined}
             onClose={handleClose}
+            showQuickApply={showQuickApply}
+            onQuickApply={showQuickApply ? handleQuickApply : undefined}
+            showClear={showClear}
+            showPresetLabels={showPresetLabels}
+            weekStartsOn={normalizedWeekStartsOn}
           />
         </OutsideFramePortal>
       ) : null}

@@ -115,6 +115,42 @@
           "type": {
             "bool": true
           }
+        },
+        "pillBackgroundColor": {
+          "displayName": "Pill background",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "pillBorderColor": {
+          "displayName": "Pill border",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "pillTextColor": {
+          "displayName": "Pill text",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "pillFontSize": {
+          "displayName": "Pill font size",
+          "type": {
+            "numeric": true
+          }
         }
       }
     },
