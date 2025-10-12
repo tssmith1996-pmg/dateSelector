@@ -1,91 +1,112 @@
-# Preset Date Slicer (Power BI Custom Visual)
+# Date Range Filter for Power BI Visuals
 
-Preset Date Slicer is a Power BI custom visual that keeps slicer chrome off the canvas until you need it. A compact pill surfaces the currently applied range and preset, and expands into a two-column popup with rich presets, a keyboard-accessible calendar, and an optional comparison range.
+A compact React + TypeScript date range control designed for Power BI custom visuals. The component keeps a small pill on the
+canvas while projecting its calendar and preset popover outside the visual iframe through a lightweight postMessage portal. The
+repo contains both the reusable library code (`/src`) and a Vite-powered demo (`/demo`) that simulates the Power BI host
+handshake.
 
 ## Highlights
 
-- **Preset-first workflow** – Quickly jump between Today, Yesterday, Last 7/30 days, Month-to-date, Year-to-date, and Last Year. The preset bar mirrors the active selection so authors always know which rule is applied.
-- **Comparison on demand** – Comparison mode is hidden by default and available behind a toggle. Turning it on reveals a second calendar so you can place a previous-period range next to the main range.
-- **Inclusive calendars** – Date grids respect locale, week-start preference, min/max data bounds, and allow click, drag, or keyboard navigation. Continuous range highlighting keeps selection context obvious.
-- **Clear, Apply, and Quick Today** – Apply is the only action that commits a filter back to the model. Clear resets the draft state to Custom, while the optional Today button immediately applies Today and closes the popup.
-- **Format pane options** – Control the default preset, quick apply/clear buttons, comparison toggle visibility, locale, week start, pill size, and optional min/max clamps.
+- **Pill-first UI** – Minimal pill with calendar icon, range text, and chevron. Clicking opens a rich popover.
+- **Preset rail + calendar** – Presets highlight softly, preview the range, and require Apply to commit. A keyboard-accessible
+  calendar supports click, hover preview, drag-like selection, and arrow/PageUp/PageDown navigation.
+- **Outside-iframe rendering** – `OutsideFramePortal` negotiates a host overlay via `postMessage` and renders the popover into the
+  parent DOM. A 150 ms timeout automatically falls back to an in-iframe portal if the host does not respond.
+- **URL + messaging** – Applied ranges update `location.hash` (`from`/`to`) and emit `DATE_RANGE_CHANGED` messages to
+  `window.parent`.
+- **Accessibility** – Focus trap, live region announcements, ARIA-compliant buttons, and Monday-first calendar semantics.
 
-## Project structure
+## Repository layout
 
 ```
-/ (root)
-├── package.json
-├── pbiviz.json
-├── capabilities.json
-├── styles/
-│   ├── base.css
-│   ├── calendar.css
-│   └── popup.css
-└── src/
-    ├── components/
-    │   ├── Calendar.tsx
-    │   ├── ComparisonToggle.tsx
-    │   ├── DateRangePill.tsx
-    │   ├── FooterBar.tsx
-    │   ├── Popup.tsx
-    │   └── PresetList.tsx
-    ├── logic/
-    │   ├── dateUtils.ts
-    │   ├── presets.ts
-    │   └── state.ts
-    ├── visual/
-    │   ├── visual.ts
-    │   └── visualHost.ts
-    ├── global.d.ts
-    └── index.ts
+/src                 – Reusable component library
+  ├─ components      – Pill, popover, calendar, presets
+  ├─ portal          – Outside-frame portal implementation
+  ├─ date            – Pure date helpers and presets
+  └─ styles          – CSS tokens + component styles
+/demo                – Vite demo with parent + iframe visual
+  ├─ parent          – Host page exposing the overlay manager
+  └─ visual          – Iframe entry that renders the filter
 ```
 
-## Development
+## Running the demo
 
-1. **Install dependencies**
+1. Install dependencies for the demo workspace:
    ```bash
+   cd demo
    npm install
    ```
-2. **Run linting and tests**
+2. Start the Vite dev server:
    ```bash
-   npm run lint
-   npm test
+   npm run dev
    ```
-3. **Start the visual locally**
-   ```bash
-   npm start
-   ```
-   Attach `pbiviz start` to a sample report in Power BI Desktop (Developer Mode).
-4. **Package for distribution**
-   ```bash
-   npm run package
-   ```
-   Bundled `.pbiviz` output is created in the `dist/` folder.
+3. Open `http://localhost:5173/parent/` in your browser. The parent page embeds the visual iframe, exposes the overlay host, and
+   lets you toggle between outside-frame and in-iframe rendering paths. The “Last applied” panel and the `DATE_RANGE_CHANGED`
+   log verify behaviour.
 
-## Formatting pane
+To build a static bundle, run `npm run build` from `/demo` and serve the generated files in `demo/dist`.
 
-| Group      | Settings                                                                 |
-|------------|--------------------------------------------------------------------------|
-| Defaults   | Default preset, locale, week starts on                                   |
-| Comparison | Show comparison toggle, comparison default on                            |
-| Limits     | Minimum/maximum date clamps                                              |
-| Pill       | Compact vs. expanded pill, show preset labels                            |
-| Buttons    | Toggle Today quick-apply and Clear buttons                               |
+## Library usage
 
-State persistence is serialized into the hidden **State** object so bookmarks and sync slicer scenarios reopen with the correct ranges.
+Install the library code into your Power BI custom visual (copy the `/src` folder or publish it as an internal package). Render
+`<DateRangeFilter />` inside your visual entry point, pass any min/max clamps, and forward changes back to the host.
 
-## Accessibility
+```tsx
+import { DateRangeFilter, PRESETS, toISODate } from "@your-scope/date-range-filter";
 
-- The popup traps focus and closes on <kbd>Esc</kbd> or outside click.
-- Calendars expose `role="grid"` semantics, arrow key navigation, Page Up/Down for month/year jumps, and Home/End for week bounds.
-- Active ranges use `aria-pressed`, while today exposes `aria-current="date"`.
+<DateRangeFilter
+  presets={PRESETS}
+  dataMin={new Date(2021, 0, 1)}
+  dataMax={new Date()}
+  onChange={({ from, to }, presetId) => {
+    window.parent.postMessage(
+      {
+        type: "DATE_RANGE_CHANGED",
+        range: { from: toISODate(from), to: toISODate(to) },
+        presetId,
+      },
+      "*",
+    );
+  }}
+/>
+```
 
-## Comparison behaviour
+### Host overlay handshake
 
-- Comparison UI is hidden until toggled on via the preset column or the format pane setting.
-- When active, the comparison range mirrors the length of the main range and defaults to the previous period.
-- On narrow canvases the calendars stack vertically with a 16px gap; wider canvases show them side-by-side.
+To allow the popover to escape the iframe, the host page must:
 
-## License
+1. Listen for `DATE_PICKER_PORTAL_REQUEST` messages and create an absolutely positioned container above the report surface.
+2. Reply with `DATE_PICKER_PORTAL_READY` containing a DOM id. The visual portals into that element.
+3. Apply ongoing position updates from `DATE_PICKER_PORTAL_GEOMETRY` and remove the container on
+   `DATE_PICKER_PORTAL_UNMOUNT`.
 
-MIT. See `LICENCE` for details.
+The demo’s `/demo/src/parent.tsx` file shows a minimal overlay manager that you can adapt to your host shell.
+
+## Integration snippet
+
+Drop the component into your visual and wire it to the parent overlay protocol:
+
+```tsx
+import { DateRangeFilter, PRESETS, toISODate } from "@your-scope/date-range-filter";
+
+<DateRangeFilter
+  presets={PRESETS}
+  dataMin={new Date(2021, 0, 1)}
+  dataMax={new Date()}
+  onChange={({ from, to }, presetId) => {
+    window.parent.postMessage(
+      {
+        type: "DATE_RANGE_CHANGED",
+        range: { from: toISODate(from), to: toISODate(to) },
+        presetId,
+      },
+      "*",
+    );
+  }}
+/>
+```
+
+In the report host (e.g., a custom Power BI add-in), add a small overlay manager similar to the demo: watch for
+`DATE_PICKER_PORTAL_REQUEST`, create a floating container aligned to the pill, respond with `DATE_PICKER_PORTAL_READY`, and keep
+its position in sync via subsequent geometry messages. If the host does not provide the overlay, the component automatically
+falls back to an internal `document.body` portal so authors can still interact with the popover.
