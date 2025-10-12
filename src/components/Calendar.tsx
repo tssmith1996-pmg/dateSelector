@@ -1,346 +1,239 @@
-import classNames from 'classnames';
-import React from 'react';
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { DateRange } from "./DateRangeFilter";
 import {
-  addDays,
   addMonths,
-  endOfMonth,
-  endOfWeek,
-  format,
+  endOfDay,
+  getMonthMatrix,
+  getToday,
   isAfter,
   isBefore,
   isSameDay,
   isSameMonth,
-  isWithinInterval,
+  moveMonth,
+  normalizeRange,
+  startOfDay,
   startOfMonth,
-  startOfWeek,
-} from 'date-fns';
-import { DateRange } from '../logic/state';
-import { clipToBounds, endOfLocalDay, startOfLocalDay } from '../logic/dateUtils';
+  toISODate,
+} from "../date";
+import "../styles/calendar.css";
 
-interface CalendarProps {
-  id: string;
+export type CalendarProps = {
   range: DateRange;
-  onChange: (range: DateRange) => void;
-  minDate?: Date;
-  maxDate?: Date;
-  weekStartsOn: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  onRangeChange: (range: DateRange) => void;
   locale: string;
-  title: string;
-}
+  dataMin?: Date;
+  dataMax?: Date;
+};
 
-interface DayCell {
-  date: Date;
-  inMonth: boolean;
-  disabled: boolean;
-}
-
-const ISO_DATE = 'yyyy-MM-dd';
-
-export const Calendar: React.FC<CalendarProps> = ({
-  id,
-  range,
-  onChange,
-  minDate,
-  maxDate,
-  weekStartsOn,
-  locale,
-  title,
-}) => {
-  const [visibleMonth, setVisibleMonth] = React.useState(() =>
-    startOfMonth(range.end),
-  );
-  const [isDragging, setIsDragging] = React.useState(false);
-  const [dragAnchor, setDragAnchor] = React.useState<Date | null>(null);
-  const [pendingFocus, setPendingFocus] = React.useState<Date | null>(null);
-  const dayRefs = React.useRef<Map<string, HTMLButtonElement>>(new Map());
-
-  React.useEffect(() => {
-    setVisibleMonth((current) => {
-      if (isSameMonth(range.end, current)) {
-        return current;
-      }
-      return startOfMonth(range.end);
-    });
-  }, [range.end]);
-
-  React.useEffect(() => {
-    if (!isDragging) {
-      setDragAnchor(null);
-    }
-  }, [isDragging]);
-
-  React.useEffect(() => {
-    if (!pendingFocus) {
-      return;
-    }
-    const key = format(pendingFocus, ISO_DATE);
-    const button = dayRefs.current.get(key);
-    if (button) {
-      button.focus({ preventScroll: true });
-      setPendingFocus(null);
-    }
-  }, [pendingFocus, visibleMonth, range]);
-
-  React.useEffect(() => {
-    if (!isDragging) {
-      return;
-    }
-
-    const handlePointerUp = () => setIsDragging(false);
-    window.addEventListener('pointerup', handlePointerUp, true);
-    return () => {
-      window.removeEventListener('pointerup', handlePointerUp, true);
-    };
-  }, [isDragging]);
-
-  const minBound = minDate ? startOfLocalDay(minDate) : undefined;
-  const maxBound = maxDate ? endOfLocalDay(maxDate) : undefined;
-
-  const start = startOfWeek(startOfMonth(visibleMonth), { weekStartsOn });
-  const end = endOfWeek(endOfMonth(visibleMonth), { weekStartsOn });
-
-  const days: DayCell[] = [];
-  let cursor = start;
-  while (!isAfter(cursor, end)) {
-    const inMonth = isSameMonth(cursor, visibleMonth);
-    const disabled =
-      (minBound && isBefore(cursor, minBound)) ||
-      (maxBound && isAfter(cursor, maxBound));
-    days.push({
-      date: cursor,
-      inMonth,
-      disabled,
-    });
-    cursor = addDays(cursor, 1);
-  }
-
-  dayRefs.current.clear();
-
-  const monthFormatter = React.useMemo(() => {
-    return new Intl.DateTimeFormat(locale || 'en-US', {
-      month: 'long',
-      year: 'numeric',
-    });
-  }, [locale]);
-
-  const weekdayFormatter = React.useMemo(() => {
-    const reference = startOfWeek(new Date(2021, 5, 6), { weekStartsOn });
-    const formatter = new Intl.DateTimeFormat(locale || 'en-US', {
-      weekday: 'short',
-    });
-    return Array.from({ length: 7 }, (_, index) =>
-      formatter.format(addDays(reference, index)),
-    );
-  }, [locale, weekStartsOn]);
-
-  const dayFormatter = React.useMemo(() => {
-    return new Intl.DateTimeFormat(locale || 'en-US', {
-      dateStyle: 'full',
-    });
-  }, [locale]);
-
-  const selectRange = React.useCallback(
-    (nextRange: DateRange) => {
-      const clipped = clipToBounds(nextRange, minBound, maxBound);
-      onChange(clipped);
-    },
-    [maxBound, minBound, onChange],
+export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale, dataMin, dataMax }) => {
+  const [visibleMonth, setVisibleMonth] = useState<Date>(startOfMonth(range.from));
+  const [pendingStart, setPendingStart] = useState<Date | null>(null);
+  const [focusDate, setFocusDate] = useState<Date>(() => range.from);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const monthTitleFormatter = useMemo(() => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }), [locale]);
+  const weekdayFormatter = useMemo(() => new Intl.DateTimeFormat(locale, { weekday: "short" }), [locale]);
+  const fullDateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      }),
+    [locale],
   );
 
-  const handleDaySelection = React.useCallback(
-    (day: Date) => {
-      if (dragAnchor) {
-        const startDate = isBefore(day, dragAnchor) ? day : dragAnchor;
-        const endDate = isAfter(day, dragAnchor) ? day : dragAnchor;
-        selectRange({ start: startDate, end: endDate });
-        setDragAnchor(null);
-        setIsDragging(false);
-      } else {
-        setDragAnchor(day);
-        selectRange({ start: day, end: day });
-      }
-    },
-    [dragAnchor, selectRange],
-  );
+  useEffect(() => {
+    if (!isSameMonth(range.from, visibleMonth) && !isSameMonth(range.to, visibleMonth)) {
+      setVisibleMonth(startOfMonth(range.from));
+    }
+  }, [range, visibleMonth]);
 
-  const handleDayClick = (day: Date, disabled: boolean) => {
-    if (disabled) {
+  useEffect(() => {
+    setFocusDate(range.from);
+  }, [range]);
+
+  useEffect(() => {
+    const label = monthTitleFormatter.format(visibleMonth);
+    if (containerRef.current) {
+      containerRef.current.setAttribute("aria-label", `Calendar for ${label}`);
+    }
+  }, [visibleMonth, monthTitleFormatter]);
+
+  const monthMatrix = useMemo(() => getMonthMatrix(visibleMonth, 1), [visibleMonth]);
+
+  const today = useMemo(() => getToday(), []);
+
+  const handleDayCommit = (date: Date) => {
+    const normalizedDate = startOfDay(date);
+    const inBounds = isDateSelectable(normalizedDate, dataMin, dataMax);
+    if (!inBounds) {
       return;
     }
-    handleDaySelection(day);
+
+    if (pendingStart) {
+      const nextRange = normalizeRange(pendingStart, normalizedDate);
+      setPendingStart(null);
+      onRangeChange(nextRange);
+      return;
+    }
+
+    setPendingStart(normalizedDate);
+    onRangeChange(normalizeRange(normalizedDate, normalizedDate));
   };
 
-  const handlePointerDown = (day: Date, disabled: boolean) => (event: React.PointerEvent) => {
-    if (disabled) {
+  const handleDayHover = (date: Date) => {
+    if (!pendingStart) {
       return;
     }
-    event.preventDefault();
-    setIsDragging(true);
-    setDragAnchor(day);
-    selectRange({ start: day, end: day });
+    const normalizedDate = startOfDay(date);
+    if (!isDateSelectable(normalizedDate, dataMin, dataMax)) {
+      return;
+    }
+    const nextRange = normalizeRange(pendingStart, normalizedDate);
+    onRangeChange(nextRange);
   };
 
-  const handlePointerEnter = (day: Date, disabled: boolean) => () => {
-    if (!isDragging || disabled || !dragAnchor) {
-      return;
-    }
-    const startDate = isBefore(day, dragAnchor) ? day : dragAnchor;
-    const endDate = isAfter(day, dragAnchor) ? day : dragAnchor;
-    selectRange({ start: startDate, end: endDate });
-  };
-
-  const handleKeyDown = (day: Date, disabled: boolean) => (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (disabled) {
-      return;
-    }
-    let target: Date | null = null;
-    switch (event.key) {
-      case 'ArrowLeft':
-        target = addDays(day, -1);
-        break;
-      case 'ArrowRight':
-        target = addDays(day, 1);
-        break;
-      case 'ArrowUp':
-        target = addDays(day, -7);
-        break;
-      case 'ArrowDown':
-        target = addDays(day, 7);
-        break;
-      case 'Home':
-        target = startOfWeek(day, { weekStartsOn });
-        break;
-      case 'End':
-        target = endOfWeek(day, { weekStartsOn });
-        break;
-      case 'PageUp':
-        target = addMonths(day, event.shiftKey ? -12 : -1);
-        break;
-      case 'PageDown':
-        target = addMonths(day, event.shiftKey ? 12 : 1);
-        break;
-      case 'Enter':
-      case ' ': {
-        event.preventDefault();
-        handleDaySelection(day);
-        return;
-      }
-      default:
-        return;
-    }
-
-    if (target) {
+  const handleKeyNavigation = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
+    let next = date;
+    if (event.key === "ArrowRight") {
+      next = addDaysClamped(date, 1, dataMin, dataMax);
+    } else if (event.key === "ArrowLeft") {
+      next = addDaysClamped(date, -1, dataMin, dataMax);
+    } else if (event.key === "ArrowUp") {
+      next = addDaysClamped(date, -7, dataMin, dataMax);
+    } else if (event.key === "ArrowDown") {
+      next = addDaysClamped(date, 7, dataMin, dataMax);
+    } else if (event.key === "PageUp") {
       event.preventDefault();
-      setVisibleMonth(startOfMonth(target));
-      setPendingFocus(target);
+      setVisibleMonth(moveMonth(visibleMonth, event.shiftKey ? -12 : -1));
+      return;
+    } else if (event.key === "PageDown") {
+      event.preventDefault();
+      setVisibleMonth(moveMonth(visibleMonth, event.shiftKey ? 12 : 1));
+      return;
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      setFocusDate(range.from);
+      return;
+    } else if (event.key === "End") {
+      event.preventDefault();
+      setFocusDate(range.to);
+      return;
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleDayCommit(date);
+      return;
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setPendingStart(null);
+      onRangeChange(range);
+      return;
+    }
+    if (next !== date) {
+      event.preventDefault();
+      setFocusDate(next);
+      if (!isSameMonth(next, visibleMonth)) {
+        setVisibleMonth(startOfMonth(next));
+      }
     }
   };
 
-  const goToPreviousMonth = () => {
-    setVisibleMonth((current) => addMonths(current, -1));
+  const handlePrevMonth = () => {
+    setVisibleMonth(addMonths(visibleMonth, -1));
   };
 
-  const goToNextMonth = () => {
-    setVisibleMonth((current) => addMonths(current, 1));
+  const handleNextMonth = () => {
+    setVisibleMonth(addMonths(visibleMonth, 1));
   };
-
-  const rangeStart = startOfLocalDay(range.start);
-  const rangeEnd = endOfLocalDay(range.end);
-
-  let focusAssigned = false;
 
   return (
-    <div className="pds-calendar" aria-labelledby={`${id}-heading`}>
-      <div className="pds-calendarHeader">
-        <button type="button" className="pds-navButton" onClick={goToPreviousMonth} aria-label="Previous month">
-          ◄
+    <div className="calendar" ref={containerRef} role="application">
+      <div className="calendar__header">
+        <button type="button" className="calendar__nav" onClick={handlePrevMonth} aria-label="Previous month">
+          ‹
         </button>
-        <h3 id={`${id}-heading`} className="pds-calendarTitle">
-          <span className="pds-calendarMonth">{monthFormatter.format(visibleMonth)}</span>
-          <span className="pds-calendarSubtitle">{title}</span>
-        </h3>
-        <button type="button" className="pds-navButton" onClick={goToNextMonth} aria-label="Next month">
-          ▶
+        <div className="calendar__title">{monthTitleFormatter.format(visibleMonth)}</div>
+        <button type="button" className="calendar__nav" onClick={handleNextMonth} aria-label="Next month">
+          ›
         </button>
       </div>
-      <table className="pds-calendarGrid" role="grid" aria-labelledby={`${id}-heading`}>
-        <thead>
-          <tr>
-            {weekdayFormatter.map((label, index) => (
-              <th key={index} scope="col">
-                {label}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {Array.from({ length: days.length / 7 }, (_, weekIndex) => (
-            <tr key={weekIndex} role="row">
-              {days.slice(weekIndex * 7, weekIndex * 7 + 7).map(({ date, inMonth, disabled }, columnIndex) => {
-                const iso = format(date, ISO_DATE);
-                const isStart = isSameDay(date, rangeStart);
-                const isEnd = isSameDay(date, rangeEnd);
-                const inRange = isWithinInterval(date, { start: rangeStart, end: rangeEnd });
-                const isToday = isSameDay(date, startOfLocalDay(new Date()));
-                let isFocus = false;
-                if (!focusAssigned && isEnd) {
-                  isFocus = true;
-                } else if (!focusAssigned && isStart) {
-                  isFocus = true;
-                } else if (
-                  !focusAssigned &&
-                  inMonth &&
-                  !disabled &&
-                  weekIndex === 0 &&
-                  columnIndex === 0
-                ) {
-                  isFocus = true;
-                }
+      <div className="calendar__weekdays" role="row">
+        {monthMatrix[0].map((date) => {
+          const label = weekdayFormatter.format(date);
+          return (
+            <div key={`weekday-${label}`} className="calendar__weekday" role="columnheader" aria-label={label}>
+              {label.slice(0, 2)}
+            </div>
+          );
+        })}
+      </div>
+      <div className="calendar__grid" role="grid">
+        {monthMatrix.map((week, rowIndex) => (
+          <div key={`row-${rowIndex}`} className="calendar__row" role="row">
+            {week.map((date) => {
+              const disabled = !isDateSelectable(date, dataMin, dataMax);
+              const selectedStart = isSameDay(date, range.from);
+              const selectedEnd = isSameDay(date, range.to);
+              const inRange = !selectedStart && !selectedEnd && isWithinDraftRange(date, range);
+              const outside = !isSameMonth(date, visibleMonth);
+              const isTodayFlag = isSameDay(date, today);
 
-                const tabIndex = isFocus ? 0 : -1;
-                if (isFocus) {
-                  focusAssigned = true;
-                }
+              const classes = ["calendar__day"];
+              if (selectedStart) classes.push("calendar__day--start");
+              if (selectedEnd) classes.push("calendar__day--end");
+              if (inRange) classes.push("calendar__day--in-range");
+              if (disabled) classes.push("calendar__day--disabled");
+              if (outside) classes.push("calendar__day--outside");
+              if (isTodayFlag) classes.push("calendar__day--today");
+              if (isSameDay(focusDate, date)) classes.push("calendar__day--focus");
 
-                return (
-                  <td key={iso} role="gridcell">
-                    <button
-                      ref={(element) => {
-                        if (!element) {
-                          dayRefs.current.delete(iso);
-                        } else {
-                          dayRefs.current.set(iso, element);
-                        }
-                      }}
-                      id={`${id}-${iso}`}
-                      className={classNames('pds-dayButton', {
-                        'pds-dayOutside': !inMonth,
-                        'pds-dayDisabled': disabled,
-                        'pds-dayInRange': inRange,
-                        'pds-dayStart': isStart,
-                        'pds-dayEnd': isEnd,
-                        'pds-dayToday': isToday,
-                      })}
-                      type="button"
-                      tabIndex={tabIndex}
-                      onClick={() => handleDayClick(date, disabled)}
-                      onPointerDown={handlePointerDown(date, disabled)}
-                      onPointerEnter={handlePointerEnter(date, disabled)}
-                      onKeyDown={handleKeyDown(date, disabled)}
-                      aria-pressed={inRange}
-                      aria-current={isToday ? 'date' : undefined}
-                      aria-label={dayFormatter.format(date)}
-                      disabled={disabled}
-                    >
-                      {format(date, 'd')}
-                    </button>
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              return (
+                <button
+                  type="button"
+                  key={toISODate(date)}
+                  className={classes.join(" ")}
+                  role="gridcell"
+                  aria-selected={selectedStart || selectedEnd || inRange}
+                  aria-label={fullDateFormatter.format(date)}
+                  onClick={() => handleDayCommit(date)}
+                  onFocus={() => setFocusDate(date)}
+                  onKeyDown={(event) => handleKeyNavigation(event, date)}
+                  onMouseEnter={() => handleDayHover(date)}
+                  disabled={disabled}
+                >
+                  <span>{date.getDate()}</span>
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
+
+function isDateSelectable(date: Date, min?: Date, max?: Date) {
+  if (min && isBefore(endOfDay(date), min)) {
+    return false;
+  }
+  if (max && isAfter(startOfDay(date), max)) {
+    return false;
+  }
+  return true;
+}
+
+function isWithinDraftRange(date: Date, range: DateRange) {
+  const time = date.getTime();
+  return time > range.from.getTime() && time < range.to.getTime();
+}
+
+function addDaysClamped(date: Date, amount: number, min?: Date, max?: Date) {
+  const target = new Date(date);
+  target.setDate(target.getDate() + amount);
+  const normalized = startOfDay(target);
+  if (!isDateSelectable(normalized, min, max)) {
+    return date;
+  }
+  return normalized;
+}
+
