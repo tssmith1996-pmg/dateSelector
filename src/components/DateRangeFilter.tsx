@@ -17,6 +17,35 @@ export type DateRange = { from: Date; to: Date };
 
 type HashRange = { from?: Date; to?: Date };
 
+function isTopLevelWindow(): boolean {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  try {
+    return window.self === window.top;
+  } catch (error) {
+    return false;
+  }
+}
+
+function getSameOriginParent(): Window | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+  if (window.parent === window) {
+    return window;
+  }
+  try {
+    const parentOrigin = window.parent.location?.origin;
+    if (parentOrigin && parentOrigin === window.location?.origin) {
+      return window.parent;
+    }
+  } catch (error) {
+    return undefined;
+  }
+  return undefined;
+}
+
 type DateRangeFilterProps = {
   presets?: DatePreset[];
   dataMin?: Date;
@@ -63,7 +92,7 @@ function parseHashRange(): HashRange | null {
 }
 
 function updateHash(range: DateRange) {
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || !isTopLevelWindow()) {
     return;
   }
   const params = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -77,7 +106,12 @@ function postRangeChanged(range: DateRange, presetId: string) {
   if (typeof window === "undefined") {
     return;
   }
-  window.parent?.postMessage(
+  const parentWindow = getSameOriginParent();
+  const targetOrigin = parentWindow?.location?.origin;
+  if (!parentWindow || !targetOrigin) {
+    return;
+  }
+  parentWindow.postMessage(
     {
       type: "DATE_RANGE_CHANGED",
       range: {
@@ -86,7 +120,7 @@ function postRangeChanged(range: DateRange, presetId: string) {
       },
       presetId,
     },
-    "*",
+    targetOrigin,
   );
 }
 
