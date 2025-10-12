@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 export type PortalStrategy = "auto" | "outside" | "iframe";
@@ -47,6 +47,33 @@ export const OutsideFramePortal: React.FC<OutsideFramePortalProps> = ({ anchorRe
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const requestIdRef = useRef<string | null>(null);
   const readyRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current !== null && typeof window !== "undefined") {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, []);
+
+  const scheduleUpdate = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (rafRef.current !== null) {
+      return;
+    }
+    rafRef.current = window.requestAnimationFrame(() => {
+      rafRef.current = null;
+      if (mode === "outside") {
+        sendGeometry(anchorRef, requestIdRef.current);
+      } else if (mode === "iframe" && container) {
+        updateIframePosition(anchorRef, container);
+      }
+    });
+  }, [anchorRef, container, mode]);
 
   useEffect(() => {
     if (strategy === "iframe") {
@@ -86,7 +113,7 @@ export const OutsideFramePortal: React.FC<OutsideFramePortalProps> = ({ anchorRe
       container.style.zIndex = "999";
       container.style.top = "0";
       container.style.left = "0";
-      updateIframePosition(anchorRef, container);
+      scheduleUpdate();
     } else {
       container.style.position = "absolute";
       container.style.zIndex = "999999";
@@ -153,55 +180,53 @@ export const OutsideFramePortal: React.FC<OutsideFramePortalProps> = ({ anchorRe
 
   useEffect(() => {
     if (mode === "outside") {
-      sendGeometry(anchorRef, requestIdRef.current);
+      scheduleUpdate();
     }
-  }, [mode, anchorRef]);
+  }, [mode, scheduleUpdate]);
 
   useEffect(() => {
     if (!container) {
       return;
     }
-    if (mode !== "outside") {
-      if (mode === "iframe") {
-        const update = () => updateIframePosition(anchorRef, container);
-        update();
-        const Observer = typeof window !== "undefined" ? window.ResizeObserver : undefined;
-        const observer = Observer ? new Observer(update) : null;
-        if (observer && anchorRef.current) {
-          observer.observe(anchorRef.current);
-        }
-        window.addEventListener("scroll", update, true);
-        window.addEventListener("resize", update);
-        return () => {
-          observer?.disconnect();
-          window.removeEventListener("scroll", update, true);
-          window.removeEventListener("resize", update);
-        };
-      }
-      return;
-    }
 
-    const update = () => sendGeometry(anchorRef, requestIdRef.current);
-    update();
+    scheduleUpdate();
 
     const Observer = typeof window !== "undefined" ? window.ResizeObserver : undefined;
-    const observer = Observer ? new Observer(update) : null;
+    const observer = Observer && anchorRef.current ? new Observer(() => scheduleUpdate()) : null;
+
     if (observer && anchorRef.current) {
       observer.observe(anchorRef.current);
     }
 
-    const parent = window.parent;
-    parent?.addEventListener("scroll", update);
-    window.addEventListener("scroll", update, true);
-    window.addEventListener("resize", update);
+    if (mode === "outside") {
+      const parent = window.parent;
+      parent?.addEventListener("scroll", scheduleUpdate);
+      window.addEventListener("scroll", scheduleUpdate, true);
+      window.addEventListener("resize", scheduleUpdate);
+
+      return () => {
+        observer?.disconnect();
+        parent?.removeEventListener("scroll", scheduleUpdate);
+        window.removeEventListener("scroll", scheduleUpdate, true);
+        window.removeEventListener("resize", scheduleUpdate);
+      };
+    }
+
+    if (mode === "iframe") {
+      window.addEventListener("scroll", scheduleUpdate, true);
+      window.addEventListener("resize", scheduleUpdate);
+
+      return () => {
+        observer?.disconnect();
+        window.removeEventListener("scroll", scheduleUpdate, true);
+        window.removeEventListener("resize", scheduleUpdate);
+      };
+    }
 
     return () => {
       observer?.disconnect();
-      parent?.removeEventListener("scroll", update);
-      window.removeEventListener("scroll", update, true);
-      window.removeEventListener("resize", update);
     };
-  }, [mode, anchorRef, container]);
+  }, [mode, anchorRef, container, scheduleUpdate]);
 
   if (!target || !container) {
     return null;

@@ -23,9 +23,10 @@ export type CalendarProps = {
   locale: string;
   dataMin?: Date;
   dataMax?: Date;
+  weekStartsOn?: number;
 };
 
-export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale, dataMin, dataMax }) => {
+export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale, dataMin, dataMax, weekStartsOn }) => {
   const [visibleMonth, setVisibleMonth] = useState<Date>(startOfMonth(range.from));
   const [pendingStart, setPendingStart] = useState<Date | null>(null);
   const [focusDate, setFocusDate] = useState<Date>(() => range.from);
@@ -59,7 +60,9 @@ export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale
     }
   }, [visibleMonth, monthTitleFormatter]);
 
-  const monthMatrix = useMemo(() => getMonthMatrix(visibleMonth, 1), [visibleMonth]);
+  const startDay = typeof weekStartsOn === "number" ? weekStartsOn : 1;
+
+  const monthMatrix = useMemo(() => getMonthMatrix(visibleMonth, startDay), [visibleMonth, startDay]);
 
   const today = useMemo(() => getToday(), []);
 

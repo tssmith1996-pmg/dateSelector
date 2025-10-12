@@ -16,8 +16,13 @@ export type PopoverProps = {
   onPresetSelect: (presetId: string) => void;
   onRangeChange: (range: DateRange) => void;
   onApply: () => void;
-  onClear: () => void;
+  onClear?: () => void;
   onClose: () => void;
+  showQuickApply?: boolean;
+  onQuickApply?: () => void;
+  showClear?: boolean;
+  showPresetLabels?: boolean;
+  weekStartsOn?: number;
 };
 
 export const Popover: React.FC<PopoverProps> = ({
@@ -33,6 +38,11 @@ export const Popover: React.FC<PopoverProps> = ({
   onApply,
   onClear,
   onClose,
+  showQuickApply = false,
+  onQuickApply,
+  showClear = true,
+  showPresetLabels = true,
+  weekStartsOn,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const previousActive = useRef<HTMLElement | null>(null);
@@ -102,6 +112,7 @@ export const Popover: React.FC<PopoverProps> = ({
             selectedPresetId={presetId}
             committedPresetId={committedPresetId}
             onPresetSelect={onPresetSelect}
+            showLabels={showPresetLabels}
           />
         </div>
         <div className="popover__calendar">
@@ -111,13 +122,21 @@ export const Popover: React.FC<PopoverProps> = ({
             locale={locale}
             dataMin={dataMin}
             dataMax={dataMax}
+            weekStartsOn={weekStartsOn}
           />
         </div>
       </div>
       <div className="popover__footer">
-        <button type="button" className="popover__ghost" onClick={onClear}>
-          Clear
-        </button>
+        {showQuickApply && onQuickApply ? (
+          <button type="button" className="popover__quick" onClick={onQuickApply}>
+            Today
+          </button>
+        ) : null}
+        {showClear && onClear ? (
+          <button type="button" className="popover__ghost" onClick={onClear}>
+            Clear
+          </button>
+        ) : null}
         <button type="button" className="popover__primary" onClick={onApply}>
           Apply
         </button>

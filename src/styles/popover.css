@@ -63,6 +63,21 @@
   cursor: pointer;
 }
 
+.popover__quick {
+  min-width: 96px;
+  border-radius: var(--ds-radius-small);
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  padding: 8px var(--ds-spacing-3);
+  font-size: var(--ds-font-size-medium);
+  cursor: pointer;
+  background-color: rgba(37, 99, 235, 0.1);
+  color: var(--ds-color-text);
+}
+
+.popover__quick:hover {
+  background-color: rgba(37, 99, 235, 0.18);
+}
+
 .popover__ghost {
   background-color: transparent;
   color: var(--ds-color-text);
@@ -111,7 +126,8 @@
   }
 
   .popover__ghost,
-  .popover__primary {
+  .popover__primary,
+  .popover__quick {
     width: 100%;
   }
 }

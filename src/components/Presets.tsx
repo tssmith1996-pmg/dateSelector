@@ -7,9 +7,16 @@ export type PresetsProps = {
   selectedPresetId: string;
   committedPresetId: string;
   onPresetSelect: (presetId: string) => void;
+  showLabels?: boolean;
 };
 
-export const Presets: React.FC<PresetsProps> = ({ presets, selectedPresetId, committedPresetId, onPresetSelect }) => {
+export const Presets: React.FC<PresetsProps> = ({
+  presets,
+  selectedPresetId,
+  committedPresetId,
+  onPresetSelect,
+  showLabels = true,
+}) => {
   return (
     <div className="presets" role="listbox" aria-label="Date presets">
       {presets.map((preset) => {
@@ -25,9 +32,15 @@ export const Presets: React.FC<PresetsProps> = ({ presets, selectedPresetId, com
             className={classes.join(" ")}
             role="option"
             aria-selected={isSelected}
+            aria-label={!showLabels ? preset.label : undefined}
             onClick={() => onPresetSelect(preset.id)}
           >
-            <span className="presets__label">{preset.label}</span>
+            <span
+              className={showLabels ? "presets__label" : "presets__label visually-hidden"}
+              aria-hidden={!showLabels}
+            >
+              {preset.label}
+            </span>
             {isCommitted && <span className="presets__badge">Applied</span>}
           </button>
         );
