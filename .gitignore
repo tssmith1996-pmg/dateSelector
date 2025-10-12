@@ -6,3 +6,5 @@ webpack.statistics.dev.html
 webpack.statistics.prod.html
 /dist/*.pbiviz
 /dist/*.pbix
+/demo/node_modules
+/demo/dist
