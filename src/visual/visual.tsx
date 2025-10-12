@@ -191,11 +191,47 @@ function findColumnTarget(dataView?: DataView): FilterTarget | undefined {
   return { table, column };
 }
 
+type VisualUpdateOptionsWithFilters = VisualUpdateOptions & {
+  filters?: models.IFilter[];
+  filterState?: { filters?: models.IFilter[] };
+};
+
+function getAllFilters(options: VisualUpdateOptionsWithFilters): models.IFilter[] {
+  const unique: models.IFilter[] = [];
+  const seen = new Set<string>();
+
+  function pushCollection(collection?: models.IFilter[]) {
+    if (!collection) {
+      return;
+    }
+    for (const filter of collection) {
+      if (!filter) {
+        continue;
+      }
+      const key = JSON.stringify(filter);
+      if (key && seen.has(key)) {
+        continue;
+      }
+      if (key) {
+        seen.add(key);
+      }
+      unique.push(filter);
+    }
+  }
+
+  pushCollection(options.jsonFilters as models.IFilter[] | undefined);
+  pushCollection(options.filters);
+  pushCollection(options.filterState?.filters);
+
+  return unique;
+}
+
 function findExistingFilterRange(options: VisualUpdateOptions, target?: FilterTarget): DateRange | undefined {
   if (!target) {
     return undefined;
   }
-  const filters = options.jsonFilters ?? [];
+  const withFilters = options as VisualUpdateOptionsWithFilters;
+  const filters = getAllFilters(withFilters);
   for (const filter of filters) {
     const candidate = filter as models.IAdvancedFilter;
     if (!candidate?.target || !("conditions" in candidate)) {
