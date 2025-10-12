@@ -1,7 +1,7 @@
 {
-  "name": "aurora-date-picker",
+  "name": "preset-date-slicer",
   "version": "0.1.0",
-  "description": "A Power BI custom visual for selecting date ranges with presets, theming, and multi-range support.",
+  "description": "A Power BI custom visual that surfaces preset date ranges and comparison controls in a compact pill.",
   "license": "MIT",
   "scripts": {
     "pbiviz": "pbiviz",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "classnames": "^2.3.2",
+    "date-fns": "^2.30.0",
     "powerbi-models": "^1.13.0",
     "powerbi-visuals-api": "~5.11.0",
     "powerbi-visuals-utils-formattingmodel": "^6.0.2",

@@ -1,0 +1,38 @@
+.pds-popupPortal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.pds-popupOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.12);
+  display: block;
+  pointer-events: auto;
+}
+
+.pds-popup {
+  position: absolute;
+  background: var(--pds-surface-elevated);
+  color: var(--pds-text);
+  border-radius: 16px;
+  border: 1px solid var(--pds-border);
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.18),
+    0 8px 20px rgba(15, 23, 42, 0.12);
+  padding: 24px;
+  margin-top: 8px;
+  min-width: 320px;
+  max-width: min(90vw, 880px);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.pds-popupOverlay::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
