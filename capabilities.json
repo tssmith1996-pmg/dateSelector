@@ -1,17 +1,14 @@
 {
   "suppressDefaultTitle": true,
   "supportsHighlight": false,
-  "supportsLandingPage": true,
   "supportsKeyboardFocus": true,
   "supportsEmptyDataView": true,
   "supportsSynchronizingFilterState": true,
-  "advancedEditModeSupport": 2,
   "dataRoles": [
     {
       "name": "date",
       "kind": "Grouping",
-      "displayName": "Date",
-      "displayNameKey": "Role_Date"
+      "displayName": "Date"
     }
   ],
   "dataViewMappings": [
@@ -27,64 +24,66 @@
         "categories": {
           "for": {
             "in": "date"
-          },
-          "dataReductionAlgorithm": {
-            "sample": {
-              "count": 300
-            }
           }
         }
       }
     }
   ],
   "objects": {
-    "general": {
-      "displayName": "General",
+    "defaults": {
+      "displayName": "Defaults",
       "properties": {
-        "displayMode": {
-          "displayName": "Display mode",
+        "defaultPreset": {
+          "displayName": "Default preset",
           "type": {
             "enumeration": [
-              {
-                "value": "popup",
-                "displayName": "Popup"
-              },
-              {
-                "value": "canvas",
-                "displayName": "Canvas"
-              }
+              { "value": "today", "displayName": "Today" },
+              { "value": "yesterday", "displayName": "Yesterday" },
+              { "value": "last7", "displayName": "Last 7 days" },
+              { "value": "last30", "displayName": "Last 30 days" },
+              { "value": "thisMonth", "displayName": "This month" },
+              { "value": "lastMonth", "displayName": "Last month" },
+              { "value": "qtd", "displayName": "Quarter to date" },
+              { "value": "ytd", "displayName": "Year to date" },
+              { "value": "lastYear", "displayName": "Last year" },
+              { "value": "custom", "displayName": "Custom" }
             ]
           }
         },
-        "selectionMode": {
-          "displayName": "Picker type",
-          "type": {
-            "enumeration": [
-              { "value": "single", "displayName": "Single date" },
-              { "value": "range", "displayName": "Range" },
-              { "value": "startOnly", "displayName": "Start only" },
-              { "value": "endOnly", "displayName": "End only" }
-            ]
-          }
-        },
-        "allowMultiple": {
-          "displayName": "Allow multiple ranges",
-          "type": {
-            "bool": true
-          }
-        },
-        "dualCalendarEnabled": {
-          "displayName": "Enable dual calendar layout",
-          "type": {
-            "bool": true
-          }
-        },
-        "firstDayOfWeek": {
-          "displayName": "First day of week",
+        "weekStartsOn": {
+          "displayName": "Week starts on",
           "type": {
             "numeric": true
           }
         },
+        "locale": {
+          "displayName": "Locale",
+          "type": {
+            "text": true
+          }
+        }
+      }
+    },
+    "comparison": {
+      "displayName": "Comparison",
+      "properties": {
+        "showComparisonToggle": {
+          "displayName": "Show comparison toggle",
+          "type": {
+            "bool": true
+          }
+        },
+        "comparisonDefaultOn": {
+          "displayName": "Comparison on by default",
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    },
+    "limits": {
+      "displayName": "Limits",
+      "properties": {
         "minDate": {
           "displayName": "Minimum date",
           "type": {
@@ -99,109 +98,39 @@
         }
       }
     },
-    "presets": {
-      "displayName": "Presets",
+    "pill": {
+      "displayName": "Pill",
       "properties": {
-        "showPresetBar": {
-          "displayName": "Show preset bar",
+        "pillStyle": {
+          "displayName": "Pill style",
+          "type": {
+            "enumeration": [
+              { "value": "compact", "displayName": "Compact" },
+              { "value": "expanded", "displayName": "Expanded" }
+            ]
+          }
+        },
+        "showPresetLabels": {
+          "displayName": "Show preset labels",
           "type": {
             "bool": true
-          }
-        },
-        "presetJson": {
-          "displayName": "Preset list (JSON)",
-          "type": {
-            "text": true
-          }
-        },
-        "defaultSelection": {
-          "displayName": "Default selection",
-          "type": {
-            "text": true
-          }
-        },
-        "defaultPresetKey": {
-          "displayName": "Default preset key",
-          "type": {
-            "text": true
           }
         }
       }
     },
-    "calendarStyles": {
-      "displayName": "Calendar styles",
+    "buttons": {
+      "displayName": "Buttons",
       "properties": {
-        "weekendStyleEnabled": {
-          "displayName": "Highlight weekends",
+        "showQuickApply": {
+          "displayName": "Show Today quick apply",
           "type": {
             "bool": true
           }
         },
-        "weekendColor": {
-          "displayName": "Weekend color",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
-        },
-        "holidayColor": {
-          "displayName": "Holiday marker",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
-        },
-        "fontFamily": {
-          "displayName": "Font family",
-          "type": {
-            "text": true
-          }
-        },
-        "fontSize": {
-          "displayName": "Font size",
-          "type": {
-            "numeric": true
-          }
-        },
-        "cellPadding": {
-          "displayName": "Cell padding",
-          "type": {
-            "numeric": true
-          }
-        },
-        "borderRadius": {
-          "displayName": "Border radius",
-          "type": {
-            "numeric": true
-          }
-        },
-        "todayOutline": {
-          "displayName": "Outline today",
+        "showClear": {
+          "displayName": "Show Clear",
           "type": {
             "bool": true
-          }
-        },
-        "themeName": {
-          "displayName": "Theme preset",
-          "type": {
-            "text": true
-          }
-        }
-      }
-    },
-    "holidaySettings": {
-      "displayName": "Holidays",
-      "properties": {
-        "holidayList": {
-          "displayName": "Holiday list",
-          "type": {
-            "text": true
           }
         }
       }
