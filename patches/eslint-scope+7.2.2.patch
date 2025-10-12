@@ -1,0 +1,26 @@
+diff --git a/node_modules/eslint-scope/lib/referencer.cjs b/node_modules/eslint-scope/lib/referencer.cjs
+new file mode 100644
+index 0000000..85ee238
+--- /dev/null
++++ b/node_modules/eslint-scope/lib/referencer.cjs
+@@
++"use strict";
++
++const { Referencer } = require("../dist/eslint-scope.cjs");
++
++module.exports = Referencer;
++module.exports.default = module.exports;
+diff --git a/node_modules/eslint-scope/package.json b/node_modules/eslint-scope/package.json
+index 697c694..999807d 100644
+--- a/node_modules/eslint-scope/package.json
++++ b/node_modules/eslint-scope/package.json
+@@ -9,6 +9,10 @@
+       "import": "./lib/index.js",
+       "require": "./dist/eslint-scope.cjs"
+     },
++    "./lib/referencer": {
++      "import": "./lib/referencer.js",
++      "require": "./lib/referencer.cjs"
++    },
+     "./package.json": "./package.json"
+   },

@@ -20,9 +20,7 @@
   "capabilities": "capabilities.json",
   "dependencies": null,
   "stringResources": [
-    {
-      "resourceId": "en-US",
-      "path": "stringResources/en-US.json"
-    }
+    "stringResources/en-US/resources.resjson",
+    "stringResources/en-AU/resources.resjson"
   ]
 }
