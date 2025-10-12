@@ -1,18 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2017",
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "jsx": "react-jsx",
-    "outDir": "./.tmp/build/",
-    "lib": ["dom", "es2020"],
+    "lib": ["DOM", "ES2020"],
+    "declaration": true,
+    "outDir": "./dist-types",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["powerbi-visuals-api", "jest", "node"],
+    "types": ["jest", "node", "powerbi-visuals-api"],
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "test/**/*"],
-  "exclude": ["node_modules", "dist", ".tmp"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "demo/node_modules", "dist", "demo/dist"]
 }

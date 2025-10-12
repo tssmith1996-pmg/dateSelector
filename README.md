@@ -1,91 +1,123 @@
-# Preset Date Slicer (Power BI Custom Visual)
+# Date Range Filter Power BI Visual
 
-Preset Date Slicer is a Power BI custom visual that keeps slicer chrome off the canvas until you need it. A compact pill surfaces the currently applied range and preset, and expands into a two-column popup with rich presets, a keyboard-accessible calendar, and an optional comparison range.
+A compact React + TypeScript date range slicer that is ready to import directly into Power BI. The visual keeps a tiny pill on
+the canvas while projecting its rich preset rail and calendar outside the iframe through a lightweight `postMessage` portal.
+This repository now ships everything required to package the `.pbiviz` artifact, exercise the outside-iframe behaviour in a
+demo shell, and consume the underlying component library in other projects.
 
 ## Highlights
 
-- **Preset-first workflow** – Quickly jump between Today, Yesterday, Last 7/30 days, Month-to-date, Year-to-date, and Last Year. The preset bar mirrors the active selection so authors always know which rule is applied.
-- **Comparison on demand** – Comparison mode is hidden by default and available behind a toggle. Turning it on reveals a second calendar so you can place a previous-period range next to the main range.
-- **Inclusive calendars** – Date grids respect locale, week-start preference, min/max data bounds, and allow click, drag, or keyboard navigation. Continuous range highlighting keeps selection context obvious.
-- **Clear, Apply, and Quick Today** – Apply is the only action that commits a filter back to the model. Clear resets the draft state to Custom, while the optional Today button immediately applies Today and closes the popup.
-- **Format pane options** – Control the default preset, quick apply/clear buttons, comparison toggle visibility, locale, week start, pill size, and optional min/max clamps.
+- **Production Power BI visual** – `src/visual/visual.tsx` implements the `PresetDateSlicerVisual` class that wires the
+  React component into Power BI’s filtering APIs, honours format pane defaults, and persists state between sessions.
+- **Preset rail + calendar** – Presets preview their range, keyboard navigation is available throughout the calendar, and drag
+  style selections are simulated through hover previews.
+- **Outside-iframe rendering** – `OutsideFramePortal` negotiates a host overlay via `postMessage` and renders the popover into
+  the parent DOM. If the host declines, the portal automatically falls back to an in-iframe rendering path.
+- **Accessibility** – Focus trap, live region announcements, ARIA-compliant buttons, and Monday-first calendar semantics.
 
-## Project structure
+## Repository layout
 
 ```
-/ (root)
-├── package.json
-├── pbiviz.json
-├── capabilities.json
-├── styles/
-│   ├── base.css
-│   ├── calendar.css
-│   └── popup.css
-└── src/
-    ├── components/
-    │   ├── Calendar.tsx
-    │   ├── ComparisonToggle.tsx
-    │   ├── DateRangePill.tsx
-    │   ├── FooterBar.tsx
-    │   ├── Popup.tsx
-    │   └── PresetList.tsx
-    ├── logic/
-    │   ├── dateUtils.ts
-    │   ├── presets.ts
-    │   └── state.ts
-    ├── visual/
-    │   ├── visual.ts
-    │   └── visualHost.ts
-    ├── global.d.ts
-    └── index.ts
+/src                 – Reusable component library & Power BI entry point
+  ├─ components      – Pill, popover, calendar, presets
+  ├─ portal          – Outside-frame portal implementation
+  ├─ date            – Pure date helpers and presets
+  ├─ styles          – CSS tokens + component styles
+  └─ visual          – Power BI `IVisual` implementation
+/demo                – Vite demo with parent + iframe visual
 ```
 
-## Development
+## Building the Power BI visual
 
-1. **Install dependencies**
+1. Install dependencies in the repository root:
+
    ```bash
    npm install
    ```
-2. **Run linting and tests**
+
+2. Package the visual for Power BI Desktop / Service:
+
    ```bash
-   npm run lint
-   npm test
+   npm run package:visual
    ```
-3. **Start the visual locally**
+
+   The compiled `.pbiviz` file will be generated inside `dist/`. Import it into Power BI like any other custom visual.
+
+3. (Optional) Run `npm run build` to emit TypeScript declaration files for the reusable component API.
+
+### Configuring defaults inside Power BI
+
+Open the *Defaults → Default preset* property in the visual format pane to pick the initial range that appears whenever the
+report loads or a consumer clears the slicer. Values map directly to the bundled preset identifiers (`today`, `yesterday`,
+`last7`, `last30`, `thisMonth`, `lastMonth`, `mtd`, `qtd`, `ytd`, `lastYear`, `custom`). The visual persists the last applied
+range in the hidden *State* object so readers return to their previous selection. Optional *Limits → Minimum/Maximum date*
+settings clamp the interactive calendar and preset ranges, preventing selections outside your dataset.
+
+The `PresetDateSlicerVisual` mirrors any existing report filters on the bound date column and merges new ranges via
+`applyJsonFilter`, ensuring the host model always stays synchronised.
+
+## Running the demo
+
+The Vite workspace still offers a quick way to observe the outside-iframe handshake.
+
+1. Install dependencies for the demo workspace:
+
    ```bash
-   npm start
+   cd demo
+   npm install
    ```
-   Attach `pbiviz start` to a sample report in Power BI Desktop (Developer Mode).
-4. **Package for distribution**
+
+2. Start the Vite dev server:
+
    ```bash
-   npm run package
+   npm run dev
    ```
-   Bundled `.pbiviz` output is created in the `dist/` folder.
 
-## Formatting pane
+3. Open `http://localhost:5173/parent/` in your browser. The parent page embeds the visual iframe, exposes the overlay host,
+   and lets you toggle between outside-frame and in-iframe rendering paths. The “Last applied” panel and the
+   `DATE_RANGE_CHANGED` log verify behaviour.
 
-| Group      | Settings                                                                 |
-|------------|--------------------------------------------------------------------------|
-| Defaults   | Default preset, locale, week starts on                                   |
-| Comparison | Show comparison toggle, comparison default on                            |
-| Limits     | Minimum/maximum date clamps                                              |
-| Pill       | Compact vs. expanded pill, show preset labels                            |
-| Buttons    | Toggle Today quick-apply and Clear buttons                               |
+To build a static bundle, run `npm run build` from `/demo` and serve the generated files in `demo/dist`.
 
-State persistence is serialized into the hidden **State** object so bookmarks and sync slicer scenarios reopen with the correct ranges.
+## Library usage
 
-## Accessibility
+If you need the component outside the packaged visual, copy the `/src` folder or publish it as an internal package. Render
+`<DateRangeFilter />` inside your host, pass any min/max clamps, and forward changes back to the parent shell.
 
-- The popup traps focus and closes on <kbd>Esc</kbd> or outside click.
-- Calendars expose `role="grid"` semantics, arrow key navigation, Page Up/Down for month/year jumps, and Home/End for week bounds.
-- Active ranges use `aria-pressed`, while today exposes `aria-current="date"`.
+```tsx
+import { DateRangeFilter, PRESETS, toISODate } from "@your-scope/date-range-filter";
 
-## Comparison behaviour
+<DateRangeFilter
+  presets={PRESETS}
+  dataMin={new Date(2021, 0, 1)}
+  dataMax={new Date()}
+  defaultPresetId={settings.defaults.defaultPreset}
+  onChange={({ from, to }, presetId) => {
+    window.parent.postMessage(
+      {
+        type: "DATE_RANGE_CHANGED",
+        range: { from: toISODate(from), to: toISODate(to) },
+        presetId,
+      },
+      "*",
+    );
+  }}
+/>
+```
 
-- Comparison UI is hidden until toggled on via the preset column or the format pane setting.
-- When active, the comparison range mirrors the length of the main range and defaults to the previous period.
-- On narrow canvases the calendars stack vertically with a 16px gap; wider canvases show them side-by-side.
+### Host overlay handshake
 
-## License
+To allow the popover to escape the iframe, the host page must:
 
-MIT. See `LICENCE` for details.
+1. Listen for `DATE_PICKER_PORTAL_REQUEST` messages and create an absolutely positioned container above the report surface.
+2. Reply with `DATE_PICKER_PORTAL_READY` containing a DOM id. The visual portals into that element.
+3. Apply ongoing position updates from `DATE_PICKER_PORTAL_GEOMETRY` and remove the container on
+   `DATE_PICKER_PORTAL_UNMOUNT`.
+
+The demo’s `/demo/src/parent.tsx` file shows a minimal overlay manager that you can adapt to your host shell.
+
+### Default ranges when embedding outside Power BI
+
+External consumers of the library (outside the packaged Power BI visual) can still pass `defaultPresetId` or a `defaultRange`
+override as shown above. Both overrides respect `dataMin`/`dataMax` clamps and synchronise URL hash state and
+`DATE_RANGE_CHANGED` messages, mirroring the in-visual behaviour.
