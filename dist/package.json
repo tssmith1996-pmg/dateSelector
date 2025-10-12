@@ -1,14 +1,14 @@
 {
-		"version": "3.2025.02.16",
-		"author": {"name":"jro","email":"josborn@tambla.com.au"},
+		"version": "0.1.0.0",
+		"author": {"name":"Contoso Analytics","email":"support@example.com"},
 		"resources": [
 			{
 				"resourceId": "rId0",
 				"sourceType": 5,
-				"file": "resources/dateSel4A1A0033E6F54D1B809B6E51058D54E3.pbiviz.json"
+				"file": "resources/presetDateSlicer3B9F1C7C8C784918A4D4C5F5EF23A12F.pbiviz.json"
 			}
 		],
-		"visual": {"name":"dateSelector","displayName":"DateSelector","guid":"dateSel4A1A0033E6F54D1B809B6E51058D54E3","visualClassName":"DateSelector","version":"3.2025.02.16","description":"Date Range Selector","supportUrl":"https://github.com/o221/dateSelector/issues","gitHubUrl":"https://github.com/o221/dateSelector"},
+		"visual": {"name":"presetDateSlicer","displayName":"Preset Date Slicer","guid":"presetDateSlicer3B9F1C7C8C784918A4D4C5F5EF23A12F","visualClassName":"PresetDateSlicerVisual","version":"0.1.0.0","description":"Compact date-range pill with popup presets, calendar selection, and optional comparison mode.","supportUrl":"https://example.com/support","gitHubUrl":"https://example.com/repo"},
 		"metadata": {
 			"pbivizjson": {
 				"resourceId": "rId0"

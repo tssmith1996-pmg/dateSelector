@@ -11,6 +11,36 @@ export type OutsideFramePortalProps = {
 
 const RESPONSE_TIMEOUT = 150;
 
+type CryptoWithUUID = Crypto & { randomUUID?: () => string };
+
+function getCrypto(): CryptoWithUUID | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+  const cryptoCandidate = (window.crypto ?? (window as Window & { msCrypto?: CryptoWithUUID }).msCrypto) as
+    | CryptoWithUUID
+    | undefined;
+  return cryptoCandidate;
+}
+
+function generatePortalRequestId(): string {
+  const cryptoObject = getCrypto();
+  if (cryptoObject?.randomUUID) {
+    return `date-portal-${cryptoObject.randomUUID()}`;
+  }
+  if (cryptoObject?.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    cryptoObject.getRandomValues(bytes);
+    const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    return `date-portal-${hex}`;
+  }
+  const timestamp = Date.now().toString(36);
+  const perf = typeof performance !== "undefined" && typeof performance.now === "function"
+    ? Math.floor(performance.now()).toString(36)
+    : "";
+  return `date-portal-${timestamp}${perf}`;
+}
+
 export const OutsideFramePortal: React.FC<OutsideFramePortalProps> = ({ anchorRef, strategy = "auto", children }) => {
   const [target, setTarget] = useState<HTMLElement | null>(() => (strategy === "iframe" ? document.body : null));
   const [mode, setMode] = useState<PortalStrategy>(strategy === "iframe" ? "iframe" : "auto");
@@ -70,7 +100,7 @@ export const OutsideFramePortal: React.FC<OutsideFramePortalProps> = ({ anchorRe
     if (strategy === "iframe") {
       return;
     }
-    const id = `date-portal-${Math.random().toString(36).slice(2)}`;
+    const id = generatePortalRequestId();
     requestIdRef.current = id;
     const timer = window.setTimeout(() => {
       if (!readyRef.current) {

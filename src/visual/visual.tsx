@@ -58,7 +58,6 @@ function parsePersistedState(value: unknown): PersistedState | undefined {
     }
     return parsed;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.warn("Failed to parse persisted state", error);
     return undefined;
   }
@@ -187,7 +186,11 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private currentPresetId?: string;
 
-  constructor(options: VisualConstructorOptions) {
+  constructor(options?: VisualConstructorOptions) {
+    if (!options) {
+      throw new Error("Visual constructor options are required.");
+    }
+
     this.host = options.host;
     this.rootElement = document.createElement("div");
     this.rootElement.className = "preset-date-slicer";
