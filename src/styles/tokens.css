@@ -1,0 +1,37 @@
+:root {
+  --ds-color-bg: #ffffff;
+  --ds-color-border: #d1d5db;
+  --ds-color-border-strong: #9ca3af;
+  --ds-color-text: #111827;
+  --ds-color-text-muted: #4b5563;
+  --ds-color-surface: #f9fafb;
+  --ds-color-primary: #111827;
+  --ds-color-primary-text: #ffffff;
+  --ds-spacing-1: 4px;
+  --ds-spacing-2: 8px;
+  --ds-spacing-3: 12px;
+  --ds-spacing-4: 16px;
+  --ds-radius-small: 4px;
+  --ds-radius-medium: 8px;
+  --ds-shadow-popover: 0 12px 30px rgba(15, 23, 42, 0.12);
+  --ds-font-size-small: 12px;
+  --ds-font-size-medium: 14px;
+  --ds-font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+}
+
+body {
+  font-family: var(--ds-font-family);
+  color: var(--ds-color-text);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
