@@ -1,3 +1,4 @@
+
 # Date Range Filter Power BI Visual
 
 A compact React + TypeScript date range slicer that is ready to import directly into Power BI. The visual keeps a tiny pill on
@@ -13,6 +14,7 @@ demo shell, and consume the underlying component library in other projects.
   style selections are simulated through hover previews.
 - **Outside-iframe rendering** – `OutsideFramePortal` negotiates a host overlay via `postMessage` and renders the popover into
   the parent DOM. If the host declines, the portal automatically falls back to an in-iframe rendering path.
+
 - **Accessibility** – Focus trap, live region announcements, ARIA-compliant buttons, and Monday-first calendar semantics.
 
 ## Repository layout
@@ -32,6 +34,7 @@ demo shell, and consume the underlying component library in other projects.
 1. Install dependencies in the repository root:
 
    ```bash
+   cd demo
    npm install
    ```
 
