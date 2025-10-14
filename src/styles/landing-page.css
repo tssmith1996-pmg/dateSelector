@@ -1,0 +1,52 @@
+@import "./tokens.css";
+
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px dashed var(--visual-border, rgba(148, 163, 184, 0.6));
+  border-radius: var(--ds-radius-medium);
+  padding: 32px;
+  gap: var(--ds-spacing-3);
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.landing-page__badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--visual-accent, #2563eb);
+}
+
+.landing-page__badge img {
+  width: 40px;
+  height: 40px;
+}
+
+.landing-page__title {
+  font-size: 20px;
+  margin: 0;
+  color: inherit;
+}
+
+.landing-page__body {
+  margin: 0;
+  font-size: var(--ds-font-size-medium);
+  color: inherit;
+}
+
+.landing-page__action {
+  margin: 0;
+  font-weight: 600;
+  color: var(--visual-accent, #2563eb);
+}
+
+.landing-page[data-high-contrast="true"] {
+  border-style: solid;
+}

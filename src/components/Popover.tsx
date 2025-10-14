@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useId } from "react";
 import { DatePreset } from "../date";
 import { DateRange } from "../types/dateRange";
+import { VisualStrings } from "../types/localization";
 import { Calendar } from "./Calendar";
 import { Presets } from "./Presets";
 import "../styles/popover.css";
@@ -23,6 +24,7 @@ export type PopoverProps = {
   showClear?: boolean;
   showPresetLabels?: boolean;
   weekStartsOn?: number;
+  strings: VisualStrings;
 };
 
 export const Popover: React.FC<PopoverProps> = ({
@@ -43,9 +45,11 @@ export const Popover: React.FC<PopoverProps> = ({
   showClear = true,
   showPresetLabels = true,
   weekStartsOn,
+  strings,
 }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const previousActive = useRef<HTMLElement | null>(null);
+  const headingId = useId();
 
   useEffect(() => {
     previousActive.current = document.activeElement as HTMLElement | null;
@@ -83,22 +87,22 @@ export const Popover: React.FC<PopoverProps> = ({
   };
 
   return (
-    <div className="popover" role="dialog" aria-modal="true" aria-labelledby="date-range-heading" ref={containerRef}>
+    <div className="popover" role="dialog" aria-modal="true" aria-labelledby={headingId} ref={containerRef}>
       <span tabIndex={0} className="popover__sentinel" onFocus={() => handleSentinelFocus("start")} />
       <div className="popover__content">
         <div className="popover__rail">
-          <h2 id="date-range-heading" className="popover__heading">
-            Date range
+          <h2 id={headingId} className="popover__heading">
+            {strings.popover.heading}
           </h2>
           <div className="popover__preset-select">
             <label htmlFor="preset-select" className="popover__preset-label">
-              Preset
+              {strings.popover.presetLabel}
             </label>
             <select
               id="preset-select"
               value={presetId}
               onChange={(event) => onPresetSelect(event.target.value)}
-              aria-label="Date preset"
+              aria-label={strings.popover.presetAriaLabel}
             >
               {presets.map((preset) => (
                 <option key={preset.id} value={preset.id}>
@@ -113,6 +117,7 @@ export const Popover: React.FC<PopoverProps> = ({
             committedPresetId={committedPresetId}
             onPresetSelect={onPresetSelect}
             showLabels={showPresetLabels}
+            strings={strings.presets}
           />
         </div>
         <div className="popover__calendar">
@@ -123,22 +128,23 @@ export const Popover: React.FC<PopoverProps> = ({
             dataMin={dataMin}
             dataMax={dataMax}
             weekStartsOn={weekStartsOn}
+            strings={strings.calendar}
           />
         </div>
       </div>
       <div className="popover__footer">
         {showQuickApply && onQuickApply ? (
           <button type="button" className="popover__quick" onClick={onQuickApply}>
-            Today
+            {strings.popover.quickApply}
           </button>
         ) : null}
         {showClear && onClear ? (
           <button type="button" className="popover__ghost" onClick={onClear}>
-            Clear
+            {strings.popover.clear}
           </button>
         ) : null}
         <button type="button" className="popover__primary" onClick={onApply}>
-          Apply
+          {strings.popover.apply}
         </button>
       </div>
       <span tabIndex={0} className="popover__sentinel" onFocus={() => handleSentinelFocus("end")} />
