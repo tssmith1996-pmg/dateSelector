@@ -141,6 +141,12 @@ function getNumericValue(value: unknown): number | undefined {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
   }
+  if (typeof value === "string") {
+    const parsed = Number(value.trim());
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
   return undefined;
 }
 
@@ -161,11 +167,12 @@ function getColorValue(value: unknown): string | undefined {
   return typeof color === "string" ? color : undefined;
 }
 
-function normalizeWeekStartsOn(value?: number): number | undefined {
-  if (typeof value !== "number" || Number.isNaN(value)) {
+function normalizeWeekStartsOn(value?: number | string): number | undefined {
+  const numeric = typeof value === "string" ? getNumericValue(value) : value;
+  if (typeof numeric !== "number" || Number.isNaN(numeric)) {
     return undefined;
   }
-  const rounded = Math.round(value);
+  const rounded = Math.round(numeric);
   if (!Number.isFinite(rounded)) {
     return undefined;
   }
@@ -531,9 +538,10 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     const selector = undefined as unknown as powerbi.data.Selector;
     switch (options.objectName) {
       case "defaults": {
+        const normalizedWeekStartsOn = normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1;
         const properties: powerbi.DataViewObject = {
           defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
-          weekStartsOn: normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1,
+          weekStartsOn: normalizedWeekStartsOn.toString(),
         };
         if (this.settings.defaults.locale) {
           properties.locale = this.settings.defaults.locale;
@@ -880,7 +888,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     }
     const normalizedWeekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn);
     const weekStartItem = typeof normalizedWeekStartsOn === "number"
-      ? FORMAT_WEEK_START_ITEMS.find((item) => item.value === normalizedWeekStartsOn)
+      ? FORMAT_WEEK_START_ITEMS.find((item) => item.value === normalizedWeekStartsOn.toString())
       : undefined;
     if (weekStartItem) {
       defaultsCard.weekStartsOn.value = weekStartItem;

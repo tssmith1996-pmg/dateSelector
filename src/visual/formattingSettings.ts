@@ -1,5 +1,6 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
+import type { ILocalizedItemMember } from "powerbi-visuals-utils-formattingmodel/lib/FormattingSettingsInterfaces";
 
 const { SimpleCard, ItemDropdown, NumUpDown, ColorPicker, ToggleSwitch, Model } =
   formattingSettings;
@@ -22,19 +23,19 @@ export const PILL_STYLE_ITEMS = [
   { value: "expanded", displayNameKey: "pill_style_expanded" },
 ];
 
-export type WeekStartDropdownItem = { value: number; displayNameKey: string };
+export type WeekStartDropdownItem = ILocalizedItemMember & { value: string };
 
 export const WEEK_START_ITEMS: WeekStartDropdownItem[] = [
-  { value: 0, displayNameKey: "weekday_sun" },
-  { value: 1, displayNameKey: "weekday_mon" },
-  { value: 2, displayNameKey: "weekday_tue" },
-  { value: 3, displayNameKey: "weekday_wed" },
-  { value: 4, displayNameKey: "weekday_thu" },
-  { value: 5, displayNameKey: "weekday_fri" },
-  { value: 6, displayNameKey: "weekday_sat" },
+  { value: "0", displayNameKey: "weekday_sun" },
+  { value: "1", displayNameKey: "weekday_mon" },
+  { value: "2", displayNameKey: "weekday_tue" },
+  { value: "3", displayNameKey: "weekday_wed" },
+  { value: "4", displayNameKey: "weekday_thu" },
+  { value: "5", displayNameKey: "weekday_fri" },
+  { value: "6", displayNameKey: "weekday_sat" },
 ];
 
-export type LocaleDropdownItem = { value: string; displayNameKey: string };
+export type LocaleDropdownItem = ILocalizedItemMember & { value: string };
 
 export const LOCALE_ITEMS: LocaleDropdownItem[] = [
   { value: "en-AU", displayNameKey: "locale_en_AU" },
@@ -59,14 +60,14 @@ export class DefaultsCardSettings extends SimpleCard {
     value: PRESET_ITEMS[2],
   });
 
-  public weekStartsOn = new ItemDropdown<WeekStartDropdownItem>({
+  public weekStartsOn = new ItemDropdown({
     name: "weekStartsOn",
     displayNameKey: "format_defaults_weekStartsOn",
     items: WEEK_START_ITEMS,
     value: WEEK_START_ITEMS[1],
   });
 
-  public locale = new ItemDropdown<LocaleDropdownItem>({
+  public locale = new ItemDropdown({
     name: "locale",
     displayNameKey: "format_defaults_locale",
     items: LOCALE_ITEMS,

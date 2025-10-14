@@ -11,10 +11,7 @@
       "name": "date",
       "kind": "Grouping",
       "displayName": "Date",
-      "displayNameKey": "role_date_displayName",
-      "preferredTypes": [
-        { "dateTime": true }
-      ]
+      "displayNameKey": "role_date_displayName"
     }
   ],
 
@@ -33,11 +30,6 @@
       }
     }
   ],
-
-  "sorting": {
-    "implicit": true
-  },
-
   "objects": {
     "general": {
       "displayNameKey": "format_general_displayName",
@@ -73,13 +65,13 @@
           "displayNameKey": "format_defaults_weekStartsOn",
           "type": {
             "enumeration": [
-              { "value": 0, "displayNameKey": "weekday_sun" },
-              { "value": 1, "displayNameKey": "weekday_mon" },
-              { "value": 2, "displayNameKey": "weekday_tue" },
-              { "value": 3, "displayNameKey": "weekday_wed" },
-              { "value": 4, "displayNameKey": "weekday_thu" },
-              { "value": 5, "displayNameKey": "weekday_fri" },
-              { "value": 6, "displayNameKey": "weekday_sat" }
+              { "value": "0", "displayNameKey": "weekday_sun" },
+              { "value": "1", "displayNameKey": "weekday_mon" },
+              { "value": "2", "displayNameKey": "weekday_tue" },
+              { "value": "3", "displayNameKey": "weekday_wed" },
+              { "value": "4", "displayNameKey": "weekday_thu" },
+              { "value": "5", "displayNameKey": "weekday_fri" },
+              { "value": "6", "displayNameKey": "weekday_sat" }
             ]
           }
         },
