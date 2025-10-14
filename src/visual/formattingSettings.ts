@@ -119,6 +119,16 @@ export class PillCardSettings extends SimpleCard {
     },
   });
 
+  public pillMinWidth = new NumUpDown({
+    name: "pillMinWidth",
+    displayName: "Pill minimum width",
+    value: 260,
+    options: {
+      minValue: { value: 120, type: powerbi.visuals.ValidatorType.Min },
+      maxValue: { value: 640, type: powerbi.visuals.ValidatorType.Max },
+    },
+  });
+
   public slices = [
     this.pillStyle,
     this.showPresetLabels,
@@ -126,6 +136,7 @@ export class PillCardSettings extends SimpleCard {
     this.pillBorderColor,
     this.pillTextColor,
     this.pillFontSize,
+    this.pillMinWidth,
   ];
 }
 

@@ -28,6 +28,6 @@ describe("date utilities", () => {
     const from = new Date(Date.UTC(2022, 1, 17));
     const to = new Date(Date.UTC(2022, 1, 21));
     const label = formatRange(from, to, "en-US");
-    expect(label).toContain("Feb");
+    expect(label).toBe("February 17, 2022 – February 21, 2022");
   });
 });

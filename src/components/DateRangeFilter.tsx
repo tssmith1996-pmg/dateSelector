@@ -59,6 +59,7 @@ type DateRangeFilterProps = {
   pillStyle?: "compact" | "expanded";
   pillColors?: { background?: string; border?: string; text?: string };
   pillFontSize?: number;
+  pillMinWidth?: number;
   showPresetLabels?: boolean;
   showQuickApply?: boolean;
   showClear?: boolean;
@@ -222,6 +223,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   pillStyle = "compact",
   pillColors,
   pillFontSize,
+  pillMinWidth,
   showPresetLabels = true,
   showQuickApply = false,
   showClear = true,
@@ -394,6 +396,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
           borderColor: pillColors?.border,
           color: pillColors?.text,
           fontSize: pillFontSize ? `${pillFontSize}px` : undefined,
+          minWidth: pillMinWidth ? `${pillMinWidth}px` : undefined,
         }}
       >
         <span className="date-range-filter__icon" aria-hidden="true">

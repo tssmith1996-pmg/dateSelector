@@ -17,6 +17,7 @@
   cursor: pointer;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   line-height: 1.25;
+  min-width: 260px;
 }
 
 .date-range-filter__pill--compact {

@@ -1,4 +1,5 @@
-import React, { act } from "react";
+import React from "react";
+import { act } from "react-dom/test-utils";
 
 (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
 import { createRoot, Root } from "react-dom/client";

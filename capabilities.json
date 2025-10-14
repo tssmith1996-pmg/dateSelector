@@ -151,6 +151,12 @@
           "type": {
             "numeric": true
           }
+        },
+        "pillMinWidth": {
+          "displayName": "Pill minimum width",
+          "type": {
+            "numeric": true
+          }
         }
       }
     },
