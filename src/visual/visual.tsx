@@ -2,8 +2,14 @@ import powerbi from "powerbi-visuals-api";
 import * as models from "powerbi-models";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
+import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import { DateRangeFilter, DateRange } from "../components/DateRangeFilter";
 import { PRESETS, ensureWithinRange, fromISODate, normalizeRange, toISODate } from "../date";
+import {
+  PresetDateSlicerFormattingSettingsModel,
+  PRESET_ITEMS as FORMAT_PRESET_ITEMS,
+  PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
+} from "./formattingSettings";
 
 type VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -327,6 +333,11 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     buttons: {},
   };
 
+  private formattingSettingsService = new FormattingSettingsService();
+
+  private formattingSettings: PresetDateSlicerFormattingSettingsModel =
+    new PresetDateSlicerFormattingSettingsModel();
+
   private lastRenderKey?: string;
 
   private lastAppliedFilterKey?: string;
@@ -347,9 +358,16 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   public update(options: VisualUpdateOptions): void {
     this.dataView = options.dataViews?.[0];
+    this.formattingSettings = this.dataView
+      ? this.formattingSettingsService.populateFormattingSettingsModel(
+          PresetDateSlicerFormattingSettingsModel,
+          this.dataView,
+        )
+      : new PresetDateSlicerFormattingSettingsModel();
     this.columnTarget = findColumnTarget(this.dataView);
     const settings = parseVisualSettings(this.dataView);
     this.settings = settings;
+    this.syncFormattingSettings(settings);
     const bounds = getDataBounds(this.dataView);
     const appliedRange = findExistingFilterRange(options, this.columnTarget);
 
@@ -540,6 +558,10 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     }
   }
 
+  public getFormattingModel(): powerbi.visuals.FormattingModel {
+    return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
+  }
+
   public destroy(): void {
     this.reactRoot.unmount();
     this.rootElement.remove();
@@ -595,6 +617,48 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       raw: payload,
     };
     this.settings.defaults.presetId = presetId;
+  }
+
+  private syncFormattingSettings(settings: VisualSettings): void {
+    const defaultsCard = this.formattingSettings.defaults;
+    const presetItem = FORMAT_PRESET_ITEMS.find(
+      (item) => item.value === (settings.defaults.presetId ?? undefined),
+    );
+    if (presetItem) {
+      defaultsCard.defaultPreset.value = presetItem;
+    }
+    const normalizedWeekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn);
+    defaultsCard.weekStartsOn.value = normalizedWeekStartsOn ?? defaultsCard.weekStartsOn.value;
+    defaultsCard.locale.value = settings.defaults.locale ?? "";
+
+    const limitsCard = this.formattingSettings.limits;
+    limitsCard.minDate.value = settings.limits.minDate ? toISODate(settings.limits.minDate) : "";
+    limitsCard.maxDate.value = settings.limits.maxDate ? toISODate(settings.limits.maxDate) : "";
+
+    const pillCard = this.formattingSettings.pill;
+    const pillStyleItem = settings.pill.style
+      ? FORMAT_PILL_STYLE_ITEMS.find((item) => item.value === settings.pill.style)
+      : undefined;
+    if (pillStyleItem) {
+      pillCard.pillStyle.value = pillStyleItem;
+    }
+    pillCard.showPresetLabels.value = settings.pill.showPresetLabels ?? true;
+    pillCard.pillBackgroundColor.value = settings.pill.backgroundColor
+      ? { value: settings.pill.backgroundColor }
+      : { value: pillCard.pillBackgroundColor.value?.value ?? "" };
+    pillCard.pillBorderColor.value = settings.pill.borderColor
+      ? { value: settings.pill.borderColor }
+      : { value: pillCard.pillBorderColor.value?.value ?? "" };
+    pillCard.pillTextColor.value = settings.pill.textColor
+      ? { value: settings.pill.textColor }
+      : { value: pillCard.pillTextColor.value?.value ?? "" };
+    if (typeof settings.pill.fontSize === "number" && Number.isFinite(settings.pill.fontSize)) {
+      pillCard.pillFontSize.value = settings.pill.fontSize;
+    }
+
+    const buttonsCard = this.formattingSettings.buttons;
+    buttonsCard.showQuickApply.value = settings.buttons.showQuickApply ?? false;
+    buttonsCard.showClear.value = settings.buttons.showClear ?? true;
   }
 }
 
