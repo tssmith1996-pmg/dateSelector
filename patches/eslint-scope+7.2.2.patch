@@ -10,3 +10,19 @@ index 0000000..8e7aadb
 +
 +module.exports = Referencer;
 +module.exports.default = module.exports;
+diff --git a/node_modules/eslint-scope/package.json b/node_modules/eslint-scope/package.json
+index 4d988f1..9ecb166 100644
+--- a/node_modules/eslint-scope/package.json
++++ b/node_modules/eslint-scope/package.json
+@@
+   "exports": {
+     ".": {
+       "import": "./lib/index.js",
+       "require": "./dist/eslint-scope.cjs"
+     },
++    "./lib/referencer": {
++      "import": "./lib/referencer.cjs",
++      "require": "./lib/referencer.cjs"
++    },
+     "./package.json": "./package.json"
+   },
