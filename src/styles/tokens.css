@@ -17,6 +17,16 @@
   --ds-font-size-small: 12px;
   --ds-font-size-medium: 14px;
   --ds-font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  --visual-accent: #2563eb;
+  --visual-accent-weak: rgba(37, 99, 235, 0.12);
+  --visual-accent-text: #ffffff;
+  --visual-border: rgba(148, 163, 184, 0.6);
+  --visual-text: var(--ds-color-text);
+  --visual-text-muted: var(--ds-color-text-muted);
+  --visual-surface: var(--ds-color-surface);
+  --visual-pill-background: var(--ds-color-bg);
+  --visual-pill-border: var(--ds-color-border);
+  --visual-pill-text: var(--ds-color-text);
 }
 
 body {

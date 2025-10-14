@@ -1,0 +1,13 @@
+diff --git a/node_modules/powerbi-visuals-tools/lib/LintValidator.js b/node_modules/powerbi-visuals-tools/lib/LintValidator.js
+index 427f445..9e90b6b 100644
+--- a/node_modules/powerbi-visuals-tools/lib/LintValidator.js
++++ b/node_modules/powerbi-visuals-tools/lib/LintValidator.js
+@@ -54,7 +54,7 @@ export class LintValidator {
+         ConsoleWriter.warning("Using recommended eslint config.");
+         this.config = {
+             overrideConfig: powerbiPlugin.configs.recommended,
+-            overrideConfigFile: true,
++            overrideConfigFile: null,
+             fix: this.shouldFix,
+         };
+     }

@@ -5,37 +5,37 @@ const { SimpleCard, ItemDropdown, NumUpDown, TextInput, ColorPicker, ToggleSwitc
   formattingSettings;
 
 export const PRESET_ITEMS = [
-  { value: "today", displayName: "Today" },
-  { value: "yesterday", displayName: "Yesterday" },
-  { value: "last7", displayName: "Last 7 days" },
-  { value: "last30", displayName: "Last 30 days" },
-  { value: "thisMonth", displayName: "This month" },
-  { value: "lastMonth", displayName: "Last month" },
-  { value: "qtd", displayName: "Quarter to date" },
-  { value: "ytd", displayName: "Year to date" },
-  { value: "lastYear", displayName: "Last year" },
-  { value: "custom", displayName: "Custom" },
+  { value: "today", displayNameKey: "preset_today" },
+  { value: "yesterday", displayNameKey: "preset_yesterday" },
+  { value: "last7", displayNameKey: "preset_last7" },
+  { value: "last30", displayNameKey: "preset_last30" },
+  { value: "thisMonth", displayNameKey: "preset_thisMonth" },
+  { value: "lastMonth", displayNameKey: "preset_lastMonth" },
+  { value: "qtd", displayNameKey: "preset_qtd" },
+  { value: "ytd", displayNameKey: "preset_ytd" },
+  { value: "lastYear", displayNameKey: "preset_lastYear" },
+  { value: "custom", displayNameKey: "preset_custom" },
 ];
 
 export const PILL_STYLE_ITEMS = [
-  { value: "compact", displayName: "Compact" },
-  { value: "expanded", displayName: "Expanded" },
+  { value: "compact", displayNameKey: "pill_style_compact" },
+  { value: "expanded", displayNameKey: "pill_style_expanded" },
 ];
 
 export class DefaultsCardSettings extends SimpleCard {
   public name = "defaults";
-  public displayName = "Defaults";
+  public displayNameKey = "format_defaults_displayName";
 
   public defaultPreset = new ItemDropdown({
     name: "defaultPreset",
-    displayName: "Default preset",
+    displayNameKey: "format_defaults_defaultPreset",
     items: PRESET_ITEMS,
     value: PRESET_ITEMS[2],
   });
 
   public weekStartsOn = new NumUpDown({
     name: "weekStartsOn",
-    displayName: "Week starts on",
+    displayNameKey: "format_defaults_weekStartsOn",
     value: 1,
     options: {
       minValue: { value: 0, type: powerbi.visuals.ValidatorType.Min },
@@ -45,7 +45,7 @@ export class DefaultsCardSettings extends SimpleCard {
 
   public locale = new TextInput({
     name: "locale",
-    displayName: "Locale",
+    displayNameKey: "format_defaults_locale",
     value: "",
     placeholder: "en-US",
   });
@@ -55,42 +55,42 @@ export class DefaultsCardSettings extends SimpleCard {
 
 export class PillCardSettings extends SimpleCard {
   public name = "pill";
-  public displayName = "Pill";
+  public displayNameKey = "format_pill_displayName";
 
   public pillStyle = new ItemDropdown({
     name: "pillStyle",
-    displayName: "Pill style",
+    displayNameKey: "format_pill_pillStyle",
     items: PILL_STYLE_ITEMS,
     value: PILL_STYLE_ITEMS[0],
   });
 
   public showPresetLabels = new ToggleSwitch({
     name: "showPresetLabels",
-    displayName: "Show preset labels",
+    displayNameKey: "format_pill_showPresetLabels",
     value: true,
   });
 
   public pillBackgroundColor = new ColorPicker({
     name: "pillBackgroundColor",
-    displayName: "Pill background",
+    displayNameKey: "format_pill_background",
     value: { value: "" },
   });
 
   public pillBorderColor = new ColorPicker({
     name: "pillBorderColor",
-    displayName: "Pill border",
+    displayNameKey: "format_pill_border",
     value: { value: "" },
   });
 
   public pillTextColor = new ColorPicker({
     name: "pillTextColor",
-    displayName: "Pill text",
+    displayNameKey: "format_pill_text",
     value: { value: "" },
   });
 
   public pillFontSize = new NumUpDown({
     name: "pillFontSize",
-    displayName: "Pill font size",
+    displayNameKey: "format_pill_fontSize",
     value: 12,
     options: {
       minValue: { value: 6, type: powerbi.visuals.ValidatorType.Min },
@@ -100,7 +100,7 @@ export class PillCardSettings extends SimpleCard {
 
   public pillMinWidth = new NumUpDown({
     name: "pillMinWidth",
-    displayName: "Pill minimum width",
+    displayNameKey: "format_pill_minWidth",
     value: 260,
     options: {
       minValue: { value: 120, type: powerbi.visuals.ValidatorType.Min },
@@ -121,17 +121,17 @@ export class PillCardSettings extends SimpleCard {
 
 export class ButtonsCardSettings extends SimpleCard {
   public name = "buttons";
-  public displayName = "Buttons";
+  public displayNameKey = "format_buttons_displayName";
 
   public showQuickApply = new ToggleSwitch({
     name: "showQuickApply",
-    displayName: "Show Today quick apply",
+    displayNameKey: "format_buttons_showQuickApply",
     value: false,
   });
 
   public showClear = new ToggleSwitch({
     name: "showClear",
-    displayName: "Show Clear",
+    displayNameKey: "format_buttons_showClear",
     value: true,
   });
 

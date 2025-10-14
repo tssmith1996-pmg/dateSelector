@@ -39,7 +39,15 @@ type DateRangeDialogViewProps = {
 };
 
 const DateRangeDialogView: React.FC<DateRangeDialogViewProps> = ({ host, initialState }) => {
-  const presets = useMemo(() => buildPresets(initialState.presetIds), [initialState.presetIds]);
+  const strings = initialState.strings;
+  const presets = useMemo(() => {
+    const base = buildPresets(initialState.presetIds);
+    return base.map((preset) => {
+      const key = preset.id as keyof typeof strings.presetLabels;
+      const label = strings.presetLabels[key] ?? preset.label;
+      return { ...preset, label };
+    });
+  }, [initialState.presetIds, strings]);
   const locale = initialState.locale && initialState.locale.trim()
     ? initialState.locale
     : typeof navigator !== "undefined"
@@ -187,6 +195,7 @@ const DateRangeDialogView: React.FC<DateRangeDialogViewProps> = ({ host, initial
         showClear={initialState.showClear}
         showPresetLabels={initialState.showPresetLabels}
         weekStartsOn={normalizedWeekStartsOn}
+        strings={strings}
       />
     </div>
   );

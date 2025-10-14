@@ -6,6 +6,7 @@ import { act } from "react-dom/test-utils";
 import { createRoot, Root } from "react-dom/client";
 import { DateRangeFilter } from "../src/components/DateRangeFilter";
 import { PRESETS, getToday, normalizeRange, toISODate } from "../src/date";
+import { getVisualStrings } from "../src/utils/localization";
 
 import DialogAction = powerbi.DialogAction;
 
@@ -43,6 +44,7 @@ describe("DateRangeFilter defaults", () => {
           onChange={onChange}
           forcePortalStrategy="iframe"
           defaultPresetId="lastMonth"
+          strings={STRINGS}
         />,
       );
     });
@@ -66,6 +68,7 @@ describe("DateRangeFilter defaults", () => {
           onChange={onChange}
           forcePortalStrategy="iframe"
           defaultRange={{ from, to }}
+          strings={STRINGS}
         />,
       );
     });
@@ -94,6 +97,7 @@ describe("DateRangeFilter defaults", () => {
           onChange={onChange}
           openDialog={openDialog}
           forcePortalStrategy="iframe"
+          strings={STRINGS}
         />,
       );
     });
@@ -118,3 +122,7 @@ describe("DateRangeFilter defaults", () => {
     expect(lastCall[1]).toBe("custom");
   });
 });
+const STRINGS = getVisualStrings({
+  getDisplayName: () => "",
+} as powerbi.extensibility.ILocalizationManager);
+
