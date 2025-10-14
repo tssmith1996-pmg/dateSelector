@@ -17,6 +17,8 @@ import {
   PresetDateSlicerFormattingSettingsModel,
   PRESET_ITEMS as FORMAT_PRESET_ITEMS,
   PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
+  WEEK_START_ITEMS as FORMAT_WEEK_START_ITEMS,
+  LOCALE_ITEMS as FORMAT_LOCALE_ITEMS,
 } from "./formattingSettings";
 import { extentFromValues, parseTargetFromQueryName, toDateOnlyIso } from "../utils/filters";
 import { getContrastingTextColor, lighten, toRgbaString } from "../utils/colors";
@@ -528,18 +530,22 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
     const selector = undefined as unknown as powerbi.data.Selector;
     switch (options.objectName) {
-      case "defaults":
+      case "defaults": {
+        const properties: powerbi.DataViewObject = {
+          defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
+          weekStartsOn: normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1,
+        };
+        if (this.settings.defaults.locale) {
+          properties.locale = this.settings.defaults.locale;
+        }
         return [
           {
             objectName: "defaults",
-            properties: {
-              defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
-              weekStartsOn: normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1,
-              locale: this.settings.defaults.locale ?? "",
-            },
+            properties,
             selector,
           },
         ];
+      }
       case "pill": {
         const properties: powerbi.DataViewObject = {
           pillStyle: this.settings.pill.style ?? "compact",
@@ -873,8 +879,18 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       defaultsCard.defaultPreset.value = presetItem;
     }
     const normalizedWeekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn);
-    defaultsCard.weekStartsOn.value = normalizedWeekStartsOn ?? defaultsCard.weekStartsOn.value;
-    defaultsCard.locale.value = settings.defaults.locale ?? "";
+    const weekStartItem = typeof normalizedWeekStartsOn === "number"
+      ? FORMAT_WEEK_START_ITEMS.find((item) => item.value === normalizedWeekStartsOn)
+      : undefined;
+    if (weekStartItem) {
+      defaultsCard.weekStartsOn.value = weekStartItem;
+    }
+    const localeItem = settings.defaults.locale
+      ? FORMAT_LOCALE_ITEMS.find((item) => item.value === settings.defaults.locale)
+      : undefined;
+    if (localeItem) {
+      defaultsCard.locale.value = localeItem;
+    }
 
     const pillCard = this.formattingSettings.pill;
     const pillStyleItem = settings.pill.style

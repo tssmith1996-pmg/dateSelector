@@ -14,11 +14,16 @@ declare module "powerbi-visuals-utils-formattingmodel" {
 
     type ValidatorType = powerbi.visuals.ValidatorType;
 
-    type DropdownItem = { value: string; displayName: string };
+    type DropdownItem = {
+      value: string | number;
+      displayName?: string;
+      displayNameKey?: string;
+    };
 
     interface ItemDropdownOptions<T = DropdownItem> {
       name: string;
-      displayName: string;
+      displayName?: string;
+      displayNameKey?: string;
       items: T[];
       value: T;
     }
@@ -26,7 +31,8 @@ declare module "powerbi-visuals-utils-formattingmodel" {
     class ItemDropdown<T = DropdownItem> {
       constructor(options: ItemDropdownOptions<T>);
       name: string;
-      displayName: string;
+      displayName?: string;
+      displayNameKey?: string;
       items: T[];
       value: T;
     }

@@ -1,7 +1,7 @@
 import powerbi from "powerbi-visuals-api";
 import { formattingSettings } from "powerbi-visuals-utils-formattingmodel";
 
-const { SimpleCard, ItemDropdown, NumUpDown, TextInput, ColorPicker, ToggleSwitch, Model } =
+const { SimpleCard, ItemDropdown, NumUpDown, ColorPicker, ToggleSwitch, Model } =
   formattingSettings;
 
 export const PRESET_ITEMS = [
@@ -22,6 +22,32 @@ export const PILL_STYLE_ITEMS = [
   { value: "expanded", displayNameKey: "pill_style_expanded" },
 ];
 
+export type WeekStartDropdownItem = { value: number; displayNameKey: string };
+
+export const WEEK_START_ITEMS: WeekStartDropdownItem[] = [
+  { value: 0, displayNameKey: "weekday_sun" },
+  { value: 1, displayNameKey: "weekday_mon" },
+  { value: 2, displayNameKey: "weekday_tue" },
+  { value: 3, displayNameKey: "weekday_wed" },
+  { value: 4, displayNameKey: "weekday_thu" },
+  { value: 5, displayNameKey: "weekday_fri" },
+  { value: 6, displayNameKey: "weekday_sat" },
+];
+
+export type LocaleDropdownItem = { value: string; displayNameKey: string };
+
+export const LOCALE_ITEMS: LocaleDropdownItem[] = [
+  { value: "en-AU", displayNameKey: "locale_en_AU" },
+  { value: "en-US", displayNameKey: "locale_en_US" },
+  { value: "en-GB", displayNameKey: "locale_en_GB" },
+  { value: "fr-FR", displayNameKey: "locale_fr_FR" },
+  { value: "de-DE", displayNameKey: "locale_de_DE" },
+  { value: "es-ES", displayNameKey: "locale_es_ES" },
+  { value: "it-IT", displayNameKey: "locale_it_IT" },
+  { value: "ja-JP", displayNameKey: "locale_ja_JP" },
+  { value: "zh-CN", displayNameKey: "locale_zh_CN" },
+];
+
 export class DefaultsCardSettings extends SimpleCard {
   public name = "defaults";
   public displayNameKey = "format_defaults_displayName";
@@ -33,21 +59,18 @@ export class DefaultsCardSettings extends SimpleCard {
     value: PRESET_ITEMS[2],
   });
 
-  public weekStartsOn = new NumUpDown({
+  public weekStartsOn = new ItemDropdown<WeekStartDropdownItem>({
     name: "weekStartsOn",
     displayNameKey: "format_defaults_weekStartsOn",
-    value: 1,
-    options: {
-      minValue: { value: 0, type: powerbi.visuals.ValidatorType.Min },
-      maxValue: { value: 6, type: powerbi.visuals.ValidatorType.Max },
-    },
+    items: WEEK_START_ITEMS,
+    value: WEEK_START_ITEMS[1],
   });
 
-  public locale = new TextInput({
+  public locale = new ItemDropdown<LocaleDropdownItem>({
     name: "locale",
     displayNameKey: "format_defaults_locale",
-    value: "",
-    placeholder: "en-US",
+    items: LOCALE_ITEMS,
+    value: LOCALE_ITEMS[0],
   });
 
   public slices = [this.defaultPreset, this.weekStartsOn, this.locale];
