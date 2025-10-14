@@ -5,43 +5,49 @@
   "supportsEmptyDataView": true,
   "supportsSynchronizingFilterState": true,
   "supportsLandingPage": true,
+
   "dataRoles": [
     {
       "name": "date",
       "kind": "Grouping",
       "displayName": "Date",
-      "displayNameKey": "role_date_displayName"
+      "displayNameKey": "role_date_displayName",
+      "preferredTypes": [
+        { "dateTime": true }
+      ]
     }
   ],
+
   "dataViewMappings": [
     {
       "conditions": [
         {
-          "date": {
-            "max": 1
-          }
+          "date": { "min": 1, "max": 1 }
         }
       ],
       "categorical": {
         "categories": {
-          "for": {
-            "in": "date"
-          }
+          "for": { "in": "date" },
+          "dataReductionAlgorithm": { "top": {} }
         }
       }
     }
   ],
+
+  "sorting": {
+    "implicit": true
+  },
+
   "objects": {
     "general": {
       "displayNameKey": "format_general_displayName",
       "properties": {
         "filter": {
-          "type": {
-            "filter": {}
-          }
+          "type": { "filter": {} }
         }
       }
     },
+
     "defaults": {
       "displayNameKey": "format_defaults_displayName",
       "properties": {
@@ -62,20 +68,41 @@
             ]
           }
         },
+
         "weekStartsOn": {
           "displayNameKey": "format_defaults_weekStartsOn",
           "type": {
-            "numeric": true
+            "enumeration": [
+              { "value": 0, "displayNameKey": "weekday_sun" },
+              { "value": 1, "displayNameKey": "weekday_mon" },
+              { "value": 2, "displayNameKey": "weekday_tue" },
+              { "value": 3, "displayNameKey": "weekday_wed" },
+              { "value": 4, "displayNameKey": "weekday_thu" },
+              { "value": 5, "displayNameKey": "weekday_fri" },
+              { "value": 6, "displayNameKey": "weekday_sat" }
+            ]
           }
         },
+
         "locale": {
           "displayNameKey": "format_defaults_locale",
           "type": {
-            "text": true
+            "enumeration": [
+              { "value": "en-AU", "displayNameKey": "locale_en_AU" },
+              { "value": "en-US", "displayNameKey": "locale_en_US" },
+              { "value": "en-GB", "displayNameKey": "locale_en_GB" },
+              { "value": "fr-FR", "displayNameKey": "locale_fr_FR" },
+              { "value": "de-DE", "displayNameKey": "locale_de_DE" },
+              { "value": "es-ES", "displayNameKey": "locale_es_ES" },
+              { "value": "it-IT", "displayNameKey": "locale_it_IT" },
+              { "value": "ja-JP", "displayNameKey": "locale_ja_JP" },
+              { "value": "zh-CN", "displayNameKey": "locale_zh_CN" }
+            ]
           }
         }
       }
     },
+
     "pill": {
       "displayNameKey": "format_pill_displayName",
       "properties": {
@@ -90,82 +117,55 @@
         },
         "showPresetLabels": {
           "displayNameKey": "format_pill_showPresetLabels",
-          "type": {
-            "bool": true
-          }
+          "type": { "bool": true }
         },
         "pillBackgroundColor": {
           "displayNameKey": "format_pill_background",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "pillBorderColor": {
           "displayNameKey": "format_pill_border",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "pillTextColor": {
           "displayNameKey": "format_pill_text",
-          "type": {
-            "fill": {
-              "solid": {
-                "color": true
-              }
-            }
-          }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "pillFontSize": {
           "displayNameKey": "format_pill_fontSize",
-          "type": {
-            "numeric": true
-          }
+          "type": { "numeric": true }
         },
         "pillMinWidth": {
           "displayNameKey": "format_pill_minWidth",
-          "type": {
-            "numeric": true
-          }
+          "type": { "numeric": true }
         }
       }
     },
+
     "buttons": {
       "displayNameKey": "format_buttons_displayName",
       "properties": {
         "showQuickApply": {
           "displayNameKey": "format_buttons_showQuickApply",
-          "type": {
-            "bool": true
-          }
+          "type": { "bool": true }
         },
         "showClear": {
           "displayNameKey": "format_buttons_showClear",
-          "type": {
-            "bool": true
-          }
+          "type": { "bool": true }
         }
       }
     },
+
     "state": {
       "displayNameKey": "format_state_displayName",
       "properties": {
         "payload": {
           "displayNameKey": "format_state_payload",
-          "type": {
-            "text": true
-          }
+          "type": { "text": true }
         }
       }
     }
   },
+
   "privileges": []
 }
