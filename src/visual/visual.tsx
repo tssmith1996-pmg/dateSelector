@@ -13,6 +13,7 @@ import {
   PRESET_ITEMS as FORMAT_PRESET_ITEMS,
   PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
 } from "./formattingSettings";
+import { extentFromValues, parseTargetFromQueryName, toDateOnlyIso } from "../utils/filters";
 
 import DialogAction = powerbi.DialogAction;
 import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
@@ -41,11 +42,6 @@ type DefaultsSettings = {
   locale?: string;
 };
 
-type LimitsSettings = {
-  minDate?: Date;
-  maxDate?: Date;
-};
-
 type PillSettings = {
   style?: "compact" | "expanded";
   showPresetLabels?: boolean;
@@ -63,7 +59,6 @@ type ButtonSettings = {
 
 type VisualSettings = {
   defaults: DefaultsSettings;
-  limits: LimitsSettings;
   pill: PillSettings;
   buttons: ButtonSettings;
   persistedState?: PersistedState;
@@ -164,7 +159,6 @@ function toFill(color?: string): powerbi.Fill | undefined {
 function parseVisualSettings(dataView?: DataView): VisualSettings {
   const objects = getObjects(dataView);
   const defaults = objects?.defaults as powerbi.DataViewObject | undefined;
-  const limits = objects?.limits as powerbi.DataViewObject | undefined;
   const state = objects?.state as powerbi.DataViewObject | undefined;
 
   const pill = objects?.pill as powerbi.DataViewObject | undefined;
@@ -175,10 +169,6 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
       presetId: (defaults?.defaultPreset as string | undefined) ?? undefined,
       weekStartsOn: getNumericValue(defaults?.weekStartsOn),
       locale: typeof defaults?.locale === "string" ? defaults.locale : undefined,
-    },
-    limits: {
-      minDate: coerceDate(limits?.minDate),
-      maxDate: coerceDate(limits?.maxDate),
     },
     pill: {
       style: (pill?.pillStyle as PillSettings["style"]) ?? undefined,
@@ -199,24 +189,33 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
 
 function findColumnTarget(dataView?: DataView): FilterTarget | undefined {
   const categories = dataView?.categorical?.categories;
-  if (!categories || categories.length === 0) {
-    return undefined;
+  if (categories && categories.length > 0) {
+    const target = parseTargetFromQueryName(categories[0]?.source?.queryName);
+    if (target) {
+      return target;
+    }
+    for (const category of categories) {
+      const candidate = parseTargetFromQueryName(category?.source?.queryName);
+      if (candidate) {
+        return candidate;
+      }
+    }
   }
-  const source = categories[0]?.source;
-  const queryName = source?.queryName;
-  if (!queryName) {
-    return undefined;
+
+  const columns = dataView?.metadata?.columns;
+  if (columns) {
+    for (const column of columns) {
+      if (!column?.roles || !column.roles.date) {
+        continue;
+      }
+      const target = parseTargetFromQueryName(column.queryName);
+      if (target) {
+        return target;
+      }
+    }
   }
-  const segments = queryName.split(".");
-  if (segments.length < 2) {
-    return undefined;
-  }
-  const column = segments.pop();
-  const table = segments.join(".");
-  if (!column || !table) {
-    return undefined;
-  }
-  return { table, column };
+
+  return undefined;
 }
 
 function filterTargetsEqual(a?: FilterTarget, b?: FilterTarget): boolean {
@@ -350,8 +349,12 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
       if (!values) {
         continue;
       }
-      for (const value of values) {
-        collect(value);
+      const extent = extentFromValues(values as unknown[]);
+      if (extent.min) {
+        collect(extent.min);
+      }
+      if (extent.max) {
+        collect(extent.max);
       }
     }
   }
@@ -360,8 +363,13 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
   if (table?.columns && table.rows) {
     const index = table.columns.findIndex((column) => columnMetadataMatches(column, dateColumn));
     if (index >= 0) {
-      for (const row of table.rows) {
-        collect(row[index]);
+      const values = table.rows.map((row) => row[index]);
+      const extent = extentFromValues(values);
+      if (extent.min) {
+        collect(extent.min);
+      }
+      if (extent.max) {
+        collect(extent.max);
       }
     }
   }
@@ -369,8 +377,12 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
   if (!min && !max && categories && categories.length > 0) {
     const fallbackValues = categories[0]?.values;
     if (fallbackValues) {
-      for (const value of fallbackValues) {
-        collect(value);
+      const extent = extentFromValues(fallbackValues as unknown[]);
+      if (extent.min) {
+        collect(extent.min);
+      }
+      if (extent.max) {
+        collect(extent.max);
       }
     }
   }
@@ -432,7 +444,6 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private settings: VisualSettings = {
     defaults: {},
-    limits: {},
     pill: {},
     buttons: {},
   };
@@ -497,8 +508,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       return normalizeRange(from, to);
     })();
 
-    const limitedMin = settings.limits.minDate ?? trackedBounds.min;
-    const limitedMax = settings.limits.maxDate ?? trackedBounds.max;
+    const limitedMin = trackedBounds.min;
+    const limitedMax = trackedBounds.max;
 
     const initialRange = appliedRange ?? persisted;
 
@@ -552,13 +563,14 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     this.lastRenderKey = renderKey;
 
     const handleChange = (range: DateRange, presetId: string) => {
-      if (rangesEqual(this.currentRange, range) && this.currentPresetId === presetId) {
+      const effectiveRange = ensureWithinRange(range, this.dataBounds.min, this.dataBounds.max);
+      if (rangesEqual(this.currentRange, effectiveRange) && this.currentPresetId === presetId) {
         return;
       }
-      this.currentRange = range;
+      this.currentRange = effectiveRange;
       this.currentPresetId = presetId;
-      this.applyRangeFilter(range);
-      this.persistState(range, presetId);
+      this.applyRangeFilter(effectiveRange);
+      this.persistState(effectiveRange, presetId);
     };
 
     const weekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn) ?? 1;
@@ -620,17 +632,6 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
               defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
               weekStartsOn: normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1,
               locale: this.settings.defaults.locale ?? "",
-            },
-            selector,
-          },
-        ];
-      case "limits":
-        return [
-          {
-            objectName: "limits",
-            properties: {
-              minDate: this.settings.limits.minDate ? toISODate(this.settings.limits.minDate) : "",
-              maxDate: this.settings.limits.maxDate ? toISODate(this.settings.limits.maxDate) : "",
             },
             selector,
           },
@@ -779,7 +780,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     if (!this.columnTarget) {
       return;
     }
-    const key = toRangeKey(range);
+    const constrained = ensureWithinRange(range, this.dataBounds.min, this.dataBounds.max);
+    const key = toRangeKey(constrained);
     if (this.lastAppliedFilterKey && key && this.lastAppliedFilterKey === key) {
       return;
     }
@@ -787,12 +789,18 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       this.lastAppliedFilterKey = key;
     }
 
-    const filter = new models.AdvancedFilter(this.columnTarget, "And", [
-      { operator: "GreaterThanOrEqual", value: toISODate(range.from) },
-      { operator: "LessThanOrEqual", value: toISODate(range.to) },
-    ]);
+    const filter: models.IAdvancedFilter = {
+      $schema: "http://powerbi.com/product/schema#advanced",
+      target: this.columnTarget,
+      logicalOperator: "And",
+      conditions: [
+        { operator: "GreaterThanOrEqual", value: toDateOnlyIso(constrained.from) },
+        { operator: "LessThanOrEqual", value: toDateOnlyIso(constrained.to) },
+      ],
+      filterType: models.FilterType.Advanced,
+    };
 
-    this.host.applyJsonFilter(filter, "defaults", "filter", powerbi.FilterAction.merge);
+    this.host.applyJsonFilter(filter, "general", "filter", powerbi.FilterAction.merge);
   }
 
   private persistState(range: DateRange, presetId: string): void {
@@ -840,10 +848,6 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     const normalizedWeekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn);
     defaultsCard.weekStartsOn.value = normalizedWeekStartsOn ?? defaultsCard.weekStartsOn.value;
     defaultsCard.locale.value = settings.defaults.locale ?? "";
-
-    const limitsCard = this.formattingSettings.limits;
-    limitsCard.minDate.value = settings.limits.minDate ? toISODate(settings.limits.minDate) : "";
-    limitsCard.maxDate.value = settings.limits.maxDate ? toISODate(settings.limits.maxDate) : "";
 
     const pillCard = this.formattingSettings.pill;
     const pillStyleItem = settings.pill.style

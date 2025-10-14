@@ -53,27 +53,6 @@ export class DefaultsCardSettings extends SimpleCard {
   public slices = [this.defaultPreset, this.weekStartsOn, this.locale];
 }
 
-export class LimitsCardSettings extends SimpleCard {
-  public name = "limits";
-  public displayName = "Limits";
-
-  public minDate = new TextInput({
-    name: "minDate",
-    displayName: "Minimum date",
-    value: "",
-    placeholder: "YYYY-MM-DD",
-  });
-
-  public maxDate = new TextInput({
-    name: "maxDate",
-    displayName: "Maximum date",
-    value: "",
-    placeholder: "YYYY-MM-DD",
-  });
-
-  public slices = [this.minDate, this.maxDate];
-}
-
 export class PillCardSettings extends SimpleCard {
   public name = "pill";
   public displayName = "Pill";
@@ -161,11 +140,10 @@ export class ButtonsCardSettings extends SimpleCard {
 
 export class PresetDateSlicerFormattingSettingsModel extends Model {
   public defaults = new DefaultsCardSettings();
-  public limits = new LimitsCardSettings();
   public pill = new PillCardSettings();
   public buttons = new ButtonsCardSettings();
 
-  public cards = [this.defaults, this.limits, this.pill, this.buttons];
+  public cards = [this.defaults, this.pill, this.buttons];
 }
 
 export type PresetDateSlicerFormattingSettings = PresetDateSlicerFormattingSettingsModel;
