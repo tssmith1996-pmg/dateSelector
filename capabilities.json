@@ -4,11 +4,13 @@
   "supportsKeyboardFocus": true,
   "supportsEmptyDataView": true,
   "supportsSynchronizingFilterState": true,
+  "supportsLandingPage": true,
   "dataRoles": [
     {
       "name": "date",
       "kind": "Grouping",
-      "displayName": "Date"
+      "displayName": "Date",
+      "displayNameKey": "role_date_displayName"
     }
   ],
   "dataViewMappings": [
@@ -31,7 +33,7 @@
   ],
   "objects": {
     "general": {
-      "displayName": "General",
+      "displayNameKey": "format_general_displayName",
       "properties": {
         "filter": {
           "type": {
@@ -41,76 +43,59 @@
       }
     },
     "defaults": {
-      "displayName": "Defaults",
+      "displayNameKey": "format_defaults_displayName",
       "properties": {
         "defaultPreset": {
-          "displayName": "Default preset",
+          "displayNameKey": "format_defaults_defaultPreset",
           "type": {
             "enumeration": [
-              { "value": "today", "displayName": "Today" },
-              { "value": "yesterday", "displayName": "Yesterday" },
-              { "value": "last7", "displayName": "Last 7 days" },
-              { "value": "last30", "displayName": "Last 30 days" },
-              { "value": "thisMonth", "displayName": "This month" },
-              { "value": "lastMonth", "displayName": "Last month" },
-              { "value": "qtd", "displayName": "Quarter to date" },
-              { "value": "ytd", "displayName": "Year to date" },
-              { "value": "lastYear", "displayName": "Last year" },
-              { "value": "custom", "displayName": "Custom" }
+              { "value": "today", "displayNameKey": "preset_today" },
+              { "value": "yesterday", "displayNameKey": "preset_yesterday" },
+              { "value": "last7", "displayNameKey": "preset_last7" },
+              { "value": "last30", "displayNameKey": "preset_last30" },
+              { "value": "thisMonth", "displayNameKey": "preset_thisMonth" },
+              { "value": "lastMonth", "displayNameKey": "preset_lastMonth" },
+              { "value": "qtd", "displayNameKey": "preset_qtd" },
+              { "value": "ytd", "displayNameKey": "preset_ytd" },
+              { "value": "lastYear", "displayNameKey": "preset_lastYear" },
+              { "value": "custom", "displayNameKey": "preset_custom" }
             ]
           }
         },
         "weekStartsOn": {
-          "displayName": "Week starts on",
+          "displayNameKey": "format_defaults_weekStartsOn",
           "type": {
             "numeric": true
           }
         },
         "locale": {
-          "displayName": "Locale",
+          "displayNameKey": "format_defaults_locale",
           "type": {
             "text": true
           }
         }
       }
     },
-    "comparison": {
-      "displayName": "Comparison",
-      "properties": {
-        "showComparisonToggle": {
-          "displayName": "Show comparison toggle",
-          "type": {
-            "bool": true
-          }
-        },
-        "comparisonDefaultOn": {
-          "displayName": "Comparison on by default",
-          "type": {
-            "bool": true
-          }
-        }
-      }
-    },
     "pill": {
-      "displayName": "Pill",
+      "displayNameKey": "format_pill_displayName",
       "properties": {
         "pillStyle": {
-          "displayName": "Pill style",
+          "displayNameKey": "format_pill_pillStyle",
           "type": {
             "enumeration": [
-              { "value": "compact", "displayName": "Compact" },
-              { "value": "expanded", "displayName": "Expanded" }
+              { "value": "compact", "displayNameKey": "pill_style_compact" },
+              { "value": "expanded", "displayNameKey": "pill_style_expanded" }
             ]
           }
         },
         "showPresetLabels": {
-          "displayName": "Show preset labels",
+          "displayNameKey": "format_pill_showPresetLabels",
           "type": {
             "bool": true
           }
         },
         "pillBackgroundColor": {
-          "displayName": "Pill background",
+          "displayNameKey": "format_pill_background",
           "type": {
             "fill": {
               "solid": {
@@ -120,7 +105,7 @@
           }
         },
         "pillBorderColor": {
-          "displayName": "Pill border",
+          "displayNameKey": "format_pill_border",
           "type": {
             "fill": {
               "solid": {
@@ -130,7 +115,7 @@
           }
         },
         "pillTextColor": {
-          "displayName": "Pill text",
+          "displayNameKey": "format_pill_text",
           "type": {
             "fill": {
               "solid": {
@@ -140,13 +125,13 @@
           }
         },
         "pillFontSize": {
-          "displayName": "Pill font size",
+          "displayNameKey": "format_pill_fontSize",
           "type": {
             "numeric": true
           }
         },
         "pillMinWidth": {
-          "displayName": "Pill minimum width",
+          "displayNameKey": "format_pill_minWidth",
           "type": {
             "numeric": true
           }
@@ -154,16 +139,16 @@
       }
     },
     "buttons": {
-      "displayName": "Buttons",
+      "displayNameKey": "format_buttons_displayName",
       "properties": {
         "showQuickApply": {
-          "displayName": "Show Today quick apply",
+          "displayNameKey": "format_buttons_showQuickApply",
           "type": {
             "bool": true
           }
         },
         "showClear": {
-          "displayName": "Show Clear",
+          "displayNameKey": "format_buttons_showClear",
           "type": {
             "bool": true
           }
@@ -171,10 +156,10 @@
       }
     },
     "state": {
-      "displayName": "State",
+      "displayNameKey": "format_state_displayName",
       "properties": {
         "payload": {
-          "displayName": "Persisted state",
+          "displayNameKey": "format_state_payload",
           "type": {
             "text": true
           }

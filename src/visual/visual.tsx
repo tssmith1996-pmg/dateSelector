@@ -3,17 +3,23 @@ import * as models from "powerbi-models";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
+import { createTooltipServiceWrapper, ITooltipServiceWrapper } from "powerbi-visuals-utils-tooltiputils";
+import { select } from "d3-selection";
 import { DateRangeFilter } from "../components/DateRangeFilter";
-import { PRESETS, ensureWithinRange, fromISODate, normalizeRange, toISODate } from "../date";
+import { LandingPage } from "../components/LandingPage";
+import { DatePreset, PRESETS, ensureWithinRange, formatRange, fromISODate, normalizeRange, toISODate } from "../date";
 import { DateRangeDialog } from "../dialogs/DateRangeDialog";
 import { DateRangeDialogInitialState, DateRangeDialogResult } from "../dialogs/types";
 import { DateRange } from "../types/dateRange";
+import { VisualStrings } from "../types/localization";
+import { getVisualStrings } from "../utils/localization";
 import {
   PresetDateSlicerFormattingSettingsModel,
   PRESET_ITEMS as FORMAT_PRESET_ITEMS,
   PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
 } from "./formattingSettings";
 import { extentFromValues, parseTargetFromQueryName, toDateOnlyIso } from "../utils/filters";
+import { getContrastingTextColor, lighten, toRgbaString } from "../utils/colors";
 
 import DialogAction = powerbi.DialogAction;
 import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
@@ -65,6 +71,19 @@ type VisualSettings = {
 };
 
 type FilterTarget = models.IFilterColumnTarget;
+
+type ThemeInfo = {
+  accent: string;
+  accentText: string;
+  accentWeak: string;
+  border: string;
+  surface: string;
+  text: string;
+  textMuted: string;
+  pillBackground: string;
+  pillBorder: string;
+  pillText: string;
+};
 
 function coerceDate(value: unknown): Date | undefined {
   if (value == null) {
@@ -432,6 +451,12 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private reactRoot: Root;
 
+  private selectionManager: powerbi.extensibility.ISelectionManager;
+
+  private tooltipServiceWrapper: ITooltipServiceWrapper;
+
+  private events?: powerbi.extensibility.IVisualEventService;
+
   private dataView?: DataView;
 
   private columnTarget?: FilterTarget;
@@ -459,165 +484,44 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private lastPersistedPayload?: string;
 
+  private allowInteractions = true;
+
+  private strings: VisualStrings;
+
+  private isHighContrast = false;
+
+  private localizationManager: powerbi.extensibility.ILocalizationManager;
+
+  private blankSelectionId: powerbi.extensibility.ISelectionId;
+
   constructor(options?: VisualConstructorOptions) {
     if (!options) {
       throw new Error("Visual constructor options are required.");
     }
 
     this.host = options.host;
+    this.selectionManager = this.host.createSelectionManager();
+    this.selectionManager.registerOnSelectCallback(this.handleBookmarkRestore);
+    this.blankSelectionId = this.host.createSelectionIdBuilder().createSelectionId();
+    this.localizationManager = this.host.createLocalizationManager();
+    this.tooltipServiceWrapper = createTooltipServiceWrapper(this.host.tooltipService, options.element);
+    this.events = this.host.eventService;
+    this.allowInteractions = this.host.hostCapabilities?.allowInteractions ?? true;
+    this.strings = getVisualStrings(this.localizationManager);
+
     this.rootElement = document.createElement("div");
     this.rootElement.className = "preset-date-slicer";
     options.element.appendChild(this.rootElement);
+    this.rootElement.addEventListener("contextmenu", this.handleContextMenu);
     this.reactRoot = createRoot(this.rootElement);
   }
 
   public update(options: VisualUpdateOptions): void {
-    this.dataView = options.dataViews?.[0];
-    this.formattingSettings = this.dataView
-      ? this.formattingSettingsService.populateFormattingSettingsModel(
-          PresetDateSlicerFormattingSettingsModel,
-          this.dataView,
-        )
-      : new PresetDateSlicerFormattingSettingsModel();
-    const nextTarget = findColumnTarget(this.dataView);
-    const metadataChanged = (options.type & powerbi.VisualUpdateType.All) !== 0;
-    if (metadataChanged || !filterTargetsEqual(nextTarget, this.columnTarget)) {
-      this.resetDataBounds();
-    }
-    this.columnTarget = nextTarget;
-    const settings = parseVisualSettings(this.dataView);
-    this.settings = settings;
-    this.seedBoundsFromPersisted(settings.persistedState?.bounds);
-    this.syncFormattingSettings(settings);
-    const bounds = getDataBounds(this.dataView);
-    const trackedBounds = this.expandBoundsWithData(bounds);
-    const appliedRange = findExistingFilterRange(options, this.columnTarget);
-
-    this.lastPersistedPayload = settings.persistedState?.raw ?? undefined;
-
-    const persistedRange = settings.persistedState?.range;
-    const persisted = (() => {
-      if (!persistedRange?.from || !persistedRange?.to) {
-        return undefined;
-      }
-      const from = coerceDate(persistedRange.from);
-      const to = coerceDate(persistedRange.to);
-      if (!from || !to) {
-        return undefined;
-      }
-      return normalizeRange(from, to);
-    })();
-
-    const limitedMin = trackedBounds.min;
-    const limitedMax = trackedBounds.max;
-
-    const initialRange = appliedRange ?? persisted;
-
-    const defaultRange = initialRange
-      ? ensureWithinRange(initialRange, limitedMin, limitedMax)
-      : undefined;
-
-    const defaultPresetId = appliedRange
-      ? undefined
-      : settings.persistedState?.presetId ?? settings.defaults.presetId ?? undefined;
-
-    const rangeForComponent = defaultRange ?? initialRange;
-    const appliedKey = toRangeKey(appliedRange);
-    if (appliedRange) {
-      this.lastAppliedFilterKey = appliedKey;
-      if (!rangesEqual(this.currentRange, appliedRange)) {
-        this.currentRange = appliedRange;
-        this.currentPresetId = undefined;
-      }
-    } else {
-      this.lastAppliedFilterKey = undefined;
-    }
-
-    const renderKey = JSON.stringify({
-      width: options.viewport?.width ?? 0,
-      height: options.viewport?.height ?? 0,
-      range: rangeForComponent ? [rangeForComponent.from.getTime(), rangeForComponent.to.getTime()] : null,
-      preset: defaultPresetId ?? null,
-      bounds: [limitedMin?.getTime() ?? null, limitedMax?.getTime() ?? null],
-      locale: settings.defaults.locale ?? null,
-      weekStartsOn: normalizeWeekStartsOn(settings.defaults.weekStartsOn) ?? null,
-      pill: {
-        style: settings.pill.style ?? null,
-        showPresetLabels: settings.pill.showPresetLabels ?? null,
-        backgroundColor: settings.pill.backgroundColor ?? null,
-        borderColor: settings.pill.borderColor ?? null,
-        textColor: settings.pill.textColor ?? null,
-        fontSize: settings.pill.fontSize ?? null,
-        minWidth: settings.pill.minWidth ?? null,
-      },
-      buttons: {
-        showQuickApply: settings.buttons.showQuickApply ?? null,
-        showClear: settings.buttons.showClear ?? null,
-      },
-    });
-
-    const isResizeOnly = (options.type & powerbi.VisualUpdateType.Resize) === options.type;
-    if (!isResizeOnly && this.lastRenderKey === renderKey) {
-      return;
-    }
-    this.lastRenderKey = renderKey;
-
-    const handleChange = (range: DateRange, presetId: string) => {
-      const effectiveRange = ensureWithinRange(range, this.dataBounds.min, this.dataBounds.max);
-      if (rangesEqual(this.currentRange, effectiveRange) && this.currentPresetId === presetId) {
-        return;
-      }
-      this.currentRange = effectiveRange;
-      this.currentPresetId = presetId;
-      this.applyRangeFilter(effectiveRange);
-      this.persistState(effectiveRange, presetId);
-    };
-
-    const weekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn) ?? 1;
-    const locale = settings.defaults.locale?.trim() ? settings.defaults.locale : undefined;
-    const showPresetLabels = settings.pill.showPresetLabels ?? true;
-    const showClear = settings.buttons.showClear ?? true;
-    const pillFontSize =
-      typeof settings.pill.fontSize === "number" && settings.pill.fontSize > 0
-        ? settings.pill.fontSize
-        : undefined;
-    const pillMinWidth =
-      typeof settings.pill.minWidth === "number" && settings.pill.minWidth > 0
-        ? settings.pill.minWidth
-        : undefined;
-    const dialogInvoker = this.canUseHostDialog() ? this.openDateDialog : undefined;
-
-    this.reactRoot.render(
-      <DateRangeFilter
-        presets={PRESETS}
-        dataMin={limitedMin}
-        dataMax={limitedMax}
-        openDialog={dialogInvoker}
-        defaultPresetId={defaultPresetId}
-        defaultRange={defaultRange}
-        localeOverride={locale}
-        weekStartsOn={weekStartsOn}
-        pillStyle={settings.pill.style}
-        pillColors={{
-          background: settings.pill.backgroundColor,
-          border: settings.pill.borderColor,
-          text: settings.pill.textColor,
-        }}
-        pillFontSize={pillFontSize}
-        pillMinWidth={pillMinWidth}
-        showPresetLabels={showPresetLabels}
-        showQuickApply={settings.buttons.showQuickApply ?? false}
-        showClear={showClear}
-        onChange={handleChange}
-      />,
-    );
-
-    const shouldApplyDefault =
-      !appliedRange && defaultRange && !rangesEqual(this.currentRange, defaultRange);
-    if (!isResizeOnly && shouldApplyDefault) {
-      this.currentRange = defaultRange;
-      this.currentPresetId = defaultPresetId;
-      this.applyRangeFilter(defaultRange);
+    this.events?.renderingStarted(options);
+    try {
+      this.renderCore(options);
+    } finally {
+      this.events?.renderingFinished(options);
     }
   }
 
@@ -685,8 +589,16 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   public destroy(): void {
     this.reactRoot.unmount();
+    this.tooltipServiceWrapper.hide();
+    this.rootElement.removeEventListener("contextmenu", this.handleContextMenu);
     this.rootElement.remove();
   }
+
+  private handleContextMenu = (event: MouseEvent) => {
+    event.preventDefault();
+    const position = { x: event.clientX, y: event.clientY };
+    this.selectionManager.showContextMenu(this.blankSelectionId, position);
+  };
 
   private canUseHostDialog(): boolean {
     return !!this.host.hostCapabilities?.allowModalDialog;
@@ -699,7 +611,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       return undefined;
     }
     const options: DialogOpenOptions = {
-      title: "Select date range",
+      title: this.strings.dialog.title,
       actionButtons: [DialogAction.Close],
       size: { width: 760, height: 520 },
     };
@@ -776,6 +688,121 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     };
   }
 
+  private applyTheme(settings: VisualSettings): ThemeInfo {
+    const palette = this.host.colorPalette;
+    const isHighContrast = !!palette?.isHighContrast;
+    this.isHighContrast = isHighContrast;
+
+    if (isHighContrast) {
+      const background = palette?.background?.value ?? "#000000";
+      const foreground = palette?.foreground?.value ?? "#ffffff";
+      const border = palette?.foregroundNeutralDark?.value ?? foreground;
+      const accent = palette?.hyperlink?.value ?? foreground;
+      const accentText = getContrastingTextColor(accent, foreground);
+      const accentWeak = toRgbaString(accent, 0.3);
+      const textMuted = palette?.foregroundNeutralSecondary?.value ?? foreground;
+      const pillBackground = settings.pill.backgroundColor ?? background;
+      const pillBorder = settings.pill.borderColor ?? border;
+      const pillText = settings.pill.textColor ?? foreground;
+
+      this.rootElement.style.setProperty("--visual-accent", accent);
+      this.rootElement.style.setProperty("--visual-accent-text", accentText);
+      this.rootElement.style.setProperty("--visual-accent-weak", accentWeak);
+      this.rootElement.style.setProperty("--visual-border", pillBorder);
+      this.rootElement.style.setProperty("--visual-text", pillText);
+      this.rootElement.style.setProperty("--visual-text-muted", textMuted);
+      this.rootElement.style.setProperty("--visual-surface", background);
+      this.rootElement.style.setProperty("--visual-pill-background", pillBackground);
+      this.rootElement.style.setProperty("--visual-pill-border", pillBorder);
+      this.rootElement.style.setProperty("--visual-pill-text", pillText);
+
+      return {
+        accent,
+        accentText,
+        accentWeak,
+        border: pillBorder,
+        surface: background,
+        text: pillText,
+        textMuted,
+        pillBackground,
+        pillBorder,
+        pillText,
+      };
+    }
+
+    const defaultBackground = palette?.getColor("presetDateSlicer_background").value ?? "#ffffff";
+    const defaultBorder = palette?.getColor("presetDateSlicer_border").value ?? "#d1d5db";
+    const defaultText = palette?.getColor("presetDateSlicer_text").value ?? "#111827";
+    const accent = palette?.getColor("presetDateSlicer_accent").value ?? "#2563eb";
+
+    const pillBackground = settings.pill.backgroundColor ?? defaultBackground;
+    const pillBorder = settings.pill.borderColor ?? defaultBorder;
+    const pillText = settings.pill.textColor ?? defaultText;
+    const accentText = getContrastingTextColor(accent);
+    const accentWeak = toRgbaString(accent, 0.15);
+    const text = pillText;
+    const textMuted = lighten(text, 0.4);
+    const surface = lighten(pillBackground, 0.08);
+
+    this.rootElement.style.setProperty("--visual-accent", accent);
+    this.rootElement.style.setProperty("--visual-accent-text", accentText);
+    this.rootElement.style.setProperty("--visual-accent-weak", accentWeak);
+    this.rootElement.style.setProperty("--visual-border", pillBorder);
+    this.rootElement.style.setProperty("--visual-text", text);
+    this.rootElement.style.setProperty("--visual-text-muted", textMuted);
+    this.rootElement.style.setProperty("--visual-surface", surface);
+    this.rootElement.style.setProperty("--visual-pill-background", pillBackground);
+    this.rootElement.style.setProperty("--visual-pill-border", pillBorder);
+    this.rootElement.style.setProperty("--visual-pill-text", pillText);
+
+    return {
+      accent,
+      accentText,
+      accentWeak,
+      border: pillBorder,
+      surface,
+      text,
+      textMuted,
+      pillBackground,
+      pillBorder,
+      pillText,
+    };
+  }
+
+  private getLocalizedPresets(): DatePreset[] {
+    return PRESETS.map((preset) => {
+      const key = preset.id as keyof VisualStrings["presetLabels"];
+      const label = this.strings.presetLabels[key] ?? preset.label;
+      return { ...preset, label };
+    });
+  }
+
+  private renderLandingPage(theme: ThemeInfo, options: VisualUpdateOptions): void {
+    const landingKey = JSON.stringify({
+      landing: true,
+      width: options.viewport?.width ?? 0,
+      height: options.viewport?.height ?? 0,
+      accent: theme.accent,
+      text: theme.text,
+      highContrast: this.isHighContrast,
+    });
+    if (this.lastRenderKey === landingKey) {
+      return;
+    }
+    this.lastRenderKey = landingKey;
+    this.currentRange = undefined;
+    this.currentPresetId = undefined;
+    this.lastAppliedFilterKey = undefined;
+    this.tooltipServiceWrapper.hide();
+    this.reactRoot.render(
+      <LandingPage
+        strings={this.strings.landing}
+        theme={{ background: theme.surface, text: theme.text, accent: theme.accent, border: theme.border }}
+        isHighContrast={this.isHighContrast}
+      />,
+    );
+  }
+
   private applyRangeFilter(range: DateRange): void {
     if (!this.columnTarget) {
       return;
@@ -790,7 +817,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     }
 
     const filter: models.IAdvancedFilter = {
-      $schema: "http://powerbi.com/product/schema#advanced",
+      $schema: "https://powerbi.com/product/schema#advanced",
       target: this.columnTarget,
       logicalOperator: "And",
       conditions: [
@@ -877,6 +904,234 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     buttonsCard.showQuickApply.value = settings.buttons.showQuickApply ?? false;
     buttonsCard.showClear.value = settings.buttons.showClear ?? true;
   }
+
+  private renderCore(options: VisualUpdateOptions): void {
+    this.dataView = options.dataViews?.[0];
+    this.localizationManager = this.host.createLocalizationManager();
+    this.strings = getVisualStrings(this.localizationManager);
+    this.allowInteractions = this.host.hostCapabilities?.allowInteractions ?? true;
+
+    this.formattingSettings = this.dataView
+      ? this.formattingSettingsService.populateFormattingSettingsModel(
+          PresetDateSlicerFormattingSettingsModel,
+          this.dataView,
+        )
+      : new PresetDateSlicerFormattingSettingsModel();
+    const nextTarget = findColumnTarget(this.dataView);
+    const metadataChanged = (options.type & powerbi.VisualUpdateType.All) !== 0;
+    if (metadataChanged || !filterTargetsEqual(nextTarget, this.columnTarget)) {
+      this.resetDataBounds();
+    }
+    this.columnTarget = nextTarget;
+    const settings = parseVisualSettings(this.dataView);
+    this.settings = settings;
+    this.seedBoundsFromPersisted(settings.persistedState?.bounds);
+    this.syncFormattingSettings(settings);
+
+    const theme = this.applyTheme(settings);
+    const localizedPresets = this.getLocalizedPresets();
+
+    const bounds = getDataBounds(this.dataView);
+    const trackedBounds = this.expandBoundsWithData(bounds);
+
+    const categories = this.dataView?.categorical?.categories;
+    const hasCategoryValues = !!categories?.some(
+      (category) => Array.isArray(category?.values) && category.values.length > 0,
+    );
+    const hasTableValues = !!this.dataView?.table?.rows?.length;
+    const hasData = !!this.columnTarget && (hasCategoryValues || hasTableValues);
+
+    this.lastPersistedPayload = settings.persistedState?.raw ?? undefined;
+
+    if (!hasData) {
+      this.renderLandingPage(theme, options);
+      return;
+    }
+
+    const appliedRange = findExistingFilterRange(options, this.columnTarget);
+
+    const persistedRange = settings.persistedState?.range;
+    const persisted = (() => {
+      if (!persistedRange?.from || !persistedRange?.to) {
+        return undefined;
+      }
+      const from = coerceDate(persistedRange.from);
+      const to = coerceDate(persistedRange.to);
+      if (!from || !to) {
+        return undefined;
+      }
+      return normalizeRange(from, to);
+    })();
+
+    const limitedMin = trackedBounds.min;
+    const limitedMax = trackedBounds.max;
+
+    const initialRange = appliedRange ?? persisted;
+
+    const defaultRange = initialRange
+      ? ensureWithinRange(initialRange, limitedMin, limitedMax)
+      : undefined;
+
+    const defaultPresetId = appliedRange
+      ? undefined
+      : settings.persistedState?.presetId ?? settings.defaults.presetId ?? undefined;
+
+    const rangeForComponent = defaultRange ?? initialRange;
+    const appliedKey = toRangeKey(appliedRange);
+    if (appliedRange) {
+      this.lastAppliedFilterKey = appliedKey;
+      if (!rangesEqual(this.currentRange, appliedRange)) {
+        this.currentRange = appliedRange;
+        this.currentPresetId = undefined;
+      }
+    } else {
+      this.lastAppliedFilterKey = undefined;
+    }
+
+    const localeOverrideSetting = settings.defaults.locale?.trim();
+    const hostLocale = (this.host as unknown as { locale?: string }).locale;
+    const localeOverride = localeOverrideSetting || hostLocale || undefined;
+    const presetLabelsSignature = localizedPresets.map((preset) => preset.label).join("|");
+    const stringsSignature = `${this.strings.popover.heading}|${this.strings.popover.apply}|${this.strings.tooltip.label}|${this.strings.landing.title}`;
+    const themeSignature = [
+      theme.pillBackground,
+      theme.pillBorder,
+      theme.pillText,
+      theme.accent,
+      theme.accentWeak,
+      theme.surface,
+      theme.text,
+      theme.textMuted,
+    ].join(":");
+
+    const renderKey = JSON.stringify({
+      width: options.viewport?.width ?? 0,
+      height: options.viewport?.height ?? 0,
+      range: rangeForComponent ? [rangeForComponent.from.getTime(), rangeForComponent.to.getTime()] : null,
+      preset: defaultPresetId ?? null,
+      bounds: [limitedMin?.getTime() ?? null, limitedMax?.getTime() ?? null],
+      locale: localeOverride ?? null,
+      weekStartsOn: normalizeWeekStartsOn(settings.defaults.weekStartsOn) ?? null,
+      pill: {
+        style: settings.pill.style ?? null,
+        showPresetLabels: settings.pill.showPresetLabels ?? null,
+        backgroundColor: settings.pill.backgroundColor ?? null,
+        borderColor: settings.pill.borderColor ?? null,
+        textColor: settings.pill.textColor ?? null,
+        fontSize: settings.pill.fontSize ?? null,
+        minWidth: settings.pill.minWidth ?? null,
+      },
+      buttons: {
+        showQuickApply: settings.buttons.showQuickApply ?? null,
+        showClear: settings.buttons.showClear ?? null,
+      },
+      allowInteractions: this.allowInteractions,
+      highContrast: this.isHighContrast,
+      theme: themeSignature,
+      strings: stringsSignature,
+      presets: presetLabelsSignature,
+    });
+
+    const isResizeOnly = (options.type & powerbi.VisualUpdateType.Resize) === options.type;
+    if (!isResizeOnly && this.lastRenderKey === renderKey) {
+      return;
+    }
+    this.lastRenderKey = renderKey;
+
+    const handleChange = (range: DateRange, presetId: string, info?: { reason: "initial" | "user" }) => {
+      if (!this.allowInteractions && info?.reason === "user") {
+        return;
+      }
+      const effectiveRange = ensureWithinRange(range, this.dataBounds.min, this.dataBounds.max);
+      const isSameSelection = rangesEqual(this.currentRange, effectiveRange) && this.currentPresetId === presetId;
+      this.currentRange = effectiveRange;
+      this.currentPresetId = presetId;
+      if (!isSameSelection || info?.reason === "initial") {
+        this.applyRangeFilter(effectiveRange);
+      }
+      if (!isSameSelection || info?.reason === "initial") {
+        this.persistState(effectiveRange, presetId);
+      }
+    };
+
+    const weekStartsOn = normalizeWeekStartsOn(settings.defaults.weekStartsOn) ?? 1;
+    const showPresetLabels = settings.pill.showPresetLabels ?? true;
+    const showClear = settings.buttons.showClear ?? true;
+    const pillFontSize =
+      typeof settings.pill.fontSize === "number" && settings.pill.fontSize > 0
+        ? settings.pill.fontSize
+        : undefined;
+    const pillMinWidth =
+      typeof settings.pill.minWidth === "number" && settings.pill.minWidth > 0
+        ? settings.pill.minWidth
+        : undefined;
+    const dialogInvoker = this.canUseHostDialog() ? this.openDateDialog : undefined;
+
+    this.reactRoot.render(
+      <DateRangeFilter
+        presets={localizedPresets}
+        dataMin={limitedMin}
+        dataMax={limitedMax}
+        openDialog={dialogInvoker}
+        defaultPresetId={defaultPresetId}
+        defaultRange={defaultRange}
+        localeOverride={localeOverride}
+        weekStartsOn={weekStartsOn}
+        pillStyle={settings.pill.style}
+        pillColors={{
+          background: theme.pillBackground,
+          border: theme.pillBorder,
+          text: theme.pillText,
+        }}
+        pillFontSize={pillFontSize}
+        pillMinWidth={pillMinWidth}
+        showPresetLabels={showPresetLabels}
+        showQuickApply={settings.buttons.showQuickApply ?? false}
+        showClear={showClear}
+        onChange={handleChange}
+        isInteractive={this.allowInteractions}
+        strings={this.strings}
+      />,
+    );
+
+    const tooltipLocale = localeOverride ?? (typeof navigator !== "undefined" ? navigator.language : "en-US");
+    const pillElement = this.rootElement.querySelector<HTMLElement>(".date-range-filter__pill");
+    if (pillElement) {
+      const tooltipSelection = select(pillElement);
+      tooltipSelection.on(".tooltip", null);
+      tooltipSelection.datum({});
+      this.tooltipServiceWrapper.addTooltip(
+        tooltipSelection,
+        () => {
+          if (!this.currentRange) {
+            return [];
+          }
+          return [
+            {
+              displayName: this.strings.tooltip.label,
+              value: formatRange(this.currentRange.from, this.currentRange.to, tooltipLocale),
+            },
+          ];
+        },
+      );
+    } else {
+      this.tooltipServiceWrapper.hide();
+    }
+
+    const shouldApplyDefault =
+      !appliedRange && defaultRange && !rangesEqual(this.currentRange, defaultRange);
+    if (!isResizeOnly && shouldApplyDefault) {
+      this.currentRange = defaultRange;
+      this.currentPresetId = defaultPresetId;
+      this.applyRangeFilter(defaultRange);
+    }
+  }
+
+  private handleBookmarkRestore = (_selectionIds: powerbi.extensibility.ISelectionId[]): void => {
+    if (this.currentRange) {
+      this.applyRangeFilter(this.currentRange);
+    }
+  };
 }
 
 export default PresetDateSlicerVisual;

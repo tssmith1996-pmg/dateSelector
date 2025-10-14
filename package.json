@@ -13,17 +13,20 @@
   "dependencies": {
     "powerbi-models": "2.0.1",
     "powerbi-visuals-utils-formattingmodel": "6.2.2",
+    "powerbi-visuals-utils-tooltiputils": "6.0.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "d3-selection": "3.0.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.11",
     "@types/node": "22.8.4",
     "@types/react": "18.2.34",
     "@types/react-dom": "18.2.14",
+    "@types/d3-selection": "3.0.7",
     "@typescript-eslint/eslint-plugin": "8.10.0",
     "@typescript-eslint/parser": "8.10.0",
-    "eslint": "8.57.1",
+    "eslint": "^9.15.0",
     "eslint-scope": "7.2.2",
     "jest": "29.7.0",
     "jest-environment-jsdom": "30.2.0",

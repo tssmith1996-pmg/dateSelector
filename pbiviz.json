@@ -21,6 +21,7 @@
   "dependencies": null,
   "stringResources": [
     "stringResources/en-US/resources.resjson",
-    "stringResources/en-AU/resources.resjson"
+    "stringResources/en-AU/resources.resjson",
+    "stringResources/fr-FR/resources.resjson"
   ]
 }

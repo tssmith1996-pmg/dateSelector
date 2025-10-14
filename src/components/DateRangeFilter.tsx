@@ -15,6 +15,7 @@ import { resolveDefaultRange, toPresetIdWithFallback } from "./dateRangeDefaults
 import { Popover } from "./Popover";
 import { DateRange } from "../types/dateRange";
 import { DateRangeDialogInitialState, DateRangeDialogResult } from "../dialogs/types";
+import { VisualStrings } from "../types/localization";
 import "../styles/date-range-filter.css";
 
 import DialogAction = powerbi.DialogAction;
@@ -58,7 +59,7 @@ type DateRangeFilterProps = {
   presets?: DatePreset[];
   dataMin?: Date;
   dataMax?: Date;
-  onChange: (range: DateRange, presetId: string) => void;
+  onChange: (range: DateRange, presetId: string, info?: { reason: "initial" | "user" }) => void;
   forcePortalStrategy?: PortalStrategy;
   openDialog?: DialogInvoker;
   defaultPresetId?: string;
@@ -72,6 +73,8 @@ type DateRangeFilterProps = {
   showPresetLabels?: boolean;
   showQuickApply?: boolean;
   showClear?: boolean;
+  isInteractive?: boolean;
+  strings: VisualStrings;
 };
 
 function rangesEqual(a: DateRange | undefined, b: DateRange | undefined): boolean {
@@ -167,6 +170,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   showPresetLabels = true,
   showQuickApply = false,
   showClear = true,
+  isInteractive = true,
+  strings,
 }) => {
   const locale = localeOverride && localeOverride.trim()
     ? localeOverride
@@ -226,16 +231,21 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       if (!changed && !force) {
         return;
       }
-      onChange(range, presetId);
-      postRangeChanged(range, presetId);
+      onChange(range, presetId, { reason: force ? "initial" : "user" });
+      if (isInteractive) {
+        postRangeChanged(range, presetId);
+      }
       if (liveRegionRef.current) {
         liveRegionRef.current.textContent = formatRange(range.from, range.to, locale);
       }
     },
-    [locale, onChange],
+    [isInteractive, locale, onChange],
   );
 
   const invokeDialog = useCallback(() => {
+    if (!isInteractive) {
+      return;
+    }
     if (!openDialog) {
       setOpen((value) => !value);
       return;
@@ -258,6 +268,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       defaultRange: defaultRange
         ? { from: toISODate(defaultRange.from), to: toISODate(defaultRange.to) }
         : undefined,
+      strings,
     };
     openDialog(initialState)
       .then((result) => {
@@ -284,6 +295,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         anchorRef.current?.focus();
       });
   }, [
+    isInteractive,
     openDialog,
     committedRange,
     committedPresetId,
@@ -297,6 +309,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     showClear,
     defaultPresetId,
     defaultRange,
+    strings,
     today,
     commitChange,
   ]);
@@ -304,6 +317,12 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   useEffect(() => {
     updateHash(committedRange);
   }, [committedRange]);
+
+  useEffect(() => {
+    if (!isInteractive) {
+      setOpen(false);
+    }
+  }, [isInteractive]);
 
   useEffect(() => {
     const signature = `${initial.presetId}:${initial.range.from.getTime()}:${initial.range.to.getTime()}`;
@@ -394,10 +413,22 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
           pillStyle === "expanded"
             ? "date-range-filter__pill--expanded"
             : "date-range-filter__pill--compact",
-        ].join(" ")}
+          !isInteractive ? "date-range-filter__pill--disabled" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         aria-haspopup="dialog"
         aria-expanded={openDialog ? undefined : open}
-        onClick={invokeDialog}
+        aria-disabled={!isInteractive}
+        aria-label={strings.pill.ariaLabel}
+        title={!isInteractive ? strings.pill.disabledMessage : undefined}
+        onClick={(event) => {
+          if (!isInteractive) {
+            event.preventDefault();
+            return;
+          }
+          invokeDialog();
+        }}
         style={{
           backgroundColor: pillColors?.background,
           borderColor: pillColors?.border,
@@ -436,11 +467,12 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             onClear={showClear ? handleClear : undefined}
             onClose={handleClose}
             showQuickApply={showQuickApply}
-            onQuickApply={showQuickApply ? handleQuickApply : undefined}
-            showClear={showClear}
-            showPresetLabels={showPresetLabels}
-            weekStartsOn={normalizedWeekStartsOn}
-          />
+          onQuickApply={showQuickApply ? handleQuickApply : undefined}
+          showClear={showClear}
+          showPresetLabels={showPresetLabels}
+          weekStartsOn={normalizedWeekStartsOn}
+          strings={strings}
+        />
         </OutsideFramePortal>
       ) : null}
     </div>

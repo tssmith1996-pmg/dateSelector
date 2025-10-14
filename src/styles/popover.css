@@ -2,10 +2,10 @@
 
 .popover {
   min-width: 320px;
-  background-color: var(--ds-color-bg);
+  background-color: var(--visual-surface, var(--ds-color-bg));
   border-radius: var(--ds-radius-medium);
   box-shadow: var(--ds-shadow-popover);
-  border: 1px solid rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--visual-border, rgba(15, 23, 42, 0.06));
   padding: var(--ds-spacing-4);
   display: flex;
   flex-direction: column;
@@ -27,7 +27,7 @@
 .popover__heading {
   font-size: var(--ds-font-size-medium);
   margin: 0;
-  color: var(--ds-color-text);
+  color: var(--visual-text, var(--ds-color-text));
 }
 
 .popover__preset-select {
@@ -39,7 +39,7 @@
 .popover__preset-select select {
   padding: 6px var(--ds-spacing-2);
   border-radius: var(--ds-radius-small);
-  border: 1px solid var(--ds-color-border);
+  border: 1px solid var(--visual-border, var(--ds-color-border));
   font-size: var(--ds-font-size-medium);
 }
 
@@ -66,35 +66,35 @@
 .popover__quick {
   min-width: 96px;
   border-radius: var(--ds-radius-small);
-  border: 1px solid rgba(15, 23, 42, 0.2);
+  border: 1px solid var(--visual-border, rgba(15, 23, 42, 0.2));
   padding: 8px var(--ds-spacing-3);
   font-size: var(--ds-font-size-medium);
   cursor: pointer;
-  background-color: rgba(37, 99, 235, 0.1);
-  color: var(--ds-color-text);
+  background-color: var(--visual-accent-weak, rgba(37, 99, 235, 0.1));
+  color: var(--visual-text, var(--ds-color-text));
 }
 
 .popover__quick:hover {
-  background-color: rgba(37, 99, 235, 0.18);
+  background-color: var(--visual-accent-weak, rgba(37, 99, 235, 0.18));
 }
 
 .popover__ghost {
   background-color: transparent;
-  color: var(--ds-color-text);
-  border-color: rgba(15, 23, 42, 0.2);
+  color: var(--visual-text, var(--ds-color-text));
+  border-color: var(--visual-border, rgba(15, 23, 42, 0.2));
 }
 
 .popover__ghost:hover {
-  background-color: var(--ds-color-surface);
+  background-color: var(--visual-surface, var(--ds-color-surface));
 }
 
 .popover__primary {
-  background-color: var(--ds-color-primary);
-  color: var(--ds-color-primary-text);
+  background-color: var(--visual-accent, var(--ds-color-primary));
+  color: var(--visual-accent-text, var(--ds-color-primary-text));
 }
 
 .popover__primary:hover {
-  background-color: #0f172a;
+  background-color: var(--visual-accent, #0f172a);
 }
 
 .popover__sentinel {

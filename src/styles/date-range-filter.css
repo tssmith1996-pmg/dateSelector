@@ -10,10 +10,10 @@
   align-items: center;
   gap: var(--ds-spacing-2);
   border-radius: 999px;
-  border: 1px solid var(--ds-color-border);
-  background-color: var(--ds-color-bg);
+  border: 1px solid var(--visual-pill-border, var(--ds-color-border));
+  background-color: var(--visual-pill-background, var(--ds-color-bg));
   font-size: var(--ds-font-size-medium);
-  color: var(--ds-color-text);
+  color: var(--visual-pill-text, var(--ds-color-text));
   cursor: pointer;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   line-height: 1.25;
@@ -30,12 +30,17 @@
 }
 
 .date-range-filter__pill:hover {
-  border-color: var(--ds-color-border-strong);
+  border-color: var(--visual-border, var(--ds-color-border-strong));
 }
 
 .date-range-filter__pill:focus-visible {
   outline: 2px solid #2563eb;
   outline-offset: 2px;
+}
+
+.date-range-filter__pill--disabled {
+  cursor: default;
+  opacity: 0.9;
 }
 
 .date-range-filter__icon {

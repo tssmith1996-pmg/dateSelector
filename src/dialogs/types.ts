@@ -16,6 +16,7 @@ export type DateRangeDialogInitialState = {
   showClear?: boolean;
   defaultPresetId?: string;
   defaultRange?: SerializableRange;
+  strings: import("../types/localization").VisualStrings;
 };
 
 export type DateRangeDialogResult = {

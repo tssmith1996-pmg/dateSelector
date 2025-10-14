@@ -15,6 +15,7 @@ import {
   toISODate,
 } from "../date";
 import { DateRange } from "../types/dateRange";
+import { formatTemplate } from "../utils/localization";
 import "../styles/calendar.css";
 
 export type CalendarProps = {
@@ -24,9 +25,22 @@ export type CalendarProps = {
   dataMin?: Date;
   dataMax?: Date;
   weekStartsOn?: number;
+  strings: {
+    previousMonth: string;
+    nextMonth: string;
+    ariaLabelTemplate: string;
+  };
 };
 
-export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale, dataMin, dataMax, weekStartsOn }) => {
+export const Calendar: React.FC<CalendarProps> = ({
+  range,
+  onRangeChange,
+  locale,
+  dataMin,
+  dataMax,
+  weekStartsOn,
+  strings,
+}) => {
   const [visibleMonth, setVisibleMonth] = useState<Date>(startOfMonth(range.from));
   const [pendingStart, setPendingStart] = useState<Date | null>(null);
   const [focusDate, setFocusDate] = useState<Date>(() => range.from);
@@ -65,9 +79,9 @@ export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale
   useEffect(() => {
     const label = monthTitleFormatter.format(visibleMonth);
     if (containerRef.current) {
-      containerRef.current.setAttribute("aria-label", `Calendar for ${label}`);
+      containerRef.current.setAttribute("aria-label", formatTemplate(strings.ariaLabelTemplate, label));
     }
-  }, [visibleMonth, monthTitleFormatter]);
+  }, [visibleMonth, monthTitleFormatter, strings.ariaLabelTemplate]);
 
   const startDay = typeof weekStartsOn === "number" ? weekStartsOn : 1;
 
@@ -161,11 +175,21 @@ export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale
   return (
     <div className="calendar" ref={containerRef} role="application">
       <div className="calendar__header">
-        <button type="button" className="calendar__nav" onClick={handlePrevMonth} aria-label="Previous month">
+        <button
+          type="button"
+          className="calendar__nav"
+          onClick={handlePrevMonth}
+          aria-label={strings.previousMonth}
+        >
           ‹
         </button>
         <div className="calendar__title">{monthTitleFormatter.format(visibleMonth)}</div>
-        <button type="button" className="calendar__nav" onClick={handleNextMonth} aria-label="Next month">
+        <button
+          type="button"
+          className="calendar__nav"
+          onClick={handleNextMonth}
+          aria-label={strings.nextMonth}
+        >
           ›
         </button>
       </div>
