@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { DateRange } from "./DateRangeFilter";
 import {
   addMonths,
   endOfDay,
@@ -15,6 +14,7 @@ import {
   startOfMonth,
   toISODate,
 } from "../date";
+import { DateRange } from "../types/dateRange";
 import "../styles/calendar.css";
 
 export type CalendarProps = {

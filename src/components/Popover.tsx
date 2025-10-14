@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { DatePreset } from "../date";
+import { DateRange } from "../types/dateRange";
 import { Calendar } from "./Calendar";
-import { DateRange } from "./DateRangeFilter";
 import { Presets } from "./Presets";
 import "../styles/popover.css";
 

@@ -10,7 +10,8 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "types": ["jest", "node", "powerbi-visuals-api"],
+    "types": ["jest", "node"],
+    "typeRoots": ["./src/types", "./node_modules/@types", "./node_modules/powerbi-visuals-api"],
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },

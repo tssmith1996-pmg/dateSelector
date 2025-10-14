@@ -3,13 +3,19 @@ import * as models from "powerbi-models";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
-import { DateRangeFilter, DateRange } from "../components/DateRangeFilter";
+import { DateRangeFilter } from "../components/DateRangeFilter";
 import { PRESETS, ensureWithinRange, fromISODate, normalizeRange, toISODate } from "../date";
+import { DateRangeDialog } from "../dialogs/DateRangeDialog";
+import { DateRangeDialogInitialState, DateRangeDialogResult } from "../dialogs/types";
+import { DateRange } from "../types/dateRange";
 import {
   PresetDateSlicerFormattingSettingsModel,
   PRESET_ITEMS as FORMAT_PRESET_ITEMS,
   PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
 } from "./formattingSettings";
+
+import DialogAction = powerbi.DialogAction;
+import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
 
 type VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -287,21 +293,44 @@ function findExistingFilterRange(options: VisualUpdateOptions, target?: FilterTa
   return undefined;
 }
 
+function findDateColumnMetadata(dataView?: DataView): powerbi.DataViewMetadataColumn | undefined {
+  const columns = dataView?.metadata?.columns;
+  if (!columns) {
+    return undefined;
+  }
+  for (const column of columns) {
+    if (column?.roles && column.roles.date) {
+      return column;
+    }
+  }
+  return undefined;
+}
+
+function columnMetadataMatches(
+  candidate?: powerbi.DataViewMetadataColumn,
+  target?: powerbi.DataViewMetadataColumn,
+): boolean {
+  if (!candidate || !target) {
+    return false;
+  }
+  if (candidate.index != null && target.index != null && candidate.index === target.index) {
+    return true;
+  }
+  if (candidate.queryName && target.queryName && candidate.queryName === target.queryName) {
+    return true;
+  }
+  return candidate.displayName === target.displayName;
+}
+
 function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
-  const categories = dataView?.categorical?.categories;
-  if (!categories || categories.length === 0) {
-    return {};
-  }
-  const values = categories[0]?.values;
-  if (!values || values.length === 0) {
-    return {};
-  }
+  const dateColumn = findDateColumnMetadata(dataView);
   let min: Date | undefined;
   let max: Date | undefined;
-  for (const value of values) {
+
+  const collect = (value: unknown) => {
     const date = coerceDate(value);
     if (!date) {
-      continue;
+      return;
     }
     if (!min || date < min) {
       min = date;
@@ -309,7 +338,43 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
     if (!max || date > max) {
       max = date;
     }
+  };
+
+  const categories = dataView?.categorical?.categories;
+  if (categories) {
+    for (const category of categories) {
+      if (!category || (dateColumn && !columnMetadataMatches(category.source, dateColumn))) {
+        continue;
+      }
+      const values = category.values;
+      if (!values) {
+        continue;
+      }
+      for (const value of values) {
+        collect(value);
+      }
+    }
   }
+
+  const table = dataView?.table;
+  if (table?.columns && table.rows) {
+    const index = table.columns.findIndex((column) => columnMetadataMatches(column, dateColumn));
+    if (index >= 0) {
+      for (const row of table.rows) {
+        collect(row[index]);
+      }
+    }
+  }
+
+  if (!min && !max && categories && categories.length > 0) {
+    const fallbackValues = categories[0]?.values;
+    if (fallbackValues) {
+      for (const value of fallbackValues) {
+        collect(value);
+      }
+    }
+  }
+
   return { min, max };
 }
 
@@ -508,12 +573,14 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       typeof settings.pill.minWidth === "number" && settings.pill.minWidth > 0
         ? settings.pill.minWidth
         : undefined;
+    const dialogInvoker = this.canUseHostDialog() ? this.openDateDialog : undefined;
 
     this.reactRoot.render(
       <DateRangeFilter
         presets={PRESETS}
         dataMin={limitedMin}
         dataMax={limitedMax}
+        openDialog={dialogInvoker}
         defaultPresetId={defaultPresetId}
         defaultRange={defaultRange}
         localeOverride={locale}
@@ -618,6 +685,47 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   public destroy(): void {
     this.reactRoot.unmount();
     this.rootElement.remove();
+  }
+
+  private canUseHostDialog(): boolean {
+    return !!this.host.hostCapabilities?.allowModalDialog;
+  }
+
+  private openDateDialog = async (
+    initialState: DateRangeDialogInitialState,
+  ): Promise<{ actionId: DialogAction; resultState?: DateRangeDialogResult } | undefined> => {
+    if (!this.canUseHostDialog()) {
+      return undefined;
+    }
+    const options: DialogOpenOptions = {
+      title: "Select date range",
+      actionButtons: [DialogAction.Close],
+      size: { width: 760, height: 520 },
+    };
+    try {
+      const result = await this.toPromise(
+        this.host.openModalDialog(DateRangeDialog.id, options, initialState),
+      );
+      return result as { actionId: DialogAction; resultState?: DateRangeDialogResult };
+    } catch (error) {
+      console.warn("Failed to open date range dialog", error);
+      return undefined;
+    }
+  };
+
+  private toPromise<T>(ipromise: powerbi.IPromise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      ipromise.then(
+        (value) => {
+          resolve(value);
+          return value;
+        },
+        (error) => {
+          reject(error);
+          return error as unknown as T;
+        },
+      );
+    });
   }
 
   private resetDataBounds(): void {

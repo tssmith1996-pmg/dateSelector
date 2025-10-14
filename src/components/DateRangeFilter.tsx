@@ -1,3 +1,4 @@
+import powerbi from "powerbi-visuals-api";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DatePreset,
@@ -10,12 +11,19 @@ import {
   toISODate,
 } from "../date";
 import { OutsideFramePortal, PortalStrategy } from "../portal/OutsideFramePortal";
+import { resolveDefaultRange, toPresetIdWithFallback } from "./dateRangeDefaults";
 import { Popover } from "./Popover";
+import { DateRange } from "../types/dateRange";
+import { DateRangeDialogInitialState, DateRangeDialogResult } from "../dialogs/types";
 import "../styles/date-range-filter.css";
 
-export type DateRange = { from: Date; to: Date };
+import DialogAction = powerbi.DialogAction;
 
 type HashRange = { from?: Date; to?: Date };
+
+type DialogInvoker = (
+  initialState: DateRangeDialogInitialState,
+) => Promise<{ actionId: DialogAction; resultState?: unknown } | undefined>;
 
 function isTopLevelWindow(): boolean {
   if (typeof window === "undefined") {
@@ -52,6 +60,7 @@ type DateRangeFilterProps = {
   dataMax?: Date;
   onChange: (range: DateRange, presetId: string) => void;
   forcePortalStrategy?: PortalStrategy;
+  openDialog?: DialogInvoker;
   defaultPresetId?: string;
   defaultRange?: DateRange;
   localeOverride?: string;
@@ -64,8 +73,6 @@ type DateRangeFilterProps = {
   showQuickApply?: boolean;
   showClear?: boolean;
 };
-
-const DEFAULT_PRESET_ID = "last7";
 
 function rangesEqual(a: DateRange | undefined, b: DateRange | undefined): boolean {
   if (!a || !b) {
@@ -142,79 +149,12 @@ function computeInitialState(
   return resolveDefaultRange(presets, dataMin, dataMax, today, defaultPresetId, defaultRange);
 }
 
-function toPresetIdWithFallback(presets: DatePreset[], range: DateRange, today: Date) {
-  for (const preset of presets) {
-    const presetRange = normalizeRange(preset.from(today), preset.to(today));
-    if (toISODate(presetRange.from) === toISODate(range.from) && toISODate(presetRange.to) === toISODate(range.to)) {
-      return preset.id;
-    }
-  }
-  return "custom";
-}
-
-function findPresetById(presets: DatePreset[], id?: string | null): DatePreset | undefined {
-  if (!id) {
-    return undefined;
-  }
-  return presets.find((preset) => preset.id === id);
-}
-
-function resolveDefaultRange(
-  presets: DatePreset[],
-  dataMin: Date | undefined,
-  dataMax: Date | undefined,
-  today: Date,
-  defaultPresetId?: string,
-  defaultRange?: DateRange,
-) {
-  if (defaultRange) {
-    const normalized = ensureWithinRange(
-      normalizeRange(defaultRange.from, defaultRange.to),
-      dataMin,
-      dataMax,
-    );
-    const presetExists = defaultPresetId ? presets.some((preset) => preset.id === defaultPresetId) : false;
-    const presetId = presetExists ? defaultPresetId! : toPresetIdWithFallback(presets, normalized, today);
-    return { range: normalized, presetId };
-  }
-
-  const fallbackCandidates: DatePreset[] = [];
-  const provided = findPresetById(presets, defaultPresetId) ?? findPresetById(PRESETS, defaultPresetId);
-  if (provided) {
-    fallbackCandidates.push(provided);
-  }
-  const defaultPreset = findPresetById(presets, DEFAULT_PRESET_ID) ?? findPresetById(PRESETS, DEFAULT_PRESET_ID);
-  if (defaultPreset) {
-    fallbackCandidates.push(defaultPreset);
-  }
-  if (presets.length > 0) {
-    fallbackCandidates.push(presets[0]);
-  }
-  if (PRESETS.length > 0) {
-    fallbackCandidates.push(PRESETS[0]);
-  }
-
-  for (const candidate of fallbackCandidates) {
-    if (!candidate) {
-      continue;
-    }
-    const range = ensureWithinRange(
-      normalizeRange(candidate.from(today), candidate.to(today)),
-      dataMin,
-      dataMax,
-    );
-    return { range, presetId: candidate.id };
-  }
-
-  const normalized = ensureWithinRange(normalizeRange(today, today), dataMin, dataMax);
-  return { range: normalized, presetId: defaultPresetId ?? DEFAULT_PRESET_ID };
-}
-
 export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   presets = PRESETS,
   dataMin,
   dataMax,
   onChange,
+  openDialog,
   forcePortalStrategy = "auto",
   defaultPresetId,
   defaultRange,
@@ -262,6 +202,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     return ((rounded % 7) + 7) % 7;
   }, [weekStartsOn]);
 
+
   const commitChange = useCallback(
     (range: DateRange, presetId: string, options?: { force?: boolean }) => {
       const force = options?.force ?? false;
@@ -293,6 +234,72 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     },
     [locale, onChange],
   );
+
+  const invokeDialog = useCallback(() => {
+    if (!openDialog) {
+      setOpen((value) => !value);
+      return;
+    }
+    const initialState: DateRangeDialogInitialState = {
+      range: {
+        from: toISODate(committedRange.from),
+        to: toISODate(committedRange.to),
+      },
+      presetId: committedPresetId,
+      dataMin: dataMin ? toISODate(dataMin) : undefined,
+      dataMax: dataMax ? toISODate(dataMax) : undefined,
+      presetIds: presets.map((preset) => preset.id),
+      locale,
+      weekStartsOn: normalizedWeekStartsOn,
+      showPresetLabels,
+      showQuickApply,
+      showClear,
+      defaultPresetId,
+      defaultRange: defaultRange
+        ? { from: toISODate(defaultRange.from), to: toISODate(defaultRange.to) }
+        : undefined,
+    };
+    openDialog(initialState)
+      .then((result) => {
+        if (!result || result.actionId !== DialogAction.OK || !result.resultState) {
+          return;
+        }
+        const payload = result.resultState as DateRangeDialogResult;
+        const from = payload.range?.from ? fromISODate(payload.range.from) : null;
+        const to = payload.range?.to ? fromISODate(payload.range.to) : null;
+        if (!from || !to) {
+          return;
+        }
+        const normalized = ensureWithinRange(normalizeRange(from, to), dataMin, dataMax);
+        const presetId =
+          typeof payload.presetId === "string" && payload.presetId.trim()
+            ? payload.presetId
+            : toPresetIdWithFallback(presets, normalized, today);
+        commitChange(normalized, presetId);
+      })
+      .catch((error) => {
+        console.warn("Failed to open date range dialog", error);
+      })
+      .finally(() => {
+        anchorRef.current?.focus();
+      });
+  }, [
+    openDialog,
+    committedRange,
+    committedPresetId,
+    dataMin,
+    dataMax,
+    presets,
+    locale,
+    normalizedWeekStartsOn,
+    showPresetLabels,
+    showQuickApply,
+    showClear,
+    defaultPresetId,
+    defaultRange,
+    today,
+    commitChange,
+  ]);
 
   useEffect(() => {
     updateHash(committedRange);
@@ -389,8 +396,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             : "date-range-filter__pill--compact",
         ].join(" ")}
         aria-haspopup="dialog"
-        aria-expanded={open}
-        onClick={() => setOpen((value) => !value)}
+        aria-expanded={openDialog ? undefined : open}
+        onClick={invokeDialog}
         style={{
           backgroundColor: pillColors?.background,
           borderColor: pillColors?.border,
