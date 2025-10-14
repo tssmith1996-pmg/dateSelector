@@ -1,9 +1,13 @@
-import React, { act } from "react";
+import powerbi from "powerbi-visuals-api";
+import React from "react";
+import { act } from "react-dom/test-utils";
 
 (globalThis as Record<string, unknown>).IS_REACT_ACT_ENVIRONMENT = true;
 import { createRoot, Root } from "react-dom/client";
 import { DateRangeFilter } from "../src/components/DateRangeFilter";
 import { PRESETS, getToday, normalizeRange, toISODate } from "../src/date";
+
+import DialogAction = powerbi.DialogAction;
 
 describe("DateRangeFilter defaults", () => {
   let container: HTMLDivElement;
@@ -68,6 +72,47 @@ describe("DateRangeFilter defaults", () => {
 
     expect(onChange).toHaveBeenCalled();
     const lastCall = onChange.mock.calls[onChange.mock.calls.length - 1];
+    expect(toISODate(lastCall[0].from)).toBe("2024-01-02");
+    expect(toISODate(lastCall[0].to)).toBe("2024-01-05");
+    expect(lastCall[1]).toBe("custom");
+  });
+
+  it("applies the dialog result when the host provides one", async () => {
+    const onChange = jest.fn();
+    const openDialog = jest.fn().mockResolvedValue({
+      actionId: DialogAction.OK,
+      resultState: {
+        range: { from: "2024-01-02", to: "2024-01-05" },
+        presetId: "custom",
+      },
+    });
+
+    await act(async () => {
+      root.render(
+        <DateRangeFilter
+          presets={PRESETS}
+          onChange={onChange}
+          openDialog={openDialog}
+          forcePortalStrategy="iframe"
+        />,
+      );
+    });
+
+    onChange.mockClear();
+
+    const button = container.querySelector("button");
+    if (!button) {
+      throw new Error("Expected pill button to exist");
+    }
+
+    await act(async () => {
+      button.click();
+      await Promise.resolve();
+    });
+
+    expect(openDialog).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const lastCall = onChange.mock.calls[0];
     expect(toISODate(lastCall[0].from)).toBe("2024-01-02");
     expect(toISODate(lastCall[0].to)).toBe("2024-01-05");
     expect(lastCall[1]).toBe("custom");

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { DateRange } from "./DateRangeFilter";
 import {
   addMonths,
   endOfDay,
@@ -15,6 +14,7 @@ import {
   startOfMonth,
   toISODate,
 } from "../date";
+import { DateRange } from "../types/dateRange";
 import "../styles/calendar.css";
 
 export type CalendarProps = {
@@ -43,11 +43,20 @@ export const Calendar: React.FC<CalendarProps> = ({ range, onRangeChange, locale
     [locale],
   );
 
+  const fromTime = range.from.getTime();
+  const toTime = range.to.getTime();
+  const rangeRef = useRef(range);
+  rangeRef.current = range;
+
   useEffect(() => {
-    if (!isSameMonth(range.from, visibleMonth) && !isSameMonth(range.to, visibleMonth)) {
-      setVisibleMonth(startOfMonth(range.from));
-    }
-  }, [range, visibleMonth]);
+    setVisibleMonth((current) => {
+      const { from, to } = rangeRef.current;
+      if (isSameMonth(from, current) || isSameMonth(to, current)) {
+        return current;
+      }
+      return startOfMonth(from);
+    });
+  }, [fromTime, toTime]);
 
   useEffect(() => {
     setFocusDate(range.from);

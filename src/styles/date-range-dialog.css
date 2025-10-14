@@ -1,0 +1,15 @@
+@import "./tokens.css";
+
+.date-range-dialog {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: var(--ds-spacing-4);
+  box-sizing: border-box;
+}
+
+.date-range-dialog .popover {
+  box-shadow: none;
+  border: none;
+}

@@ -3,13 +3,19 @@ import * as models from "powerbi-models";
 import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
-import { DateRangeFilter, DateRange } from "../components/DateRangeFilter";
+import { DateRangeFilter } from "../components/DateRangeFilter";
 import { PRESETS, ensureWithinRange, fromISODate, normalizeRange, toISODate } from "../date";
+import { DateRangeDialog } from "../dialogs/DateRangeDialog";
+import { DateRangeDialogInitialState, DateRangeDialogResult } from "../dialogs/types";
+import { DateRange } from "../types/dateRange";
 import {
   PresetDateSlicerFormattingSettingsModel,
   PRESET_ITEMS as FORMAT_PRESET_ITEMS,
   PILL_STYLE_ITEMS as FORMAT_PILL_STYLE_ITEMS,
 } from "./formattingSettings";
+
+import DialogAction = powerbi.DialogAction;
+import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
 
 type VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
@@ -17,9 +23,15 @@ type VisualObjectInstance = powerbi.VisualObjectInstance;
 type DataView = powerbi.DataView;
 type DataViewObjects = powerbi.DataViewObjects;
 
+type PersistedBounds = {
+  min?: string;
+  max?: string;
+};
+
 type PersistedState = {
   range?: { from: string; to: string };
   presetId?: string;
+  bounds?: PersistedBounds;
   raw?: string;
 };
 
@@ -41,6 +53,7 @@ type PillSettings = {
   borderColor?: string;
   textColor?: string;
   fontSize?: number;
+  minWidth?: number;
 };
 
 type ButtonSettings = {
@@ -89,7 +102,15 @@ function parsePersistedState(value: unknown): PersistedState | undefined {
     if (!parsed || typeof parsed !== "object") {
       return undefined;
     }
-    return { ...parsed, raw: value };
+    const bounds = parsed.bounds;
+    const normalizedBounds =
+      bounds && typeof bounds === "object"
+        ? {
+            min: typeof bounds.min === "string" ? bounds.min : undefined,
+            max: typeof bounds.max === "string" ? bounds.max : undefined,
+          }
+        : undefined;
+    return { ...parsed, bounds: normalizedBounds, raw: value };
   } catch (error) {
     console.warn("Failed to parse persisted state", error);
     return undefined;
@@ -166,6 +187,7 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
       borderColor: getColorValue(pill?.pillBorderColor),
       textColor: getColorValue(pill?.pillTextColor),
       fontSize: getNumericValue(pill?.pillFontSize),
+      minWidth: getNumericValue(pill?.pillMinWidth),
     },
     buttons: {
       showQuickApply: getBooleanValue(buttons?.showQuickApply),
@@ -195,6 +217,16 @@ function findColumnTarget(dataView?: DataView): FilterTarget | undefined {
     return undefined;
   }
   return { table, column };
+}
+
+function filterTargetsEqual(a?: FilterTarget, b?: FilterTarget): boolean {
+  if (!a && !b) {
+    return true;
+  }
+  if (!a || !b) {
+    return false;
+  }
+  return a.table === b.table && a.column === b.column;
 }
 
 type VisualUpdateOptionsWithFilters = VisualUpdateOptions & {
@@ -261,21 +293,44 @@ function findExistingFilterRange(options: VisualUpdateOptions, target?: FilterTa
   return undefined;
 }
 
+function findDateColumnMetadata(dataView?: DataView): powerbi.DataViewMetadataColumn | undefined {
+  const columns = dataView?.metadata?.columns;
+  if (!columns) {
+    return undefined;
+  }
+  for (const column of columns) {
+    if (column?.roles && column.roles.date) {
+      return column;
+    }
+  }
+  return undefined;
+}
+
+function columnMetadataMatches(
+  candidate?: powerbi.DataViewMetadataColumn,
+  target?: powerbi.DataViewMetadataColumn,
+): boolean {
+  if (!candidate || !target) {
+    return false;
+  }
+  if (candidate.index != null && target.index != null && candidate.index === target.index) {
+    return true;
+  }
+  if (candidate.queryName && target.queryName && candidate.queryName === target.queryName) {
+    return true;
+  }
+  return candidate.displayName === target.displayName;
+}
+
 function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
-  const categories = dataView?.categorical?.categories;
-  if (!categories || categories.length === 0) {
-    return {};
-  }
-  const values = categories[0]?.values;
-  if (!values || values.length === 0) {
-    return {};
-  }
+  const dateColumn = findDateColumnMetadata(dataView);
   let min: Date | undefined;
   let max: Date | undefined;
-  for (const value of values) {
+
+  const collect = (value: unknown) => {
     const date = coerceDate(value);
     if (!date) {
-      continue;
+      return;
     }
     if (!min || date < min) {
       min = date;
@@ -283,15 +338,62 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
     if (!max || date > max) {
       max = date;
     }
+  };
+
+  const categories = dataView?.categorical?.categories;
+  if (categories) {
+    for (const category of categories) {
+      if (!category || (dateColumn && !columnMetadataMatches(category.source, dateColumn))) {
+        continue;
+      }
+      const values = category.values;
+      if (!values) {
+        continue;
+      }
+      for (const value of values) {
+        collect(value);
+      }
+    }
   }
+
+  const table = dataView?.table;
+  if (table?.columns && table.rows) {
+    const index = table.columns.findIndex((column) => columnMetadataMatches(column, dateColumn));
+    if (index >= 0) {
+      for (const row of table.rows) {
+        collect(row[index]);
+      }
+    }
+  }
+
+  if (!min && !max && categories && categories.length > 0) {
+    const fallbackValues = categories[0]?.values;
+    if (fallbackValues) {
+      for (const value of fallbackValues) {
+        collect(value);
+      }
+    }
+  }
+
   return { min, max };
 }
 
-function toPersistedPayload(range: DateRange, presetId: string): string {
-  return JSON.stringify({
+function toPersistedPayload(
+  range: DateRange,
+  presetId: string,
+  bounds?: { min?: Date; max?: Date },
+): string {
+  const payload: { range: { from: string; to: string }; presetId: string; bounds?: PersistedBounds } = {
     range: { from: toISODate(range.from), to: toISODate(range.to) },
     presetId,
-  });
+  };
+  if (bounds?.min || bounds?.max) {
+    payload.bounds = {
+      min: bounds.min ? toISODate(bounds.min) : undefined,
+      max: bounds.max ? toISODate(bounds.max) : undefined,
+    };
+  }
+  return JSON.stringify(payload);
 }
 
 function rangesEqual(a: DateRange | undefined, b: DateRange | undefined): boolean {
@@ -325,6 +427,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   private currentRange?: DateRange;
 
   private currentPresetId?: string;
+
+  private dataBounds: { min?: Date; max?: Date } = {};
 
   private settings: VisualSettings = {
     defaults: {},
@@ -364,11 +468,18 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
           this.dataView,
         )
       : new PresetDateSlicerFormattingSettingsModel();
-    this.columnTarget = findColumnTarget(this.dataView);
+    const nextTarget = findColumnTarget(this.dataView);
+    const metadataChanged = (options.type & powerbi.VisualUpdateType.All) !== 0;
+    if (metadataChanged || !filterTargetsEqual(nextTarget, this.columnTarget)) {
+      this.resetDataBounds();
+    }
+    this.columnTarget = nextTarget;
     const settings = parseVisualSettings(this.dataView);
     this.settings = settings;
+    this.seedBoundsFromPersisted(settings.persistedState?.bounds);
     this.syncFormattingSettings(settings);
     const bounds = getDataBounds(this.dataView);
+    const trackedBounds = this.expandBoundsWithData(bounds);
     const appliedRange = findExistingFilterRange(options, this.columnTarget);
 
     this.lastPersistedPayload = settings.persistedState?.raw ?? undefined;
@@ -386,8 +497,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       return normalizeRange(from, to);
     })();
 
-    const limitedMin = settings.limits.minDate ?? bounds.min;
-    const limitedMax = settings.limits.maxDate ?? bounds.max;
+    const limitedMin = settings.limits.minDate ?? trackedBounds.min;
+    const limitedMax = settings.limits.maxDate ?? trackedBounds.max;
 
     const initialRange = appliedRange ?? persisted;
 
@@ -426,6 +537,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         borderColor: settings.pill.borderColor ?? null,
         textColor: settings.pill.textColor ?? null,
         fontSize: settings.pill.fontSize ?? null,
+        minWidth: settings.pill.minWidth ?? null,
       },
       buttons: {
         showQuickApply: settings.buttons.showQuickApply ?? null,
@@ -457,12 +569,18 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       typeof settings.pill.fontSize === "number" && settings.pill.fontSize > 0
         ? settings.pill.fontSize
         : undefined;
+    const pillMinWidth =
+      typeof settings.pill.minWidth === "number" && settings.pill.minWidth > 0
+        ? settings.pill.minWidth
+        : undefined;
+    const dialogInvoker = this.canUseHostDialog() ? this.openDateDialog : undefined;
 
     this.reactRoot.render(
       <DateRangeFilter
         presets={PRESETS}
         dataMin={limitedMin}
         dataMax={limitedMax}
+        openDialog={dialogInvoker}
         defaultPresetId={defaultPresetId}
         defaultRange={defaultRange}
         localeOverride={locale}
@@ -474,6 +592,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
           text: settings.pill.textColor,
         }}
         pillFontSize={pillFontSize}
+        pillMinWidth={pillMinWidth}
         showPresetLabels={showPresetLabels}
         showQuickApply={settings.buttons.showQuickApply ?? false}
         showClear={showClear}
@@ -521,6 +640,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
           pillStyle: this.settings.pill.style ?? "compact",
           showPresetLabels: this.settings.pill.showPresetLabels ?? true,
           pillFontSize: this.settings.pill.fontSize ?? 12,
+          pillMinWidth: this.settings.pill.minWidth ?? 260,
         };
         const background = toFill(this.settings.pill.backgroundColor);
         if (background) {
@@ -567,6 +687,94 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     this.rootElement.remove();
   }
 
+  private canUseHostDialog(): boolean {
+    return !!this.host.hostCapabilities?.allowModalDialog;
+  }
+
+  private openDateDialog = async (
+    initialState: DateRangeDialogInitialState,
+  ): Promise<{ actionId: DialogAction; resultState?: DateRangeDialogResult } | undefined> => {
+    if (!this.canUseHostDialog()) {
+      return undefined;
+    }
+    const options: DialogOpenOptions = {
+      title: "Select date range",
+      actionButtons: [DialogAction.Close],
+      size: { width: 760, height: 520 },
+    };
+    try {
+      const result = await this.toPromise(
+        this.host.openModalDialog(DateRangeDialog.id, options, initialState),
+      );
+      return result as { actionId: DialogAction; resultState?: DateRangeDialogResult };
+    } catch (error) {
+      console.warn("Failed to open date range dialog", error);
+      return undefined;
+    }
+  };
+
+  private toPromise<T>(ipromise: powerbi.IPromise<T>): Promise<T> {
+    return new Promise((resolve, reject) => {
+      ipromise.then(
+        (value) => {
+          resolve(value);
+          return value;
+        },
+        (error) => {
+          reject(error);
+          return error as unknown as T;
+        },
+      );
+    });
+  }
+
+  private resetDataBounds(): void {
+    this.dataBounds = {};
+  }
+
+  private seedBoundsFromPersisted(bounds?: PersistedBounds): void {
+    if (!bounds) {
+      return;
+    }
+    if (bounds.min && !this.dataBounds.min) {
+      const min = coerceDate(bounds.min);
+      if (min) {
+        this.dataBounds.min = min;
+      }
+    }
+    if (bounds.max && !this.dataBounds.max) {
+      const max = coerceDate(bounds.max);
+      if (max) {
+        this.dataBounds.max = max;
+      }
+    }
+  }
+
+  private expandBoundsWithData(bounds: { min?: Date; max?: Date }): { min?: Date; max?: Date } {
+    if (bounds.min) {
+      const candidate = new Date(bounds.min.getTime());
+      this.dataBounds.min =
+        this.dataBounds.min && this.dataBounds.min <= candidate ? this.dataBounds.min : candidate;
+    }
+    if (bounds.max) {
+      const candidate = new Date(bounds.max.getTime());
+      this.dataBounds.max =
+        this.dataBounds.max && this.dataBounds.max >= candidate ? this.dataBounds.max : candidate;
+    }
+    return { min: this.dataBounds.min ?? bounds.min, max: this.dataBounds.max ?? bounds.max };
+  }
+
+  private getPersistableBounds(): PersistedBounds | undefined {
+    const { min, max } = this.dataBounds;
+    if (!min && !max) {
+      return undefined;
+    }
+    return {
+      min: min ? toISODate(min) : undefined,
+      max: max ? toISODate(max) : undefined,
+    };
+  }
+
   private applyRangeFilter(range: DateRange): void {
     if (!this.columnTarget) {
       return;
@@ -588,7 +796,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   }
 
   private persistState(range: DateRange, presetId: string): void {
-    const payload = toPersistedPayload(range, presetId);
+    const payload = toPersistedPayload(range, presetId, this.dataBounds);
     if (this.lastPersistedPayload === payload) {
       return;
     }
@@ -611,9 +819,11 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         },
       ],
     });
+    const bounds = this.getPersistableBounds();
     this.settings.persistedState = {
       range: { from: toISODate(range.from), to: toISODate(range.to) },
       presetId,
+      bounds,
       raw: payload,
     };
     this.settings.defaults.presetId = presetId;
@@ -654,6 +864,9 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       : { value: pillCard.pillTextColor.value?.value ?? "" };
     if (typeof settings.pill.fontSize === "number" && Number.isFinite(settings.pill.fontSize)) {
       pillCard.pillFontSize.value = settings.pill.fontSize;
+    }
+    if (typeof settings.pill.minWidth === "number" && Number.isFinite(settings.pill.minWidth)) {
+      pillCard.pillMinWidth.value = settings.pill.minWidth;
     }
 
     const buttonsCard = this.formattingSettings.buttons;
