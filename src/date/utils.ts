@@ -152,26 +152,15 @@ export function fromISODate(value: string): Date | null {
 
 export function formatRange(from: Date, to: Date, locale: string): string {
   const formatter = new Intl.DateTimeFormat(locale, {
-    month: "short",
+    month: "long",
     day: "numeric",
-    year: from.getFullYear() !== to.getFullYear() ? "numeric" : undefined,
+    year: "numeric",
   });
 
-  const sameMonth = isSameMonth(from, to);
-  const sameYear = from.getFullYear() === to.getFullYear();
+  const fromLabel = formatter.format(from);
+  const toLabel = formatter.format(to);
 
-  if (sameMonth && sameYear) {
-    const monthFormatter = new Intl.DateTimeFormat(locale, {
-      month: "short",
-    });
-    return `${monthFormatter.format(from)} ${from.getDate()} – ${to.getDate()}, ${from.getFullYear()}`;
-  }
-
-  if (sameYear) {
-    return `${formatter.format(from)} – ${formatter.format(to)}, ${from.getFullYear()}`;
-  }
-
-  return `${formatter.format(from)} – ${formatter.format(to)}`;
+  return `${fromLabel} – ${toLabel}`;
 }
 
 export function getToday(): Date {
