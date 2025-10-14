@@ -30,6 +30,16 @@
     }
   ],
   "objects": {
+    "general": {
+      "displayName": "General",
+      "properties": {
+        "filter": {
+          "type": {
+            "filter": {}
+          }
+        }
+      }
+    },
     "defaults": {
       "displayName": "Defaults",
       "properties": {
@@ -77,23 +87,6 @@
           "displayName": "Comparison on by default",
           "type": {
             "bool": true
-          }
-        }
-      }
-    },
-    "limits": {
-      "displayName": "Limits",
-      "properties": {
-        "minDate": {
-          "displayName": "Minimum date",
-          "type": {
-            "text": true
-          }
-        },
-        "maxDate": {
-          "displayName": "Maximum date",
-          "type": {
-            "text": true
           }
         }
       }
