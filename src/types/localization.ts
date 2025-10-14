@@ -22,6 +22,12 @@ export type VisualStrings = {
     ariaLabel: string;
     disabledMessage: string;
   };
+  manualEntry: {
+    startLabel: string;
+    endLabel: string;
+    formatHint: string;
+    invalidDate: string;
+  };
   popover: {
     heading: string;
     presetLabel: string;

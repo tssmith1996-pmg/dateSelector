@@ -68,6 +68,20 @@ export function getVisualStrings(localizationManager: powerbi.extensibility.ILoc
         "Interactions are disabled for this visual.",
       ),
     },
+    manualEntry: {
+      startLabel: resolveString(localizationManager, "visual_manual_startLabel", "Start date"),
+      endLabel: resolveString(localizationManager, "visual_manual_endLabel", "End date"),
+      formatHint: resolveString(
+        localizationManager,
+        "visual_manual_formatHint",
+        "Use format dd/mm/yyyy.",
+      ),
+      invalidDate: resolveString(
+        localizationManager,
+        "visual_manual_invalidDate",
+        "Enter a valid date in dd/mm/yyyy format.",
+      ),
+    },
     popover: {
       heading: resolveString(localizationManager, "visual_popover_heading", "Date range"),
       presetLabel: resolveString(localizationManager, "visual_popover_presetLabel", "Preset"),

@@ -1,6 +1,8 @@
+import powerbi from "powerbi-visuals-api";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import { DateRange, DateRangeFilter, PRESETS, PortalStrategy, toISODate } from "@lib";
+import { getVisualStrings } from "@lib/utils/localization";
 import "./styles.css";
 
 const VisualApp: React.FC = () => {
@@ -66,6 +68,7 @@ const VisualApp: React.FC = () => {
         onChange={handleChange}
         forcePortalStrategy={strategy}
         defaultPresetId={defaultPresetId}
+        strings={STRINGS}
       />
       <div className="visual-status">
         <strong>Last applied</strong>
@@ -74,6 +77,10 @@ const VisualApp: React.FC = () => {
     </div>
   );
 };
+
+const STRINGS = getVisualStrings({
+  getDisplayName: () => "",
+} as powerbi.extensibility.ILocalizationManager);
 
 const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(<VisualApp />);
