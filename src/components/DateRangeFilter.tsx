@@ -1,5 +1,5 @@
 import powerbi from "powerbi-visuals-api";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   DatePreset,
   PRESETS,
@@ -21,6 +21,48 @@ import "../styles/date-range-filter.css";
 import DialogAction = powerbi.DialogAction;
 
 type HashRange = { from?: Date; to?: Date };
+
+type ManualEditState = {
+  field: "from" | "to";
+  value: string;
+  error?: string;
+};
+
+const MANUAL_DATE_PATTERN = /^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/;
+
+function formatManualDate(date: Date): string {
+  const day = `${date.getDate()}`.padStart(2, "0");
+  const month = `${date.getMonth() + 1}`.padStart(2, "0");
+  const year = `${date.getFullYear()}`;
+  return `${day}/${month}/${year}`;
+}
+
+function parseManualDate(value: string): Date | null {
+  const trimmed = value.trim();
+  const match = MANUAL_DATE_PATTERN.exec(trimmed);
+  if (!match) {
+    return null;
+  }
+  const [, dayPart, monthPart, yearPart] = match;
+  const day = Number.parseInt(dayPart, 10);
+  const month = Number.parseInt(monthPart, 10);
+  const year = Number.parseInt(yearPart, 10);
+  if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) {
+    return null;
+  }
+  if (month < 1 || month > 12 || day < 1 || day > 31) {
+    return null;
+  }
+  const parsed = new Date(year, month - 1, day);
+  if (
+    parsed.getFullYear() !== year ||
+    parsed.getMonth() !== month - 1 ||
+    parsed.getDate() !== day
+  ) {
+    return null;
+  }
+  return parsed;
+}
 
 type DialogInvoker = (
   initialState: DateRangeDialogInitialState,
@@ -178,8 +220,22 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     : typeof navigator !== "undefined"
       ? navigator.language
       : "en-US";
-  const anchorRef = useRef<HTMLButtonElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const anchorRef = useRef<HTMLDivElement | null>(null);
   const liveRegionRef = useRef<HTMLDivElement | null>(null);
+  const manualInputRef = useRef<HTMLInputElement | null>(null);
+  const manualFromInputId = useId();
+  const manualToInputId = useId();
+  const manualFromIds = {
+    input: manualFromInputId,
+    hint: `${manualFromInputId}-hint`,
+    error: `${manualFromInputId}-error`,
+  };
+  const manualToIds = {
+    input: manualToInputId,
+    hint: `${manualToInputId}-hint`,
+    error: `${manualToInputId}-error`,
+  };
   const today = useMemo(() => getToday(), []);
 
   const dataMinTime = dataMin?.getTime();
@@ -198,7 +254,17 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   const [draftRange, setDraftRange] = useState<DateRange>(initial.range);
   const [draftPresetId, setDraftPresetId] = useState(initial.presetId);
   const [open, setOpen] = useState(false);
+  const [manualEdit, setManualEdit] = useState<ManualEditState | null>(null);
   const initialSignatureRef = useRef<string>();
+  const safeLocale = useMemo(() => {
+    try {
+      // Validates locale and falls back when encountering unsupported tags like "en-US@posix".
+      new Intl.DateTimeFormat(locale);
+      return locale;
+    } catch (error) {
+      return "en-US";
+    }
+  }, [locale]);
   const normalizedWeekStartsOn = useMemo(() => {
     if (typeof weekStartsOn !== "number" || Number.isNaN(weekStartsOn)) {
       return 1;
@@ -236,10 +302,10 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         postRangeChanged(range, presetId);
       }
       if (liveRegionRef.current) {
-        liveRegionRef.current.textContent = formatRange(range.from, range.to, locale);
+        liveRegionRef.current.textContent = formatRange(range.from, range.to, safeLocale);
       }
     },
-    [isInteractive, locale, onChange],
+    [isInteractive, onChange, safeLocale],
   );
 
   const invokeDialog = useCallback(() => {
@@ -259,7 +325,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
       dataMin: dataMin ? toISODate(dataMin) : undefined,
       dataMax: dataMax ? toISODate(dataMax) : undefined,
       presetIds: presets.map((preset) => preset.id),
-      locale,
+      locale: safeLocale,
       weekStartsOn: normalizedWeekStartsOn,
       showPresetLabels,
       showQuickApply,
@@ -302,7 +368,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     dataMin,
     dataMax,
     presets,
-    locale,
+    safeLocale,
     normalizedWeekStartsOn,
     showPresetLabels,
     showQuickApply,
@@ -333,7 +399,111 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     commitChange(initial.range, initial.presetId, { force: true });
   }, [commitChange, initial]);
 
-  const pillLabel = useMemo(() => formatRange(committedRange.from, committedRange.to, locale), [committedRange, locale]);
+  const pillLabel = useMemo(
+    () => formatRange(committedRange.from, committedRange.to, safeLocale),
+    [committedRange, safeLocale],
+  );
+  const rangeDateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat(safeLocale, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      }),
+    [safeLocale],
+  );
+  const committedFromLabel = useMemo(
+    () => rangeDateFormatter.format(committedRange.from),
+    [committedRange.from, rangeDateFormatter],
+  );
+  const committedToLabel = useMemo(
+    () => rangeDateFormatter.format(committedRange.to),
+    [committedRange.to, rangeDateFormatter],
+  );
+  const isEditingFrom = manualEdit?.field === "from";
+  const isEditingTo = manualEdit?.field === "to";
+
+  const closeManualEdit = useCallback(() => {
+    setManualEdit(null);
+    anchorRef.current?.focus();
+  }, []);
+
+  const openManualEdit = useCallback(
+    (field: "from" | "to") => (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!isInteractive) {
+        return;
+      }
+      setOpen(false);
+      setManualEdit({
+        field,
+        value: formatManualDate(field === "from" ? committedRange.from : committedRange.to),
+      });
+    },
+    [committedRange.from, committedRange.to, isInteractive],
+  );
+
+  const handleManualChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setManualEdit((previous) => (previous ? { ...previous, value, error: undefined } : previous));
+  }, []);
+
+  const handleManualApply = useCallback(() => {
+    if (!manualEdit) {
+      return;
+    }
+    const parsed = parseManualDate(manualEdit.value);
+    if (!parsed) {
+      setManualEdit({ ...manualEdit, error: strings.manualEntry.invalidDate });
+      return;
+    }
+    const nextRange = manualEdit.field === "from"
+      ? { from: parsed, to: committedRange.to }
+      : { from: committedRange.from, to: parsed };
+    const normalized = ensureWithinRange(
+      normalizeRange(nextRange.from, nextRange.to),
+      dataMin,
+      dataMax,
+    );
+    const presetId = toPresetIdWithFallback(presets, normalized, today);
+    commitChange(normalized, presetId);
+    closeManualEdit();
+  }, [closeManualEdit, commitChange, committedRange.from, committedRange.to, dataMax, dataMin, manualEdit, presets, strings.manualEntry.invalidDate, today]);
+
+  useEffect(() => {
+    if (!manualEdit) {
+      return;
+    }
+    manualInputRef.current?.focus();
+    manualInputRef.current?.select();
+  }, [manualEdit]);
+
+  useEffect(() => {
+    if (!manualEdit) {
+      return;
+    }
+    function handlePointerDown(event: MouseEvent | TouchEvent) {
+      if (!containerRef.current) {
+        return;
+      }
+      if (!containerRef.current.contains(event.target as Node)) {
+        setManualEdit(null);
+      }
+    }
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+    };
+  }, [manualEdit]);
+
+  useEffect(() => {
+    if (!isInteractive) {
+      setManualEdit(null);
+    }
+  }, [isInteractive]);
 
   const handlePresetDraft = useCallback(
     (presetId: string) => {
@@ -404,10 +574,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   }, [open, handleClose]);
 
   return (
-    <div className="date-range-filter">
-      <button
+    <div ref={containerRef} className="date-range-filter">
+      <div
         ref={anchorRef}
-        type="button"
         className={[
           "date-range-filter__pill",
           pillStyle === "expanded"
@@ -417,6 +586,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         ]
           .filter(Boolean)
           .join(" ")}
+        role="button"
+        tabIndex={isInteractive ? 0 : -1}
         aria-haspopup="dialog"
         aria-expanded={openDialog ? undefined : open}
         aria-disabled={!isInteractive}
@@ -427,7 +598,20 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             event.preventDefault();
             return;
           }
+          setManualEdit(null);
           invokeDialog();
+        }}
+        onKeyDown={(event) => {
+          if (!isInteractive) {
+            return;
+          }
+          if (manualEdit) {
+            return;
+          }
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            invokeDialog();
+          }
         }}
         style={{
           backgroundColor: pillColors?.background,
@@ -443,14 +627,162 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             <path d="M14 6H2v6.5A1.5 1.5 0 0 0 3.5 14h9a1.5 1.5 0 0 0 1.5-1.5V6Z" />
           </svg>
         </span>
-        <span className="date-range-filter__label">{pillLabel}</span>
+        <span className="date-range-filter__label" title={pillLabel}>
+          <span
+            className={[
+              "date-range-filter__label-date",
+              isEditingFrom ? "date-range-filter__label-date--editing" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={isEditingFrom ? undefined : openManualEdit("from")}
+            onKeyDown={
+              isEditingFrom
+                ? undefined
+                : (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      openManualEdit("from")(event);
+                    }
+                  }
+            }
+            role={!isEditingFrom && isInteractive ? "button" : undefined}
+            tabIndex={!isEditingFrom && isInteractive ? 0 : -1}
+            aria-label={
+              !isEditingFrom
+                ? `${strings.manualEntry.startLabel}: ${committedFromLabel}`
+                : undefined
+            }
+          >
+            {isEditingFrom ? (
+              <input
+                id={manualFromIds.input}
+                ref={manualInputRef}
+                className={[
+                  "date-range-filter__input",
+                  manualEdit?.error ? "date-range-filter__input--error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                type="text"
+                inputMode="numeric"
+                placeholder="dd/mm/yyyy"
+                value={manualEdit?.value ?? ""}
+                aria-invalid={manualEdit?.error ? true : undefined}
+                aria-describedby={
+                  manualEdit?.error ? manualFromIds.error : manualFromIds.hint
+                }
+                aria-label={strings.manualEntry.startLabel}
+                onChange={handleManualChange}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleManualApply();
+                  }
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    closeManualEdit();
+                  }
+                  event.stopPropagation();
+                }}
+                onClick={(event) => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
+              />
+            ) : (
+              committedFromLabel
+            )}
+          </span>
+          <span aria-hidden="true">–</span>
+          <span
+            className={[
+              "date-range-filter__label-date",
+              isEditingTo ? "date-range-filter__label-date--editing" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={isEditingTo ? undefined : openManualEdit("to")}
+            onKeyDown={
+              isEditingTo
+                ? undefined
+                : (event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      openManualEdit("to")(event);
+                    }
+                  }
+            }
+            role={!isEditingTo && isInteractive ? "button" : undefined}
+            tabIndex={!isEditingTo && isInteractive ? 0 : -1}
+            aria-label={
+              !isEditingTo
+                ? `${strings.manualEntry.endLabel}: ${committedToLabel}`
+                : undefined
+            }
+          >
+            {isEditingTo ? (
+              <input
+                id={manualToIds.input}
+                ref={manualInputRef}
+                className={[
+                  "date-range-filter__input",
+                  manualEdit?.error ? "date-range-filter__input--error" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                type="text"
+                inputMode="numeric"
+                placeholder="dd/mm/yyyy"
+                value={manualEdit?.value ?? ""}
+                aria-invalid={manualEdit?.error ? true : undefined}
+                aria-describedby={manualEdit?.error ? manualToIds.error : manualToIds.hint}
+                aria-label={strings.manualEntry.endLabel}
+                onChange={handleManualChange}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleManualApply();
+                  }
+                  if (event.key === "Escape") {
+                    event.preventDefault();
+                    closeManualEdit();
+                  }
+                  event.stopPropagation();
+                }}
+                onClick={(event) => event.stopPropagation()}
+                onMouseDown={(event) => event.stopPropagation()}
+              />
+            ) : (
+              committedToLabel
+            )}
+          </span>
+        </span>
         <span className="date-range-filter__chevron" aria-hidden="true">
           <svg viewBox="0 0 12 8" focusable="false" aria-hidden="true">
             <path d="M1.41.58 6 5.17 10.59.58 12 2 6 8 0 2z" />
           </svg>
         </span>
-      </button>
+      </div>
       <div ref={liveRegionRef} className="visually-hidden" aria-live="polite" />
+      {manualEdit ? (
+        <p
+          id={
+            manualEdit.field === "from"
+              ? manualEdit.error
+                ? manualFromIds.error
+                : manualFromIds.hint
+              : manualEdit.error
+                ? manualToIds.error
+                : manualToIds.hint
+          }
+          className={[
+            "date-range-filter__message",
+            manualEdit.error ? "date-range-filter__message--error" : "date-range-filter__message--hint",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          role={manualEdit.error ? "alert" : undefined}
+        >
+          {manualEdit.error ?? strings.manualEntry.formatHint}
+        </p>
+      ) : null}
       {open ? (
         <OutsideFramePortal anchorRef={anchorRef} strategy={forcePortalStrategy}>
           <Popover
@@ -459,7 +791,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             presetId={draftPresetId}
             committedPresetId={committedPresetId}
             presets={presets}
-            locale={locale}
+            locale={safeLocale}
             dataMin={dataMin}
             dataMax={dataMax}
             onPresetSelect={handlePresetDraft}
@@ -467,12 +799,12 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             onClear={showClear ? handleClear : undefined}
             onClose={handleClose}
             showQuickApply={showQuickApply}
-          onQuickApply={showQuickApply ? handleQuickApply : undefined}
-          showClear={showClear}
-          showPresetLabels={showPresetLabels}
-          weekStartsOn={normalizedWeekStartsOn}
-          strings={strings}
-        />
+            onQuickApply={showQuickApply ? handleQuickApply : undefined}
+            showClear={showClear}
+            showPresetLabels={showPresetLabels}
+            weekStartsOn={normalizedWeekStartsOn}
+            strings={strings}
+          />
         </OutsideFramePortal>
       ) : null}
     </div>

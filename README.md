@@ -10,6 +10,8 @@ demo shell, and consume the underlying component library in other projects.
 
 - **Production Power BI visual** – `src/visual/visual.tsx` implements the `PresetDateSlicerVisual` class that wires the
   React component into Power BI’s filtering APIs, honours format pane defaults, and persists state between sessions.
+- **Inline manual editing** – Click either date inside the pill to type a dd/mm/yyyy value, complete with validation and
+  accessible feedback without opening the popover.
 - **Preset rail + calendar** – Presets preview their range, keyboard navigation is available throughout the calendar, and drag
   style selections are simulated through hover previews.
 - **Outside-iframe rendering** – `OutsideFramePortal` negotiates a host overlay via `postMessage` and renders the popover into
@@ -34,7 +36,6 @@ demo shell, and consume the underlying component library in other projects.
 1. Install dependencies in the repository root:
 
    ```bash
-   cd demo
    npm install
    ```
 
