@@ -21,6 +21,7 @@ import {
   LOCALE_ITEMS as FORMAT_LOCALE_ITEMS,
 } from "./formattingSettings";
 import { extentFromValues, parseTargetFromQueryName, toDateOnlyIso } from "../utils/filters";
+import { mergeBounds } from "../utils/bounds";
 import { getContrastingTextColor, lighten, toRgbaString } from "../utils/colors";
 
 import DialogAction = powerbi.DialogAction;
@@ -663,32 +664,29 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     if (!bounds) {
       return;
     }
-    if (bounds.min && !this.dataBounds.min) {
+    const parsed: { min?: Date; max?: Date } = {};
+    if (bounds.min) {
       const min = coerceDate(bounds.min);
       if (min) {
-        this.dataBounds.min = min;
+        parsed.min = min;
       }
     }
-    if (bounds.max && !this.dataBounds.max) {
+    if (bounds.max) {
       const max = coerceDate(bounds.max);
       if (max) {
-        this.dataBounds.max = max;
+        parsed.max = max;
       }
     }
+    this.dataBounds = mergeBounds(this.dataBounds, parsed);
   }
 
   private expandBoundsWithData(bounds: { min?: Date; max?: Date }): { min?: Date; max?: Date } {
-    if (bounds.min) {
-      const candidate = new Date(bounds.min.getTime());
-      this.dataBounds.min =
-        this.dataBounds.min && this.dataBounds.min <= candidate ? this.dataBounds.min : candidate;
-    }
-    if (bounds.max) {
-      const candidate = new Date(bounds.max.getTime());
-      this.dataBounds.max =
-        this.dataBounds.max && this.dataBounds.max >= candidate ? this.dataBounds.max : candidate;
-    }
-    return { min: this.dataBounds.min ?? bounds.min, max: this.dataBounds.max ?? bounds.max };
+    this.dataBounds = mergeBounds(this.dataBounds, bounds);
+    const { min, max } = this.dataBounds;
+    return {
+      min: min ? new Date(min.getTime()) : undefined,
+      max: max ? new Date(max.getTime()) : undefined,
+    };
   }
 
   private getPersistableBounds(): PersistedBounds | undefined {
@@ -744,10 +742,15 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       };
     }
 
-    const defaultBackground = palette?.getColor("presetDateSlicer_background").value ?? "#ffffff";
-    const defaultBorder = palette?.getColor("presetDateSlicer_border").value ?? "#d1d5db";
-    const defaultText = palette?.getColor("presetDateSlicer_text").value ?? "#111827";
-    const accent = palette?.getColor("presetDateSlicer_accent").value ?? "#2563eb";
+    const hostBackground = palette?.background?.value;
+    const hostBorder = palette?.foregroundNeutralLight?.value;
+    const hostText = palette?.foreground?.value;
+    const defaultBackground =
+      palette?.getColor("presetDateSlicer_background")?.value ?? hostBackground ?? "#ffffff";
+    const defaultBorder =
+      palette?.getColor("presetDateSlicer_border")?.value ?? hostBorder ?? "#d1d5db";
+    const defaultText = palette?.getColor("presetDateSlicer_text")?.value ?? hostText ?? "#111827";
+    const accent = palette?.getColor("presetDateSlicer_accent")?.value ?? "#2563eb";
 
     const pillBackground = settings.pill.backgroundColor ?? defaultBackground;
     const pillBorder = settings.pill.borderColor ?? defaultBorder;
