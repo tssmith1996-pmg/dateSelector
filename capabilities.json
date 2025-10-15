@@ -12,7 +12,7 @@
       "name": "date",
       "kind": "Grouping",
       "displayName": "Date",
-      "displayNameKey": "role_date_displayName",
+      "displayNameKey": "role_date_displayName"
     }
   ],
 
