@@ -139,14 +139,7 @@
         "pillBackgroundColor": {
           "displayNameKey": "format_pill_background",
           "displayName": "Pill background",
-          "type": { "fill": { "solid": { "color": true } } },
-          "default": {
-            "solid": {
-              "color": {
-                "expr": { "Literal": { "Value": "\"#ffffff\"" } }
-              }
-            }
-          }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "pillBorderColor": {
           "displayNameKey": "format_pill_border",
@@ -156,14 +149,7 @@
         "pillTextColor": {
           "displayNameKey": "format_pill_text",
           "displayName": "Pill text",
-          "type": { "fill": { "solid": { "color": true } } },
-          "default": {
-            "solid": {
-              "color": {
-                "expr": { "Literal": { "Value": "\"#000000\"" } }
-              }
-            }
-          }
+          "type": { "fill": { "solid": { "color": true } } }
         },
         "pillFontSize": {
           "displayNameKey": "format_pill_fontSize",
