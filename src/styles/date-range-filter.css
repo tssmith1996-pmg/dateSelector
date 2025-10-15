@@ -133,6 +133,8 @@
   color: inherit;
   padding: 0;
   cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .date-range-filter__chevron:focus-visible {

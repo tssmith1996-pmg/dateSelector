@@ -271,7 +271,23 @@
     ],
     "missing": []
   },
+  "preset_lastWeek": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
   "preset_lastYear": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_mtd": {
     "present": [
       "en-AU",
       "en-US",
