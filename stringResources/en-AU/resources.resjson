@@ -1,6 +1,7 @@
 {
   "role_date_displayName": "Date",
   "format_general_displayName": "General",
+  "format_general_filter": "Filter",
   "format_defaults_displayName": "Defaults",
   "format_defaults_defaultPreset": "Default preset",
   "format_defaults_weekStartsOn": "Week starts on",
@@ -35,7 +36,7 @@
   "format_buttons_showQuickApply": "Show Today quick apply",
   "format_buttons_showClear": "Show Clear",
   "format_state_displayName": "State",
-  "format_state_payload": "Persisted state",
+  "format_state_payload": "Selection state",
   "preset_today": "Today",
   "preset_yesterday": "Yesterday",
   "preset_last7": "Last 7 days",

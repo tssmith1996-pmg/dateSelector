@@ -1,0 +1,12 @@
+Role usage search:
+src/visual/visual.tsx:147:  return roles.date === true || roles.dateInput === true;
+
+Filter state search:
+artifacts/capabilities.patch:209:+          "type": { "text": true, "filterState": true }
+capabilities.json:189:          "type": { "text": true, "filterState": true }
+src/visual/visual.tsx:284:  filterState?: { filters?: models.IFilter[] };
+src/visual/visual.tsx:312:  pushCollection(options.filterState?.filters);
+
+Formatting model search:
+574:  public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
+653:    return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);

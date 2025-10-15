@@ -1,0 +1,386 @@
+{
+  "format_buttons_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_buttons_showClear": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_buttons_showQuickApply": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_defaults_defaultPreset": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_defaults_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_defaults_locale": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_defaults_weekStartsOn": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_general_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_general_filter": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_background": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_border": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_fontSize": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_minWidth": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_pillStyle": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_showPresetLabels": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_pill_text": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_state_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "format_state_payload": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_de_DE": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_en_AU": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_en_GB": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_en_US": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_es_ES": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_fr_FR": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_it_IT": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_ja_JP": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "locale_zh_CN": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "pill_style_compact": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "pill_style_expanded": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_custom": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_last30": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_last7": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_lastMonth": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_lastYear": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_qtd": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_thisMonth": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_today": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_yesterday": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "preset_ytd": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "role_date_displayName": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_fri": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_mon": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_sat": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_sun": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_thu": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_tue": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  },
+  "weekday_wed": {
+    "present": [
+      "en-AU",
+      "en-US",
+      "fr-FR"
+    ],
+    "missing": []
+  }
+}

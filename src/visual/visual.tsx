@@ -32,6 +32,7 @@ type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
 type VisualObjectInstance = powerbi.VisualObjectInstance;
 type DataView = powerbi.DataView;
 type DataViewObjects = powerbi.DataViewObjects;
+type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
 
 type PersistedBounds = {
   min?: string;
@@ -138,6 +139,27 @@ function getObjects(dataView?: DataView): DataViewObjects | undefined {
   return dataView?.metadata?.objects ?? undefined;
 }
 
+function hasDateRole(column?: powerbi.DataViewMetadataColumn): boolean {
+  if (!column?.roles) {
+    return false;
+  }
+  const roles = column.roles as Record<string, boolean | undefined>;
+  return roles.date === true || roles.dateInput === true;
+}
+
+function findDateCategoryColumn(dataView?: DataView): DataViewCategoryColumn | undefined {
+  const categories = dataView?.categorical?.categories;
+  if (!categories) {
+    return undefined;
+  }
+  for (const category of categories) {
+    if (category?.source && hasDateRole(category.source)) {
+      return category;
+    }
+  }
+  return undefined;
+}
+
 function getNumericValue(value: unknown): number | undefined {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value;
@@ -219,11 +241,11 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
 function findColumnTarget(dataView?: DataView): FilterTarget | undefined {
   const categories = dataView?.categorical?.categories;
   if (categories && categories.length > 0) {
-    const target = parseTargetFromQueryName(categories[0]?.source?.queryName);
-    if (target) {
-      return target;
-    }
-    for (const category of categories) {
+    const prioritized = findDateCategoryColumn(dataView);
+    const ordered = prioritized
+      ? [prioritized, ...categories.filter((category) => category !== prioritized)]
+      : categories;
+    for (const category of ordered) {
       const candidate = parseTargetFromQueryName(category?.source?.queryName);
       if (candidate) {
         return candidate;
@@ -234,7 +256,7 @@ function findColumnTarget(dataView?: DataView): FilterTarget | undefined {
   const columns = dataView?.metadata?.columns;
   if (columns) {
     for (const column of columns) {
-      if (!column?.roles || !column.roles.date) {
+      if (!hasDateRole(column)) {
         continue;
       }
       const target = parseTargetFromQueryName(column.queryName);
@@ -322,12 +344,17 @@ function findExistingFilterRange(options: VisualUpdateOptions, target?: FilterTa
 }
 
 function findDateColumnMetadata(dataView?: DataView): powerbi.DataViewMetadataColumn | undefined {
+  const dateCategory = findDateCategoryColumn(dataView);
+  if (dateCategory?.source) {
+    return dateCategory.source;
+  }
+
   const columns = dataView?.metadata?.columns;
   if (!columns) {
     return undefined;
   }
   for (const column of columns) {
-    if (column?.roles && column.roles.date) {
+    if (hasDateRole(column)) {
       return column;
     }
   }
@@ -352,6 +379,7 @@ function columnMetadataMatches(
 
 function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
   const dateColumn = findDateColumnMetadata(dataView);
+  const dateCategory = findDateCategoryColumn(dataView);
   let min: Date | undefined;
   let max: Date | undefined;
 
@@ -371,7 +399,13 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
   const categories = dataView?.categorical?.categories;
   if (categories) {
     for (const category of categories) {
-      if (!category || (dateColumn && !columnMetadataMatches(category.source, dateColumn))) {
+      if (!category) {
+        continue;
+      }
+      if (dateColumn && !columnMetadataMatches(category.source, dateColumn)) {
+        continue;
+      }
+      if (!dateColumn && dateCategory && category !== dateCategory) {
         continue;
       }
       const values = category.values;
@@ -403,8 +437,8 @@ function getDataBounds(dataView?: DataView): { min?: Date; max?: Date } {
     }
   }
 
-  if (!min && !max && categories && categories.length > 0) {
-    const fallbackValues = categories[0]?.values;
+  if (!min && !max) {
+    const fallbackValues = (dateCategory?.values ?? categories?.[0]?.values) as unknown[] | undefined;
     if (fallbackValues) {
       const extent = extentFromValues(fallbackValues as unknown[]);
       if (extent.min) {
@@ -504,6 +538,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private blankSelectionId: powerbi.extensibility.ISelectionId;
 
+  private lastTheme?: ThemeInfo;
+
   constructor(options?: VisualConstructorOptions) {
     if (!options) {
       throw new Error("Visual constructor options are required.");
@@ -540,13 +576,17 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     switch (options.objectName) {
       case "defaults": {
         const normalizedWeekStartsOn = normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1;
+        const localeSetting = this.settings.defaults.locale?.trim();
+        const fallbackLocale =
+          localeSetting ||
+          (this.host as unknown as { locale?: string }).locale ||
+          this.formattingSettings.defaults.locale.value?.value ||
+          "en-US";
         const properties: powerbi.DataViewObject = {
           defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
           weekStartsOn: normalizedWeekStartsOn.toString(),
+          locale: fallbackLocale,
         };
-        if (this.settings.defaults.locale) {
-          properties.locale = this.settings.defaults.locale;
-        }
         return [
           {
             objectName: "defaults",
@@ -556,24 +596,23 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         ];
       }
       case "pill": {
+        const theme = this.lastTheme;
+        const backgroundColor =
+          this.settings.pill.backgroundColor ?? theme?.pillBackground ?? theme?.surface ?? "#ffffff";
+        const borderColor = this.settings.pill.borderColor ?? theme?.pillBorder ?? theme?.border ?? "#d1d5db";
+        const textColor = this.settings.pill.textColor ?? theme?.pillText ?? theme?.text ?? "#111827";
+        const pillBackgroundFill = toFill(backgroundColor) ?? { solid: { color: backgroundColor } };
+        const pillBorderFill = toFill(borderColor) ?? { solid: { color: borderColor } };
+        const pillTextFill = toFill(textColor) ?? { solid: { color: textColor } };
         const properties: powerbi.DataViewObject = {
           pillStyle: this.settings.pill.style ?? "compact",
           showPresetLabels: this.settings.pill.showPresetLabels ?? true,
           pillFontSize: this.settings.pill.fontSize ?? 12,
           pillMinWidth: this.settings.pill.minWidth ?? 260,
+          pillBackgroundColor: pillBackgroundFill,
+          pillBorderColor: pillBorderFill,
+          pillTextColor: pillTextFill,
         };
-        const background = toFill(this.settings.pill.backgroundColor);
-        if (background) {
-          properties.pillBackgroundColor = background;
-        }
-        const border = toFill(this.settings.pill.borderColor);
-        if (border) {
-          properties.pillBorderColor = border;
-        }
-        const text = toFill(this.settings.pill.textColor);
-        if (text) {
-          properties.pillTextColor = text;
-        }
         return [
           {
             objectName: "pill",
@@ -593,6 +632,18 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
             selector,
           },
         ];
+      case "state": {
+        const payload = this.settings.persistedState?.raw ?? this.lastPersistedPayload ?? "";
+        return [
+          {
+            objectName: "state",
+            properties: {
+              payload,
+            },
+            selector,
+          },
+        ];
+      }
       default:
         return [];
     }
@@ -728,7 +779,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       this.rootElement.style.setProperty("--visual-pill-border", pillBorder);
       this.rootElement.style.setProperty("--visual-pill-text", pillText);
 
-      return {
+      const theme: ThemeInfo = {
         accent,
         accentText,
         accentWeak,
@@ -740,6 +791,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         pillBorder,
         pillText,
       };
+      this.lastTheme = theme;
+      return theme;
     }
 
     const hostBackground = palette?.background?.value;
@@ -772,7 +825,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     this.rootElement.style.setProperty("--visual-pill-border", pillBorder);
     this.rootElement.style.setProperty("--visual-pill-text", pillText);
 
-    return {
+    const theme: ThemeInfo = {
       accent,
       accentText,
       accentWeak,
@@ -784,6 +837,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       pillBorder,
       pillText,
     };
+    this.lastTheme = theme;
+    return theme;
   }
 
   private getLocalizedPresets(): DatePreset[] {
@@ -822,9 +877,11 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private applyRangeFilter(range: DateRange): void {
     if (!this.columnTarget) {
+      this.syncSelectionForRange(undefined);
       return;
     }
     const constrained = ensureWithinRange(range, this.dataBounds.min, this.dataBounds.max);
+    this.syncSelectionForRange(constrained);
     const key = toRangeKey(constrained);
     if (this.lastAppliedFilterKey && key && this.lastAppliedFilterKey === key) {
       return;
@@ -879,6 +936,48 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       raw: payload,
     };
     this.settings.defaults.presetId = presetId;
+  }
+
+  private buildSelectionIdsForRange(range: DateRange): powerbi.extensibility.ISelectionId[] {
+    const category = findDateCategoryColumn(this.dataView);
+    if (!category?.values || !Array.isArray(category.values)) {
+      return [];
+    }
+    const fromIso = toISODate(range.from);
+    const toIso = toISODate(range.to);
+    const selectionIds: powerbi.extensibility.ISelectionId[] = [];
+    const seen = new Set<string>();
+    category.values.forEach((value, index) => {
+      const date = coerceDate(value);
+      if (!date) {
+        return;
+      }
+      const iso = toISODate(date);
+      if (iso < fromIso || iso > toIso) {
+        return;
+      }
+      const key = `${iso}:${index}`;
+      if (seen.has(key)) {
+        return;
+      }
+      seen.add(key);
+      const selectionId = this.host.createSelectionIdBuilder().withCategory(category, index).createSelectionId();
+      selectionIds.push(selectionId);
+    });
+    return selectionIds;
+  }
+
+  private syncSelectionForRange(range: DateRange | undefined): void {
+    if (!range) {
+      void this.selectionManager.clear();
+      return;
+    }
+    const selectionIds = this.buildSelectionIdsForRange(range);
+    if (selectionIds.length === 0) {
+      void this.selectionManager.clear();
+      return;
+    }
+    void this.selectionManager.select(selectionIds, false);
   }
 
   private syncFormattingSettings(settings: VisualSettings): void {
@@ -971,6 +1070,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     this.lastPersistedPayload = settings.persistedState?.raw ?? undefined;
 
     if (!hasData) {
+      this.syncSelectionForRange(undefined);
       this.renderLandingPage(theme, options);
       return;
     }
@@ -1157,6 +1257,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   private handleBookmarkRestore = (_selectionIds: powerbi.extensibility.ISelectionId[]): void => {
     if (this.currentRange) {
       this.applyRangeFilter(this.currentRange);
+    } else {
+      this.syncSelectionForRange(undefined);
     }
   };
 }
