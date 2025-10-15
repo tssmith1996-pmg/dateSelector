@@ -1,17 +1,19 @@
 {
   "suppressDefaultTitle": true,
-  "supportsHighlight": false,
+  "supportsHighlight": true,
   "supportsKeyboardFocus": true,
   "supportsEmptyDataView": true,
   "supportsSynchronizingFilterState": true,
   "supportsLandingPage": true,
+  "advancedEditModeSupport": 2,
 
   "dataRoles": [
     {
       "name": "date",
       "kind": "Grouping",
       "displayName": "Date",
-      "displayNameKey": "role_date_displayName"
+      "displayNameKey": "role_date_displayName",
+      "preferredTypes": { "dateTime": true }
     }
   ],
 
@@ -56,8 +58,10 @@
               { "value": "yesterday", "displayNameKey": "preset_yesterday", "displayName": "Yesterday" },
               { "value": "last7", "displayNameKey": "preset_last7", "displayName": "Last 7 days" },
               { "value": "last30", "displayNameKey": "preset_last30", "displayName": "Last 30 days" },
+              { "value": "lastWeek", "displayNameKey": "preset_lastWeek", "displayName": "Last week" },
               { "value": "thisMonth", "displayNameKey": "preset_thisMonth", "displayName": "This month" },
               { "value": "lastMonth", "displayNameKey": "preset_lastMonth", "displayName": "Last month" },
+              { "value": "mtd", "displayNameKey": "preset_mtd", "displayName": "Month to date" },
               { "value": "qtd", "displayNameKey": "preset_qtd", "displayName": "Quarter to date" },
               { "value": "ytd", "displayNameKey": "preset_ytd", "displayName": "Year to date" },
               { "value": "lastYear", "displayNameKey": "preset_lastYear", "displayName": "Last year" },
@@ -185,7 +189,7 @@
         "payload": {
           "displayNameKey": "format_state_payload",
           "displayName": "Selection state",
-          "type": { "text": true }
+          "type": { "text": true, "filterState": true }
         }
       }
     }
