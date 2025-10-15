@@ -1,0 +1,36 @@
+# Repository audit — dateSelector visual
+
+## Toolchain & configuration
+- **Node version:** no `.nvmrc` or explicit engine constraint found.
+- **TypeScript config:** `tsconfig.json` targets ES2020 modules, emits declarations to `dist-types`, includes `src/**/*`, and excludes `dist`/`demo` folders. Entry file set to `src/visual.ts` but actual visual lives in `src/visual/visual.tsx` (mismatch).
+- **ESLint:** custom flat config at `eslint.config.mjs` using `@typescript-eslint` plugin only.
+- **Jest:** `jest.config.cjs` with `ts-jest` preset; no Karma harness present.
+
+## Package manifest
+- **Dependencies:** `powerbi-models@2.0.1`, `powerbi-visuals-utils-formattingmodel@6.2.2`, `powerbi-visuals-utils-tooltiputils@6.0.4`, `react@18.2.0`, `react-dom@18.2.0`, `d3-selection@3.0.0`.
+- **DevDependencies:** tooling mix for Jest/ESLint plus pinned `powerbi-visuals-api@5.11.0` and `powerbi-visuals-tools@6.2.0`; includes legacy webpack helpers (`loader-runner`, `neo-async`, `schema-utils`, `watchpack`, `totalist`) likely leftover from older build chain; `patch-package` used to modify `powerbi-visuals-tools` lint validator.
+- **Scripts:** `build` runs `tsc --emitDeclarationOnly`; packaging lives under `package:visual`; no clean/watch/test:ui targets; lint path limited to `src/**/*`.
+
+## Visual metadata
+- **pbiviz.json:** visual GUID `presetDateSlicer3B9F1C7C8C784918A4D4C5F5EF23A12F`, display name "Preset Date Slicer", version `0.1.0.0`. Uses `apiVersion` `5.11.0`. Assets reference `assets/icon.svg`. Optional support/github URLs still point to placeholders. String resources cover `en-US`, `en-AU`, `fr-FR`.
+- **capabilities.json:** declares single `date` grouping role with categorical mapping and `dataReductionAlgorithm.top.count=2000`. Objects include `general`, `defaults`, `pill`, `buttons`, `state`. Flags currently enable `supportsHighlight`, `supportsLandingPage`, `advancedEditModeSupport`, and `supportsEmptyDataView` alongside `supportsSynchronizingFilterState`.
+- **stringResources:** localization files exist for `en-US`, `en-AU`, `fr-FR`. Only `en-US` appears fully populated; AU/FR contain sparse overrides (placeholders with same English strings).
+
+## Source layout (`/src`)
+- `components/` — React UI (pill, popover, calendar, presets, landing page).
+- `date/` — preset definitions and date math utilities.
+- `dialogs/` — modal dialog host components.
+- `portal/` — outside-iframe communication layer.
+- `styles/` — CSS modules consumed by components (imports reference `src/styles/...`).
+- `utils/` — helpers for bounds, filters, colors, localization, selection.
+- `visual/` — Power BI visual entry point with formatting model wiring.
+- Root `src/index.ts` re-exports components for external reuse.
+
+## Redundant / legacy content
+- `/dist` committed artifacts (`.pbiviz`, `.pbix`, package.json) should be ignored, not source-controlled.
+- `/demo` Vite harness and `/readme_files` design assets appear unused for packaging and add maintenance overhead.
+- Duplicate stylesheet folder `/styles` (root-level) is unused—the app imports from `src/styles` instead.
+- Several devDependencies (`loader-runner`, `neo-async`, `schema-utils`, `totalist`, `watchpack`) are unused by the current build scripts.
+- `tsconfig.json` references `src/visual.ts` which no longer exists (should point to `src/visual/visual.tsx`).
+- Existing `artifacts/*.json` (capabilities audit/search report/etc.) contain stale snapshot data.
+

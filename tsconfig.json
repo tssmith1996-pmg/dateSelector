@@ -15,7 +15,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true
   },
-  "files": ["src/visual.ts"],
+  "files": ["src/visual/visual.tsx"],
   "include": ["src/**/*"],
   "exclude": ["node_modules", "demo/node_modules", "dist", "demo/dist"]
 }

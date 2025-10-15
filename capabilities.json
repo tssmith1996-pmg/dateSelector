@@ -1,11 +1,9 @@
 {
   "suppressDefaultTitle": true,
-  "supportsHighlight": true,
   "supportsKeyboardFocus": true,
   "supportsEmptyDataView": true,
   "supportsSynchronizingFilterState": true,
   "supportsLandingPage": true,
-  "advancedEditModeSupport": 2,
 
   "dataRoles": [
     {
