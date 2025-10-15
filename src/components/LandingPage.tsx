@@ -1,6 +1,5 @@
 import React from "react";
 import { VisualStrings } from "../types/localization";
-import landingLogo from "../../assets/landingLogo.png";
 import "../styles/landing-page.css";
 
 export type LandingPageProps = {
@@ -26,7 +25,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ strings, theme, isHigh
       }}
     >
       <div className="landing-page__badge" style={{ backgroundColor: theme.accent }}>
-        <img src={landingLogo} alt="" aria-hidden="true" />
+        <span aria-hidden="true" className="landing-page__badge-icon">
+          {strings.title.charAt(0) || "D"}
+        </span>
       </div>
       <h1 className="landing-page__title">{strings.title}</h1>
       <p className="landing-page__body">{strings.instructions}</p>

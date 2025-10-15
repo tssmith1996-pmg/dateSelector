@@ -1,0 +1,23 @@
+
+> date-range-filter@0.1.0 build
+> pbiviz package
+
+ info   powerbi-visuals-tools version - 6.2.0
+ info   Running lint check...
+ info   Lint check completed.
+ info   Certificate is valid.
+ info   Start preparing plugin template
+ info   Finish preparing plugin template
+ info   Start packaging...
+ info   Package compression enabled
+ info   Package created!
+ info   Finish packaging
+Webpack Bundle Analyzer saved report to /workspace/dateSelector/webpack.statistics.prod.html
+ 
+ done   Build completed successfully
+ 
+ 
+ info   Visual can be improved by adding 8 more optional features.
+ 
+ info   Run `pbiviz package` with --verbose flag to see more details.
+ 

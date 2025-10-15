@@ -36,18 +36,35 @@ demo shell, and consume the underlying component library in other projects.
 1. Install dependencies in the repository root:
 
    ```bash
-   npm install
+   npm ci
    ```
 
 2. Package the visual for Power BI Desktop / Service:
 
    ```bash
-   npm run package:visual
+   npm run build
    ```
 
    The compiled `.pbiviz` file will be generated inside `dist/`. Import it into Power BI like any other custom visual.
 
-3. (Optional) Run `npm run build` to emit TypeScript declaration files for the reusable component API.
+3. During development you can launch the live reload harness:
+
+   ```bash
+   npm run watch
+   ```
+
+4. (Optional) Quality checks:
+
+   ```bash
+   npm run lint
+   npm run test
+   ```
+
+5. Remove build output and temporary folders:
+
+   ```bash
+   npm run clean
+   ```
 
 ### Configuring defaults inside Power BI
 

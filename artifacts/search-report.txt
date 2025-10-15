@@ -1,12 +1,41 @@
-Role usage search:
-src/visual/visual.tsx:147:  return roles.date === true || roles.dateInput === true;
-
-Filter state search:
-artifacts/capabilities.patch:209:+          "type": { "text": true, "filterState": true }
-capabilities.json:189:          "type": { "text": true, "filterState": true }
-src/visual/visual.tsx:284:  filterState?: { filters?: models.IFilter[] };
-src/visual/visual.tsx:312:  pushCollection(options.filterState?.filters);
-
-Formatting model search:
-574:  public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
-653:    return this.formattingSettingsService.buildFormattingModel(this.formattingSettings);
+M  .gitignore
+M  README.md
+A  artifacts/audit.txt
+A  artifacts/build.log
+D  artifacts/capabilities-audit.json
+M  artifacts/capabilities.patch
+M  artifacts/resource-audit.json
+MM artifacts/search-report.txt
+D  assets/Barlow-Light.ttf
+D  assets/TamblaIcon24.png
+D  assets/landingLogo.png
+D  assets/themes/aurora-carbon.json
+D  assets/themes/aurora-dark.json
+D  assets/themes/aurora-dusk.json
+D  assets/themes/aurora-ember.json
+D  assets/themes/aurora-forest.json
+D  assets/themes/aurora-gilded.json
+D  assets/themes/aurora-glacier.json
+D  assets/themes/aurora-harvest.json
+D  assets/themes/aurora-high-contrast.json
+D  assets/themes/aurora-ink.json
+D  assets/themes/aurora-light.json
+D  assets/themes/aurora-mint.json
+D  assets/themes/aurora-ocean.json
+D  assets/themes/aurora-slate.json
+D  assets/themes/aurora-sunrise.json
+D  assets/timeline.png
+D  assets/visual.less
+M  capabilities.json
+D  "dist/date selector doc.pbix"
+D  dist/dateSel4A1A0033E6F54D1B809B6E51058D54E3.3.2025.02.16.pbiviz
+M  package-lock.json
+M  package.json
+M  src/components/LandingPage.tsx
+M  src/styles/landing-page.css
+M  src/visual/visual.tsx
+D  styles/base.css
+D  styles/calendar.css
+D  styles/popup.css
+M  test/visual-integration.spec.ts
+M  tsconfig.json

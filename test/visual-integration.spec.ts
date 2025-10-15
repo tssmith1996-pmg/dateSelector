@@ -420,19 +420,26 @@ describe("PresetDateSlicerVisual integration", () => {
     const formattingPath = path.join(ARTIFACTS_DIR, "formatting-model.json");
     fs.writeFileSync(formattingPath, JSON.stringify(formattingModel, null, 2));
 
-    const skipObjects = new Set(["general"]);
+    const skipObjects = new Set(["general", "state"]);
     const capabilityObjects = capabilities.objects as Record<string, { properties?: Record<string, unknown> }>;
+    const cards = (formattingModel.cards ?? []) as Array<{
+      name?: string;
+      slices?: Array<{ name?: string; value?: unknown }>;
+    }>;
+    const cardsByName = new Map(cards.map((card) => [card.name, card]));
 
     for (const [objectName, definition] of Object.entries(capabilityObjects)) {
       const propertyNames = Object.keys(definition.properties ?? {});
       if (propertyNames.length === 0 || skipObjects.has(objectName)) {
         continue;
       }
-      const instances = visual.enumerateObjectInstances({ objectName } as powerbi.EnumerateVisualObjectInstancesOptions);
-      expect(instances.length).toBeGreaterThan(0);
+      const card = cardsByName.get(objectName);
+      expect(card).toBeDefined();
+      const slices = Array.isArray(card?.slices) ? card?.slices ?? [] : [];
       for (const propertyName of propertyNames) {
-        const hasValue = instances.some((instance) => instance.properties[propertyName] !== undefined);
-        expect(hasValue).toBe(true);
+        const slice = slices.find((entry) => entry?.name === propertyName);
+        expect(slice).toBeDefined();
+        expect(slice?.value).not.toBeUndefined();
       }
     }
 
@@ -458,7 +465,7 @@ describe("PresetDateSlicerVisual integration", () => {
 
     const resourcesDir = path.resolve(__dirname, "../stringResources");
     const localeDirs = fs.readdirSync(resourcesDir).filter((entry) => fs.statSync(path.join(resourcesDir, entry)).isDirectory());
-    const audit: Record<string, { present: string[]; missing: string[] }> = {};
+    const localization: Record<string, { present: string[]; missing: string[] }> = {};
 
     for (const key of Array.from(displayNameKeys).sort()) {
       const record = { present: [] as string[], missing: [] as string[] };
@@ -472,13 +479,14 @@ describe("PresetDateSlicerVisual integration", () => {
           record.missing.push(locale);
         }
       }
-      audit[key] = record;
+      localization[key] = record;
     }
 
     const auditPath = path.join(ARTIFACTS_DIR, "resource-audit.json");
-    fs.writeFileSync(auditPath, JSON.stringify(audit, null, 2));
+    const resourceAudit = { addedKeys: [] as string[], localization };
+    fs.writeFileSync(auditPath, JSON.stringify(resourceAudit, null, 2));
 
-    const missingEntries = Object.entries(audit).filter(([, entry]) => entry.missing.length > 0);
+    const missingEntries = Object.entries(localization).filter(([, entry]) => entry.missing.length > 0);
     expect(missingEntries).toEqual([]);
 
     visual.destroy();

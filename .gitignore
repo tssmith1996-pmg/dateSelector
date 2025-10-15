@@ -1,7 +1,10 @@
 /.tmp
 /.vscode
 /node_modules
+/dist
 /dist-types
+/.cache
+/coverage
 webpack.statistics.dev.html
 webpack.statistics.prod.html
 /dist/*.pbiviz

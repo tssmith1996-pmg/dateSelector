@@ -1,34 +1,16 @@
 diff --git a/capabilities.json b/capabilities.json
-index f995ada..3caee35 100644
+index 9289d1c..2d48062 100644
 --- a/capabilities.json
 +++ b/capabilities.json
-@@ -13,7 +13,9 @@
-       "kind": "Grouping",
-       "displayName": "Date",
-       "displayNameKey": "role_date_displayName",
--      "preferredTypes": { "dateTime": true }
-+      "preferredTypes": [
-+        { "dateTime": true }
-+      ]
-     }
-   ],
+@@ -1,11 +1,9 @@
+ {
+   "suppressDefaultTitle": true,
+-  "supportsHighlight": true,
+   "supportsKeyboardFocus": true,
+   "supportsEmptyDataView": true,
+   "supportsSynchronizingFilterState": true,
+   "supportsLandingPage": true,
+-  "advancedEditModeSupport": 2,
  
-@@ -40,7 +42,7 @@
-         "filter": {
-           "displayNameKey": "format_general_filter",
-           "displayName": "Filter",
--          "type": { "filter": {} }
-+          "type": { "filter": true }
-         }
-       }
-     },
-@@ -189,7 +191,8 @@
-         "payload": {
-           "displayNameKey": "format_state_payload",
-           "displayName": "Selection state",
--          "type": { "text": true, "filterState": true }
-+          "type": { "text": true },
-+          "filterState": true
-         }
-       }
-     }
+   "dataRoles": [
+     {

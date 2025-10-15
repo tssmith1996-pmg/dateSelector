@@ -29,7 +29,6 @@ import DialogOpenOptions = powerbi.extensibility.visual.DialogOpenOptions;
 
 type VisualConstructorOptions = powerbi.extensibility.visual.VisualConstructorOptions;
 type VisualUpdateOptions = powerbi.extensibility.visual.VisualUpdateOptions;
-type VisualObjectInstance = powerbi.VisualObjectInstance;
 type DataView = powerbi.DataView;
 type DataViewObjects = powerbi.DataViewObjects;
 type DataViewCategoryColumn = powerbi.DataViewCategoryColumn;
@@ -569,84 +568,6 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       this.renderCore(options);
     } finally {
       this.events?.renderingFinished(options);
-    }
-  }
-
-  public enumerateObjectInstances(options: powerbi.EnumerateVisualObjectInstancesOptions): VisualObjectInstance[] {
-    const selector = undefined as unknown as powerbi.data.Selector;
-    switch (options.objectName) {
-      case "defaults": {
-        const normalizedWeekStartsOn = normalizeWeekStartsOn(this.settings.defaults.weekStartsOn) ?? 1;
-        const localeSetting = this.settings.defaults.locale?.trim();
-        const fallbackLocale =
-          localeSetting ||
-          (this.host as unknown as { locale?: string }).locale ||
-          this.formattingSettings.defaults.locale.value?.value ||
-          "en-US";
-        const properties: powerbi.DataViewObject = {
-          defaultPreset: this.currentPresetId ?? this.settings.defaults.presetId ?? "last7",
-          weekStartsOn: normalizedWeekStartsOn.toString(),
-          locale: fallbackLocale,
-        };
-        return [
-          {
-            objectName: "defaults",
-            properties,
-            selector,
-          },
-        ];
-      }
-      case "pill": {
-        const theme = this.lastTheme;
-        const backgroundColor =
-          this.settings.pill.backgroundColor ?? theme?.pillBackground ?? theme?.surface ?? "#ffffff";
-        const borderColor = this.settings.pill.borderColor ?? theme?.pillBorder ?? theme?.border ?? "#d1d5db";
-        const textColor = this.settings.pill.textColor ?? theme?.pillText ?? theme?.text ?? "#111827";
-        const pillBackgroundFill = toFill(backgroundColor) ?? { solid: { color: backgroundColor } };
-        const pillBorderFill = toFill(borderColor) ?? { solid: { color: borderColor } };
-        const pillTextFill = toFill(textColor) ?? { solid: { color: textColor } };
-        const properties: powerbi.DataViewObject = {
-          pillStyle: this.settings.pill.style ?? "compact",
-          showPresetLabels: this.settings.pill.showPresetLabels ?? true,
-          pillFontSize: this.settings.pill.fontSize ?? 12,
-          pillMinWidth: this.settings.pill.minWidth ?? 260,
-          pillBackgroundColor: pillBackgroundFill,
-          pillBorderColor: pillBorderFill,
-          pillTextColor: pillTextFill,
-        };
-        return [
-          {
-            objectName: "pill",
-            properties,
-            selector,
-          },
-        ];
-      }
-      case "buttons":
-        return [
-          {
-            objectName: "buttons",
-            properties: {
-              showQuickApply: this.settings.buttons.showQuickApply ?? false,
-              showClear: this.settings.buttons.showClear ?? true,
-            },
-            selector,
-          },
-        ];
-      case "state": {
-        const payload = this.settings.persistedState?.raw ?? this.lastPersistedPayload ?? "";
-        return [
-          {
-            objectName: "state",
-            properties: {
-              payload,
-            },
-            selector,
-          },
-        ];
-      }
-      default:
-        return [];
     }
   }
 
