@@ -517,7 +517,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     buttons: {},
   };
 
-  private formattingSettingsService = new FormattingSettingsService();
+  private formattingSettingsService: FormattingSettingsService;
 
   private formattingSettings: PresetDateSlicerFormattingSettingsModel =
     new PresetDateSlicerFormattingSettingsModel();
@@ -554,6 +554,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     this.events = this.host.eventService;
     this.allowInteractions = this.host.hostCapabilities?.allowInteractions ?? true;
     this.strings = getVisualStrings(this.localizationManager);
+    this.formattingSettingsService = new FormattingSettingsService(this.localizationManager);
 
     this.rootElement = document.createElement("div");
     this.rootElement.className = "preset-date-slicer";

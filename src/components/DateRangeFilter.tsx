@@ -475,8 +475,17 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     if (!manualEdit) {
       return;
     }
-    manualInputRef.current?.focus();
-    manualInputRef.current?.select();
+    const input = manualInputRef.current;
+    if (!input) {
+      return;
+    }
+    input.focus();
+    const length = input.value.length;
+    try {
+      input.setSelectionRange(length, length);
+    } catch {
+      // Some browsers may throw if the input type does not support selection ranges.
+    }
   }, [manualEdit]);
 
   useEffect(() => {

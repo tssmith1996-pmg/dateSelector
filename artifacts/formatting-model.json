@@ -8,48 +8,69 @@
           "items": [
             {
               "value": "today",
-              "displayNameKey": "preset_today"
+              "displayNameKey": "preset_today",
+              "displayName": "Today"
             },
             {
               "value": "yesterday",
-              "displayNameKey": "preset_yesterday"
+              "displayNameKey": "preset_yesterday",
+              "displayName": "Yesterday"
             },
             {
               "value": "last7",
-              "displayNameKey": "preset_last7"
+              "displayNameKey": "preset_last7",
+              "displayName": "Last 7 days"
             },
             {
               "value": "last30",
-              "displayNameKey": "preset_last30"
+              "displayNameKey": "preset_last30",
+              "displayName": "Last 30 days"
+            },
+            {
+              "value": "lastWeek",
+              "displayNameKey": "preset_lastWeek",
+              "displayName": "Last week"
             },
             {
               "value": "thisMonth",
-              "displayNameKey": "preset_thisMonth"
+              "displayNameKey": "preset_thisMonth",
+              "displayName": "This month"
             },
             {
               "value": "lastMonth",
-              "displayNameKey": "preset_lastMonth"
+              "displayNameKey": "preset_lastMonth",
+              "displayName": "Last month"
+            },
+            {
+              "value": "mtd",
+              "displayNameKey": "preset_mtd",
+              "displayName": "Month to date"
             },
             {
               "value": "qtd",
-              "displayNameKey": "preset_qtd"
+              "displayNameKey": "preset_qtd",
+              "displayName": "Quarter to date"
             },
             {
               "value": "ytd",
-              "displayNameKey": "preset_ytd"
+              "displayNameKey": "preset_ytd",
+              "displayName": "Year to date"
             },
             {
               "value": "lastYear",
-              "displayNameKey": "preset_lastYear"
+              "displayNameKey": "preset_lastYear",
+              "displayName": "Last year"
             },
             {
               "value": "custom",
-              "displayNameKey": "preset_custom"
+              "displayNameKey": "preset_custom",
+              "displayName": "Custom"
             }
           ],
           "value": {
             "value": "last30",
-            "displayNameKey": "preset_last30"
+            "displayNameKey": "preset_last30",
+            "displayName": "Last 30 days"
           }
         },
         {
@@ -58,36 +79,44 @@
           "items": [
             {
               "value": "0",
-              "displayNameKey": "weekday_sun"
+              "displayNameKey": "weekday_sun",
+              "displayName": "Sunday"
             },
             {
               "value": "1",
-              "displayNameKey": "weekday_mon"
+              "displayNameKey": "weekday_mon",
+              "displayName": "Monday"
             },
             {
               "value": "2",
-              "displayNameKey": "weekday_tue"
+              "displayNameKey": "weekday_tue",
+              "displayName": "Tuesday"
             },
             {
               "value": "3",
-              "displayNameKey": "weekday_wed"
+              "displayNameKey": "weekday_wed",
+              "displayName": "Wednesday"
             },
             {
               "value": "4",
-              "displayNameKey": "weekday_thu"
+              "displayNameKey": "weekday_thu",
+              "displayName": "Thursday"
             },
             {
               "value": "5",
-              "displayNameKey": "weekday_fri"
+              "displayNameKey": "weekday_fri",
+              "displayName": "Friday"
             },
             {
               "value": "6",
-              "displayNameKey": "weekday_sat"
+              "displayNameKey": "weekday_sat",
+              "displayName": "Saturday"
             }
           ],
           "value": {
             "value": "1",
-            "displayNameKey": "weekday_mon"
+            "displayNameKey": "weekday_mon",
+            "displayName": "Monday"
           }
         },
         {
@@ -96,97 +125,129 @@
           "items": [
             {
               "value": "en-AU",
-              "displayNameKey": "locale_en_AU"
+              "displayNameKey": "locale_en_AU",
+              "displayName": "English (Australia)"
             },
             {
               "value": "en-US",
-              "displayNameKey": "locale_en_US"
+              "displayNameKey": "locale_en_US",
+              "displayName": "English (United States)"
             },
             {
               "value": "en-GB",
-              "displayNameKey": "locale_en_GB"
+              "displayNameKey": "locale_en_GB",
+              "displayName": "English (United Kingdom)"
             },
             {
               "value": "fr-FR",
-              "displayNameKey": "locale_fr_FR"
+              "displayNameKey": "locale_fr_FR",
+              "displayName": "French (France)"
             },
             {
               "value": "de-DE",
-              "displayNameKey": "locale_de_DE"
+              "displayNameKey": "locale_de_DE",
+              "displayName": "German (Germany)"
             },
             {
               "value": "es-ES",
-              "displayNameKey": "locale_es_ES"
+              "displayNameKey": "locale_es_ES",
+              "displayName": "Spanish (Spain)"
             },
             {
               "value": "it-IT",
-              "displayNameKey": "locale_it_IT"
+              "displayNameKey": "locale_it_IT",
+              "displayName": "Italian (Italy)"
             },
             {
               "value": "ja-JP",
-              "displayNameKey": "locale_ja_JP"
+              "displayNameKey": "locale_ja_JP",
+              "displayName": "Japanese (Japan)"
             },
             {
               "value": "zh-CN",
-              "displayNameKey": "locale_zh_CN"
+              "displayNameKey": "locale_zh_CN",
+              "displayName": "Chinese (China)"
             }
           ],
           "value": {
             "value": "en-US",
-            "displayNameKey": "locale_en_US"
+            "displayNameKey": "locale_en_US",
+            "displayName": "English (United States)"
           }
         }
       ],
       "name": "defaults",
       "displayNameKey": "format_defaults_displayName",
+      "displayName": "Defaults",
       "defaultPreset": {
         "name": "defaultPreset",
         "displayNameKey": "format_defaults_defaultPreset",
         "items": [
           {
             "value": "today",
-            "displayNameKey": "preset_today"
+            "displayNameKey": "preset_today",
+            "displayName": "Today"
           },
           {
             "value": "yesterday",
-            "displayNameKey": "preset_yesterday"
+            "displayNameKey": "preset_yesterday",
+            "displayName": "Yesterday"
           },
           {
             "value": "last7",
-            "displayNameKey": "preset_last7"
+            "displayNameKey": "preset_last7",
+            "displayName": "Last 7 days"
           },
           {
             "value": "last30",
-            "displayNameKey": "preset_last30"
+            "displayNameKey": "preset_last30",
+            "displayName": "Last 30 days"
+          },
+          {
+            "value": "lastWeek",
+            "displayNameKey": "preset_lastWeek",
+            "displayName": "Last week"
           },
           {
             "value": "thisMonth",
-            "displayNameKey": "preset_thisMonth"
+            "displayNameKey": "preset_thisMonth",
+            "displayName": "This month"
           },
           {
             "value": "lastMonth",
-            "displayNameKey": "preset_lastMonth"
+            "displayNameKey": "preset_lastMonth",
+            "displayName": "Last month"
+          },
+          {
+            "value": "mtd",
+            "displayNameKey": "preset_mtd",
+            "displayName": "Month to date"
           },
           {
             "value": "qtd",
-            "displayNameKey": "preset_qtd"
+            "displayNameKey": "preset_qtd",
+            "displayName": "Quarter to date"
           },
           {
             "value": "ytd",
-            "displayNameKey": "preset_ytd"
+            "displayNameKey": "preset_ytd",
+            "displayName": "Year to date"
           },
           {
             "value": "lastYear",
-            "displayNameKey": "preset_lastYear"
+            "displayNameKey": "preset_lastYear",
+            "displayName": "Last year"
           },
           {
             "value": "custom",
-            "displayNameKey": "preset_custom"
+            "displayNameKey": "preset_custom",
+            "displayName": "Custom"
           }
         ],
         "value": {
           "value": "last30",
-          "displayNameKey": "preset_last30"
+          "displayNameKey": "preset_last30",
+          "displayName": "Last 30 days"
         }
       },
       "weekStartsOn": {
@@ -195,36 +256,44 @@
         "items": [
           {
             "value": "0",
-            "displayNameKey": "weekday_sun"
+            "displayNameKey": "weekday_sun",
+            "displayName": "Sunday"
           },
           {
             "value": "1",
-            "displayNameKey": "weekday_mon"
+            "displayNameKey": "weekday_mon",
+            "displayName": "Monday"
           },
           {
             "value": "2",
-            "displayNameKey": "weekday_tue"
+            "displayNameKey": "weekday_tue",
+            "displayName": "Tuesday"
           },
           {
             "value": "3",
-            "displayNameKey": "weekday_wed"
+            "displayNameKey": "weekday_wed",
+            "displayName": "Wednesday"
           },
           {
             "value": "4",
-            "displayNameKey": "weekday_thu"
+            "displayNameKey": "weekday_thu",
+            "displayName": "Thursday"
           },
           {
             "value": "5",
-            "displayNameKey": "weekday_fri"
+            "displayNameKey": "weekday_fri",
+            "displayName": "Friday"
           },
           {
             "value": "6",
-            "displayNameKey": "weekday_sat"
+            "displayNameKey": "weekday_sat",
+            "displayName": "Saturday"
           }
         ],
         "value": {
           "value": "1",
-          "displayNameKey": "weekday_mon"
+          "displayNameKey": "weekday_mon",
+          "displayName": "Monday"
         }
       },
       "locale": {
@@ -233,44 +302,54 @@
         "items": [
           {
             "value": "en-AU",
-            "displayNameKey": "locale_en_AU"
+            "displayNameKey": "locale_en_AU",
+            "displayName": "English (Australia)"
           },
           {
             "value": "en-US",
-            "displayNameKey": "locale_en_US"
+            "displayNameKey": "locale_en_US",
+            "displayName": "English (United States)"
           },
           {
             "value": "en-GB",
-            "displayNameKey": "locale_en_GB"
+            "displayNameKey": "locale_en_GB",
+            "displayName": "English (United Kingdom)"
           },
           {
             "value": "fr-FR",
-            "displayNameKey": "locale_fr_FR"
+            "displayNameKey": "locale_fr_FR",
+            "displayName": "French (France)"
           },
           {
             "value": "de-DE",
-            "displayNameKey": "locale_de_DE"
+            "displayNameKey": "locale_de_DE",
+            "displayName": "German (Germany)"
           },
           {
             "value": "es-ES",
-            "displayNameKey": "locale_es_ES"
+            "displayNameKey": "locale_es_ES",
+            "displayName": "Spanish (Spain)"
           },
           {
             "value": "it-IT",
-            "displayNameKey": "locale_it_IT"
+            "displayNameKey": "locale_it_IT",
+            "displayName": "Italian (Italy)"
           },
           {
             "value": "ja-JP",
-            "displayNameKey": "locale_ja_JP"
+            "displayNameKey": "locale_ja_JP",
+            "displayName": "Japanese (Japan)"
           },
           {
             "value": "zh-CN",
-            "displayNameKey": "locale_zh_CN"
+            "displayNameKey": "locale_zh_CN",
+            "displayName": "Chinese (China)"
           }
         ],
         "value": {
           "value": "en-US",
-          "displayNameKey": "locale_en_US"
+          "displayNameKey": "locale_en_US",
+          "displayName": "English (United States)"
         }
       }
     },
@@ -282,26 +361,31 @@
           "items": [
             {
               "value": "compact",
-              "displayNameKey": "pill_style_compact"
+              "displayNameKey": "pill_style_compact",
+              "displayName": "Compact"
             },
             {
               "value": "expanded",
-              "displayNameKey": "pill_style_expanded"
+              "displayNameKey": "pill_style_expanded",
+              "displayName": "Expanded"
             }
           ],
           "value": {
             "value": "expanded",
-            "displayNameKey": "pill_style_expanded"
+            "displayNameKey": "pill_style_expanded",
+            "displayName": "Expanded"
           }
         },
         {
           "name": "showPresetLabels",
           "displayNameKey": "format_pill_showPresetLabels",
+          "displayName": "Show preset labels",
           "value": true
         },
         {
           "name": "pillBackgroundColor",
           "displayNameKey": "format_pill_background",
+          "displayName": "Pill background",
           "value": {
             "value": "#123456"
           }
@@ -309,6 +393,7 @@
         {
           "name": "pillBorderColor",
           "displayNameKey": "format_pill_border",
+          "displayName": "Pill border",
           "value": {
             "value": "#abcdef"
           }
@@ -316,6 +401,7 @@
         {
           "name": "pillTextColor",
           "displayNameKey": "format_pill_text",
+          "displayName": "Pill text",
           "value": {
             "value": "#654321"
           }
@@ -323,6 +409,7 @@
         {
           "name": "pillFontSize",
           "displayNameKey": "format_pill_fontSize",
+          "displayName": "Pill font size",
           "value": 14,
           "options": {
             "minValue": {
@@ -338,6 +425,7 @@
         {
           "name": "pillMinWidth",
           "displayNameKey": "format_pill_minWidth",
+          "displayName": "Pill minimum width",
           "value": 300,
           "options": {
             "minValue": {
@@ -353,32 +441,38 @@
       ],
       "name": "pill",
       "displayNameKey": "format_pill_displayName",
+      "displayName": "Pill",
       "pillStyle": {
         "name": "pillStyle",
         "displayNameKey": "format_pill_pillStyle",
         "items": [
           {
             "value": "compact",
-            "displayNameKey": "pill_style_compact"
+            "displayNameKey": "pill_style_compact",
+            "displayName": "Compact"
           },
           {
             "value": "expanded",
-            "displayNameKey": "pill_style_expanded"
+            "displayNameKey": "pill_style_expanded",
+            "displayName": "Expanded"
           }
         ],
         "value": {
           "value": "expanded",
-          "displayNameKey": "pill_style_expanded"
+          "displayNameKey": "pill_style_expanded",
+          "displayName": "Expanded"
         }
       },
       "showPresetLabels": {
         "name": "showPresetLabels",
         "displayNameKey": "format_pill_showPresetLabels",
+        "displayName": "Show preset labels",
         "value": true
       },
       "pillBackgroundColor": {
         "name": "pillBackgroundColor",
         "displayNameKey": "format_pill_background",
+        "displayName": "Pill background",
         "value": {
           "value": "#123456"
         }
@@ -386,6 +480,7 @@
       "pillBorderColor": {
         "name": "pillBorderColor",
         "displayNameKey": "format_pill_border",
+        "displayName": "Pill border",
         "value": {
           "value": "#abcdef"
         }
@@ -393,6 +488,7 @@
       "pillTextColor": {
         "name": "pillTextColor",
         "displayNameKey": "format_pill_text",
+        "displayName": "Pill text",
         "value": {
           "value": "#654321"
         }
@@ -400,6 +496,7 @@
       "pillFontSize": {
         "name": "pillFontSize",
         "displayNameKey": "format_pill_fontSize",
+        "displayName": "Pill font size",
         "value": 14,
         "options": {
           "minValue": {
@@ -415,6 +512,7 @@
       "pillMinWidth": {
         "name": "pillMinWidth",
         "displayNameKey": "format_pill_minWidth",
+        "displayName": "Pill minimum width",
         "value": 300,
         "options": {
           "minValue": {
@@ -433,24 +531,29 @@
         {
           "name": "showQuickApply",
           "displayNameKey": "format_buttons_showQuickApply",
+          "displayName": "Show Today quick apply",
           "value": true
         },
         {
           "name": "showClear",
           "displayNameKey": "format_buttons_showClear",
+          "displayName": "Show Clear",
           "value": false
         }
       ],
       "name": "buttons",
       "displayNameKey": "format_buttons_displayName",
+      "displayName": "Buttons",
       "showQuickApply": {
         "name": "showQuickApply",
         "displayNameKey": "format_buttons_showQuickApply",
+        "displayName": "Show Today quick apply",
         "value": true
       },
       "showClear": {
         "name": "showClear",
         "displayNameKey": "format_buttons_showClear",
+        "displayName": "Show Clear",
         "value": false
       }
     }
