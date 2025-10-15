@@ -11,8 +11,7 @@
       "name": "date",
       "kind": "Grouping",
       "displayName": "Date",
-      "displayNameKey": "role_date_displayName",
-      "preferredTypes": { "dateTime": true }
+      "displayNameKey": "role_date_displayName"
     }
   ],
 
@@ -186,7 +185,7 @@
         "payload": {
           "displayNameKey": "format_state_payload",
           "displayName": "Selection state",
-          "type": { "text": true, "filterState": true }
+          "type": { "text": true }
         }
       }
     }
