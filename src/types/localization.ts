@@ -21,6 +21,7 @@ export type VisualStrings = {
   pill: {
     ariaLabel: string;
     disabledMessage: string;
+    openPickerLabel: string;
   };
   manualEntry: {
     startLabel: string;

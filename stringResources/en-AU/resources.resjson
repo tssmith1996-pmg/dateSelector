@@ -66,6 +66,7 @@
   "visual_tooltip_label": "Selected range",
   "visual_pill_ariaLabel": "Open date range picker",
   "visual_pill_disabledMessage": "Interactions are disabled for this visual.",
+  "visual_pill_openPickerLabel": "Open calendar",
   "visual_manual_startLabel": "Start date",
   "visual_manual_endLabel": "End date",
   "visual_manual_formatHint": "Use format dd/mm/yyyy.",

@@ -67,6 +67,11 @@ export function getVisualStrings(localizationManager: powerbi.extensibility.ILoc
         "visual_pill_disabledMessage",
         "Interactions are disabled for this visual.",
       ),
+      openPickerLabel: resolveString(
+        localizationManager,
+        "visual_pill_openPickerLabel",
+        "Toggle date picker",
+      ),
     },
     manualEntry: {
       startLabel: resolveString(localizationManager, "visual_manual_startLabel", "Start date"),

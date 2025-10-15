@@ -66,6 +66,7 @@
   "visual_tooltip_label": "Plage sélectionnée",
   "visual_pill_ariaLabel": "Ouvrir le sélecteur de plage de dates",
   "visual_pill_disabledMessage": "Les interactions sont désactivées pour ce visuel.",
+  "visual_pill_openPickerLabel": "Ouvrir le calendrier",
   "visual_manual_startLabel": "Date de début",
   "visual_manual_endLabel": "Date de fin",
   "visual_manual_formatHint": "Format : jj/mm/aaaa.",

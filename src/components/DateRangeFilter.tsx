@@ -583,10 +583,11 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             ? "date-range-filter__pill--expanded"
             : "date-range-filter__pill--compact",
           !isInteractive ? "date-range-filter__pill--disabled" : "",
+          manualEdit?.error ? "date-range-filter__pill--error" : "",
         ]
           .filter(Boolean)
           .join(" ")}
-        role="button"
+        role="group"
         tabIndex={isInteractive ? 0 : -1}
         aria-haspopup="dialog"
         aria-expanded={openDialog ? undefined : open}
@@ -598,6 +599,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             event.preventDefault();
             return;
           }
+          if (manualEdit) {
+            return;
+          }
           setManualEdit(null);
           invokeDialog();
         }}
@@ -606,6 +610,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             return;
           }
           if (manualEdit) {
+            if (event.key === "Escape") {
+              event.stopPropagation();
+            }
             return;
           }
           if (event.key === "Enter" || event.key === " ") {
@@ -691,7 +698,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
               committedFromLabel
             )}
           </span>
-          <span aria-hidden="true">–</span>
+          <span aria-hidden="true" className="date-range-filter__separator">
+            –
+          </span>
           <span
             className={[
               "date-range-filter__label-date",
@@ -754,11 +763,35 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             )}
           </span>
         </span>
-        <span className="date-range-filter__chevron" aria-hidden="true">
+        <button
+          type="button"
+          className="date-range-filter__chevron"
+          aria-label={strings.pill.openPickerLabel}
+          tabIndex={isInteractive ? 0 : -1}
+          onClick={(event) => {
+            event.stopPropagation();
+            if (!isInteractive) {
+              return;
+            }
+            setManualEdit(null);
+            invokeDialog();
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              event.stopPropagation();
+              if (!isInteractive) {
+                return;
+              }
+              setManualEdit(null);
+              invokeDialog();
+            }
+          }}
+        >
           <svg viewBox="0 0 12 8" focusable="false" aria-hidden="true">
             <path d="M1.41.58 6 5.17 10.59.58 12 2 6 8 0 2z" />
           </svg>
-        </span>
+        </button>
       </div>
       <div ref={liveRegionRef} className="visually-hidden" aria-live="polite" />
       {manualEdit ? (
