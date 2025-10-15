@@ -1,6 +1,7 @@
 {
   "role_date_displayName": "Date",
   "format_general_displayName": "Général",
+  "format_general_filter": "Filtre",
   "format_defaults_displayName": "Valeurs par défaut",
   "format_defaults_defaultPreset": "Préréglage par défaut",
   "format_defaults_weekStartsOn": "Début de semaine",
@@ -35,7 +36,7 @@
   "format_buttons_showQuickApply": "Afficher l'application rapide Aujourd'hui",
   "format_buttons_showClear": "Afficher Effacer",
   "format_state_displayName": "État",
-  "format_state_payload": "État conservé",
+  "format_state_payload": "État de sélection",
   "preset_today": "Aujourd'hui",
   "preset_yesterday": "Hier",
   "preset_last7": "7 derniers jours",

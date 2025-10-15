@@ -1,0 +1,458 @@
+{
+  "cards": [
+    {
+      "slices": [
+        {
+          "name": "defaultPreset",
+          "displayNameKey": "format_defaults_defaultPreset",
+          "items": [
+            {
+              "value": "today",
+              "displayNameKey": "preset_today"
+            },
+            {
+              "value": "yesterday",
+              "displayNameKey": "preset_yesterday"
+            },
+            {
+              "value": "last7",
+              "displayNameKey": "preset_last7"
+            },
+            {
+              "value": "last30",
+              "displayNameKey": "preset_last30"
+            },
+            {
+              "value": "thisMonth",
+              "displayNameKey": "preset_thisMonth"
+            },
+            {
+              "value": "lastMonth",
+              "displayNameKey": "preset_lastMonth"
+            },
+            {
+              "value": "qtd",
+              "displayNameKey": "preset_qtd"
+            },
+            {
+              "value": "ytd",
+              "displayNameKey": "preset_ytd"
+            },
+            {
+              "value": "lastYear",
+              "displayNameKey": "preset_lastYear"
+            },
+            {
+              "value": "custom",
+              "displayNameKey": "preset_custom"
+            }
+          ],
+          "value": {
+            "value": "last30",
+            "displayNameKey": "preset_last30"
+          }
+        },
+        {
+          "name": "weekStartsOn",
+          "displayNameKey": "format_defaults_weekStartsOn",
+          "items": [
+            {
+              "value": "0",
+              "displayNameKey": "weekday_sun"
+            },
+            {
+              "value": "1",
+              "displayNameKey": "weekday_mon"
+            },
+            {
+              "value": "2",
+              "displayNameKey": "weekday_tue"
+            },
+            {
+              "value": "3",
+              "displayNameKey": "weekday_wed"
+            },
+            {
+              "value": "4",
+              "displayNameKey": "weekday_thu"
+            },
+            {
+              "value": "5",
+              "displayNameKey": "weekday_fri"
+            },
+            {
+              "value": "6",
+              "displayNameKey": "weekday_sat"
+            }
+          ],
+          "value": {
+            "value": "1",
+            "displayNameKey": "weekday_mon"
+          }
+        },
+        {
+          "name": "locale",
+          "displayNameKey": "format_defaults_locale",
+          "items": [
+            {
+              "value": "en-AU",
+              "displayNameKey": "locale_en_AU"
+            },
+            {
+              "value": "en-US",
+              "displayNameKey": "locale_en_US"
+            },
+            {
+              "value": "en-GB",
+              "displayNameKey": "locale_en_GB"
+            },
+            {
+              "value": "fr-FR",
+              "displayNameKey": "locale_fr_FR"
+            },
+            {
+              "value": "de-DE",
+              "displayNameKey": "locale_de_DE"
+            },
+            {
+              "value": "es-ES",
+              "displayNameKey": "locale_es_ES"
+            },
+            {
+              "value": "it-IT",
+              "displayNameKey": "locale_it_IT"
+            },
+            {
+              "value": "ja-JP",
+              "displayNameKey": "locale_ja_JP"
+            },
+            {
+              "value": "zh-CN",
+              "displayNameKey": "locale_zh_CN"
+            }
+          ],
+          "value": {
+            "value": "en-US",
+            "displayNameKey": "locale_en_US"
+          }
+        }
+      ],
+      "name": "defaults",
+      "displayNameKey": "format_defaults_displayName",
+      "defaultPreset": {
+        "name": "defaultPreset",
+        "displayNameKey": "format_defaults_defaultPreset",
+        "items": [
+          {
+            "value": "today",
+            "displayNameKey": "preset_today"
+          },
+          {
+            "value": "yesterday",
+            "displayNameKey": "preset_yesterday"
+          },
+          {
+            "value": "last7",
+            "displayNameKey": "preset_last7"
+          },
+          {
+            "value": "last30",
+            "displayNameKey": "preset_last30"
+          },
+          {
+            "value": "thisMonth",
+            "displayNameKey": "preset_thisMonth"
+          },
+          {
+            "value": "lastMonth",
+            "displayNameKey": "preset_lastMonth"
+          },
+          {
+            "value": "qtd",
+            "displayNameKey": "preset_qtd"
+          },
+          {
+            "value": "ytd",
+            "displayNameKey": "preset_ytd"
+          },
+          {
+            "value": "lastYear",
+            "displayNameKey": "preset_lastYear"
+          },
+          {
+            "value": "custom",
+            "displayNameKey": "preset_custom"
+          }
+        ],
+        "value": {
+          "value": "last30",
+          "displayNameKey": "preset_last30"
+        }
+      },
+      "weekStartsOn": {
+        "name": "weekStartsOn",
+        "displayNameKey": "format_defaults_weekStartsOn",
+        "items": [
+          {
+            "value": "0",
+            "displayNameKey": "weekday_sun"
+          },
+          {
+            "value": "1",
+            "displayNameKey": "weekday_mon"
+          },
+          {
+            "value": "2",
+            "displayNameKey": "weekday_tue"
+          },
+          {
+            "value": "3",
+            "displayNameKey": "weekday_wed"
+          },
+          {
+            "value": "4",
+            "displayNameKey": "weekday_thu"
+          },
+          {
+            "value": "5",
+            "displayNameKey": "weekday_fri"
+          },
+          {
+            "value": "6",
+            "displayNameKey": "weekday_sat"
+          }
+        ],
+        "value": {
+          "value": "1",
+          "displayNameKey": "weekday_mon"
+        }
+      },
+      "locale": {
+        "name": "locale",
+        "displayNameKey": "format_defaults_locale",
+        "items": [
+          {
+            "value": "en-AU",
+            "displayNameKey": "locale_en_AU"
+          },
+          {
+            "value": "en-US",
+            "displayNameKey": "locale_en_US"
+          },
+          {
+            "value": "en-GB",
+            "displayNameKey": "locale_en_GB"
+          },
+          {
+            "value": "fr-FR",
+            "displayNameKey": "locale_fr_FR"
+          },
+          {
+            "value": "de-DE",
+            "displayNameKey": "locale_de_DE"
+          },
+          {
+            "value": "es-ES",
+            "displayNameKey": "locale_es_ES"
+          },
+          {
+            "value": "it-IT",
+            "displayNameKey": "locale_it_IT"
+          },
+          {
+            "value": "ja-JP",
+            "displayNameKey": "locale_ja_JP"
+          },
+          {
+            "value": "zh-CN",
+            "displayNameKey": "locale_zh_CN"
+          }
+        ],
+        "value": {
+          "value": "en-US",
+          "displayNameKey": "locale_en_US"
+        }
+      }
+    },
+    {
+      "slices": [
+        {
+          "name": "pillStyle",
+          "displayNameKey": "format_pill_pillStyle",
+          "items": [
+            {
+              "value": "compact",
+              "displayNameKey": "pill_style_compact"
+            },
+            {
+              "value": "expanded",
+              "displayNameKey": "pill_style_expanded"
+            }
+          ],
+          "value": {
+            "value": "expanded",
+            "displayNameKey": "pill_style_expanded"
+          }
+        },
+        {
+          "name": "showPresetLabels",
+          "displayNameKey": "format_pill_showPresetLabels",
+          "value": true
+        },
+        {
+          "name": "pillBackgroundColor",
+          "displayNameKey": "format_pill_background",
+          "value": {
+            "value": "#123456"
+          }
+        },
+        {
+          "name": "pillBorderColor",
+          "displayNameKey": "format_pill_border",
+          "value": {
+            "value": "#abcdef"
+          }
+        },
+        {
+          "name": "pillTextColor",
+          "displayNameKey": "format_pill_text",
+          "value": {
+            "value": "#654321"
+          }
+        },
+        {
+          "name": "pillFontSize",
+          "displayNameKey": "format_pill_fontSize",
+          "value": 14,
+          "options": {
+            "minValue": {
+              "value": 6,
+              "type": 0
+            },
+            "maxValue": {
+              "value": 48,
+              "type": 1
+            }
+          }
+        },
+        {
+          "name": "pillMinWidth",
+          "displayNameKey": "format_pill_minWidth",
+          "value": 300,
+          "options": {
+            "minValue": {
+              "value": 120,
+              "type": 0
+            },
+            "maxValue": {
+              "value": 640,
+              "type": 1
+            }
+          }
+        }
+      ],
+      "name": "pill",
+      "displayNameKey": "format_pill_displayName",
+      "pillStyle": {
+        "name": "pillStyle",
+        "displayNameKey": "format_pill_pillStyle",
+        "items": [
+          {
+            "value": "compact",
+            "displayNameKey": "pill_style_compact"
+          },
+          {
+            "value": "expanded",
+            "displayNameKey": "pill_style_expanded"
+          }
+        ],
+        "value": {
+          "value": "expanded",
+          "displayNameKey": "pill_style_expanded"
+        }
+      },
+      "showPresetLabels": {
+        "name": "showPresetLabels",
+        "displayNameKey": "format_pill_showPresetLabels",
+        "value": true
+      },
+      "pillBackgroundColor": {
+        "name": "pillBackgroundColor",
+        "displayNameKey": "format_pill_background",
+        "value": {
+          "value": "#123456"
+        }
+      },
+      "pillBorderColor": {
+        "name": "pillBorderColor",
+        "displayNameKey": "format_pill_border",
+        "value": {
+          "value": "#abcdef"
+        }
+      },
+      "pillTextColor": {
+        "name": "pillTextColor",
+        "displayNameKey": "format_pill_text",
+        "value": {
+          "value": "#654321"
+        }
+      },
+      "pillFontSize": {
+        "name": "pillFontSize",
+        "displayNameKey": "format_pill_fontSize",
+        "value": 14,
+        "options": {
+          "minValue": {
+            "value": 6,
+            "type": 0
+          },
+          "maxValue": {
+            "value": 48,
+            "type": 1
+          }
+        }
+      },
+      "pillMinWidth": {
+        "name": "pillMinWidth",
+        "displayNameKey": "format_pill_minWidth",
+        "value": 300,
+        "options": {
+          "minValue": {
+            "value": 120,
+            "type": 0
+          },
+          "maxValue": {
+            "value": 640,
+            "type": 1
+          }
+        }
+      }
+    },
+    {
+      "slices": [
+        {
+          "name": "showQuickApply",
+          "displayNameKey": "format_buttons_showQuickApply",
+          "value": true
+        },
+        {
+          "name": "showClear",
+          "displayNameKey": "format_buttons_showClear",
+          "value": false
+        }
+      ],
+      "name": "buttons",
+      "displayNameKey": "format_buttons_displayName",
+      "showQuickApply": {
+        "name": "showQuickApply",
+        "displayNameKey": "format_buttons_showQuickApply",
+        "value": true
+      },
+      "showClear": {
+        "name": "showClear",
+        "displayNameKey": "format_buttons_showClear",
+        "value": false
+      }
+    }
+  ]
+}
