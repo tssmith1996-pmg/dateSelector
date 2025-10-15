@@ -1,212 +1,34 @@
 diff --git a/capabilities.json b/capabilities.json
-index 0981bca..b6d164f 100644
+index f995ada..3caee35 100644
 --- a/capabilities.json
 +++ b/capabilities.json
-@@ -11,7 +11,8 @@
-       "name": "date",
+@@ -13,7 +13,9 @@
        "kind": "Grouping",
        "displayName": "Date",
--      "displayNameKey": "role_date_displayName"
-+      "displayNameKey": "role_date_displayName",
-+      "preferredTypes": { "dateTime": true }
+       "displayNameKey": "role_date_displayName",
+-      "preferredTypes": { "dateTime": true }
++      "preferredTypes": [
++        { "dateTime": true }
++      ]
      }
    ],
  
-@@ -25,7 +26,7 @@
-       "categorical": {
-         "categories": {
-           "for": { "in": "date" },
--          "dataReductionAlgorithm": { "top": {} }
-+          "dataReductionAlgorithm": { "top": { "count": 2000 } }
-         }
-       }
-     }
-@@ -33,8 +34,11 @@
-   "objects": {
-     "general": {
-       "displayNameKey": "format_general_displayName",
-+      "displayName": "General",
-       "properties": {
+@@ -40,7 +42,7 @@
          "filter": {
-+          "displayNameKey": "format_general_filter",
-+          "displayName": "Filter",
-           "type": { "filter": {} }
+           "displayNameKey": "format_general_filter",
+           "displayName": "Filter",
+-          "type": { "filter": {} }
++          "type": { "filter": true }
          }
        }
-@@ -42,53 +46,69 @@
- 
-     "defaults": {
-       "displayNameKey": "format_defaults_displayName",
-+      "displayName": "Defaults",
-       "properties": {
-         "defaultPreset": {
-           "displayNameKey": "format_defaults_defaultPreset",
-+          "displayName": "Default preset",
-           "type": {
-             "enumeration": [
--              { "value": "today", "displayNameKey": "preset_today" },
--              { "value": "yesterday", "displayNameKey": "preset_yesterday" },
--              { "value": "last7", "displayNameKey": "preset_last7" },
--              { "value": "last30", "displayNameKey": "preset_last30" },
--              { "value": "thisMonth", "displayNameKey": "preset_thisMonth" },
--              { "value": "lastMonth", "displayNameKey": "preset_lastMonth" },
--              { "value": "qtd", "displayNameKey": "preset_qtd" },
--              { "value": "ytd", "displayNameKey": "preset_ytd" },
--              { "value": "lastYear", "displayNameKey": "preset_lastYear" },
--              { "value": "custom", "displayNameKey": "preset_custom" }
-+              { "value": "today", "displayNameKey": "preset_today", "displayName": "Today" },
-+              { "value": "yesterday", "displayNameKey": "preset_yesterday", "displayName": "Yesterday" },
-+              { "value": "last7", "displayNameKey": "preset_last7", "displayName": "Last 7 days" },
-+              { "value": "last30", "displayNameKey": "preset_last30", "displayName": "Last 30 days" },
-+              { "value": "thisMonth", "displayNameKey": "preset_thisMonth", "displayName": "This month" },
-+              { "value": "lastMonth", "displayNameKey": "preset_lastMonth", "displayName": "Last month" },
-+              { "value": "qtd", "displayNameKey": "preset_qtd", "displayName": "Quarter to date" },
-+              { "value": "ytd", "displayNameKey": "preset_ytd", "displayName": "Year to date" },
-+              { "value": "lastYear", "displayNameKey": "preset_lastYear", "displayName": "Last year" },
-+              { "value": "custom", "displayNameKey": "preset_custom", "displayName": "Custom" }
-             ]
-           }
-         },
- 
-         "weekStartsOn": {
-           "displayNameKey": "format_defaults_weekStartsOn",
-+          "displayName": "Week starts on",
-           "type": {
-             "enumeration": [
--              { "value": "0", "displayNameKey": "weekday_sun" },
--              { "value": "1", "displayNameKey": "weekday_mon" },
--              { "value": "2", "displayNameKey": "weekday_tue" },
--              { "value": "3", "displayNameKey": "weekday_wed" },
--              { "value": "4", "displayNameKey": "weekday_thu" },
--              { "value": "5", "displayNameKey": "weekday_fri" },
--              { "value": "6", "displayNameKey": "weekday_sat" }
-+              { "value": "0", "displayNameKey": "weekday_sun", "displayName": "Sunday" },
-+              { "value": "1", "displayNameKey": "weekday_mon", "displayName": "Monday" },
-+              { "value": "2", "displayNameKey": "weekday_tue", "displayName": "Tuesday" },
-+              { "value": "3", "displayNameKey": "weekday_wed", "displayName": "Wednesday" },
-+              { "value": "4", "displayNameKey": "weekday_thu", "displayName": "Thursday" },
-+              { "value": "5", "displayNameKey": "weekday_fri", "displayName": "Friday" },
-+              { "value": "6", "displayNameKey": "weekday_sat", "displayName": "Saturday" }
-             ]
-           }
-         },
- 
-         "locale": {
-           "displayNameKey": "format_defaults_locale",
-+          "displayName": "Locale",
-           "type": {
-             "enumeration": [
--              { "value": "en-AU", "displayNameKey": "locale_en_AU" },
--              { "value": "en-US", "displayNameKey": "locale_en_US" },
--              { "value": "en-GB", "displayNameKey": "locale_en_GB" },
--              { "value": "fr-FR", "displayNameKey": "locale_fr_FR" },
--              { "value": "de-DE", "displayNameKey": "locale_de_DE" },
--              { "value": "es-ES", "displayNameKey": "locale_es_ES" },
--              { "value": "it-IT", "displayNameKey": "locale_it_IT" },
--              { "value": "ja-JP", "displayNameKey": "locale_ja_JP" },
--              { "value": "zh-CN", "displayNameKey": "locale_zh_CN" }
-+              {
-+                "value": "en-AU",
-+                "displayNameKey": "locale_en_AU",
-+                "displayName": "English (Australia)"
-+              },
-+              {
-+                "value": "en-US",
-+                "displayNameKey": "locale_en_US",
-+                "displayName": "English (United States)"
-+              },
-+              {
-+                "value": "en-GB",
-+                "displayNameKey": "locale_en_GB",
-+                "displayName": "English (United Kingdom)"
-+              },
-+              { "value": "fr-FR", "displayNameKey": "locale_fr_FR", "displayName": "French (France)" },
-+              { "value": "de-DE", "displayNameKey": "locale_de_DE", "displayName": "German (Germany)" },
-+              { "value": "es-ES", "displayNameKey": "locale_es_ES", "displayName": "Spanish (Spain)" },
-+              { "value": "it-IT", "displayNameKey": "locale_it_IT", "displayName": "Italian (Italy)" },
-+              { "value": "ja-JP", "displayNameKey": "locale_ja_JP", "displayName": "Japanese (Japan)" },
-+              { "value": "zh-CN", "displayNameKey": "locale_zh_CN", "displayName": "Chinese (China)" }
-             ]
-           }
-         }
-@@ -97,38 +117,46 @@
- 
-     "pill": {
-       "displayNameKey": "format_pill_displayName",
-+      "displayName": "Pill",
-       "properties": {
-         "pillStyle": {
-           "displayNameKey": "format_pill_pillStyle",
-+          "displayName": "Pill style",
-           "type": {
-             "enumeration": [
--              { "value": "compact", "displayNameKey": "pill_style_compact" },
--              { "value": "expanded", "displayNameKey": "pill_style_expanded" }
-+              { "value": "compact", "displayNameKey": "pill_style_compact", "displayName": "Compact" },
-+              { "value": "expanded", "displayNameKey": "pill_style_expanded", "displayName": "Expanded" }
-             ]
-           }
-         },
-         "showPresetLabels": {
-           "displayNameKey": "format_pill_showPresetLabels",
-+          "displayName": "Show preset labels",
-           "type": { "bool": true }
-         },
-         "pillBackgroundColor": {
-           "displayNameKey": "format_pill_background",
-+          "displayName": "Pill background",
-           "type": { "fill": { "solid": { "color": true } } }
-         },
-         "pillBorderColor": {
-           "displayNameKey": "format_pill_border",
-+          "displayName": "Pill border",
-           "type": { "fill": { "solid": { "color": true } } }
-         },
-         "pillTextColor": {
-           "displayNameKey": "format_pill_text",
-+          "displayName": "Pill text",
-           "type": { "fill": { "solid": { "color": true } } }
-         },
-         "pillFontSize": {
-           "displayNameKey": "format_pill_fontSize",
--          "type": { "numeric": true }
-+          "displayName": "Pill font size",
-+          "type": { "formatting": { "fontSize": true } }
-         },
-         "pillMinWidth": {
-           "displayNameKey": "format_pill_minWidth",
-+          "displayName": "Pill minimum width",
-           "type": { "numeric": true }
-         }
-       }
-@@ -136,13 +164,16 @@
- 
-     "buttons": {
-       "displayNameKey": "format_buttons_displayName",
-+      "displayName": "Buttons",
-       "properties": {
-         "showQuickApply": {
-           "displayNameKey": "format_buttons_showQuickApply",
-+          "displayName": "Show Today quick apply",
-           "type": { "bool": true }
-         },
-         "showClear": {
-           "displayNameKey": "format_buttons_showClear",
-+          "displayName": "Show Clear",
-           "type": { "bool": true }
-         }
-       }
-@@ -150,10 +181,12 @@
- 
-     "state": {
-       "displayNameKey": "format_state_displayName",
-+      "displayName": "State",
-       "properties": {
+     },
+@@ -189,7 +191,8 @@
          "payload": {
            "displayNameKey": "format_state_payload",
--          "type": { "text": true }
-+          "displayName": "Selection state",
-+          "type": { "text": true, "filterState": true }
+           "displayName": "Selection state",
+-          "type": { "text": true, "filterState": true }
++          "type": { "text": true },
++          "filterState": true
          }
        }
      }

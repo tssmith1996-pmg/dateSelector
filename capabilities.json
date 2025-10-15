@@ -13,7 +13,9 @@
       "kind": "Grouping",
       "displayName": "Date",
       "displayNameKey": "role_date_displayName",
-      "preferredTypes": { "dateTime": true }
+      "preferredTypes": [
+        { "dateTime": true }
+      ]
     }
   ],
 
@@ -40,7 +42,7 @@
         "filter": {
           "displayNameKey": "format_general_filter",
           "displayName": "Filter",
-          "type": { "filter": {} }
+          "type": { "filter": true }
         }
       }
     },
@@ -189,7 +191,8 @@
         "payload": {
           "displayNameKey": "format_state_payload",
           "displayName": "Selection state",
-          "type": { "text": true, "filterState": true }
+          "type": { "text": true },
+          "filterState": true
         }
       }
     }
