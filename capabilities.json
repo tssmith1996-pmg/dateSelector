@@ -13,9 +13,6 @@
       "kind": "Grouping",
       "displayName": "Date",
       "displayNameKey": "role_date_displayName",
-      "preferredTypes": [
-        { "dateTime": true }
-      ]
     }
   ],
 
