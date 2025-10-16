@@ -16,10 +16,21 @@ type IntlLocaleWeekInfo = {
   weekInfo?: { firstDay?: string | string[] };
 };
 
+type IntlLocaleConstructor = new (tag: string) => IntlLocaleWeekInfo & { toString(): string };
+
+const IntlLocaleCtor = (Intl as unknown as { Locale?: IntlLocaleConstructor }).Locale;
+
 function canonicalizeLocale(locale: string): string | undefined {
+  if (IntlLocaleCtor) {
+    try {
+      return new IntlLocaleCtor(locale).toString();
+    } catch (error) {
+      // Fall back to DateTimeFormat canonicalization.
+    }
+  }
   try {
-    const canonical = Intl.getCanonicalLocales(locale)[0];
-    return canonical ?? undefined;
+    const supported = Intl.DateTimeFormat.supportedLocalesOf([locale]);
+    return supported[0] ?? undefined;
   } catch (error) {
     return undefined;
   }
@@ -66,12 +77,11 @@ export function normalizeLocaleTag(locale?: string): string {
 }
 
 export function getLocaleWeekStart(locale: string): number | undefined {
-  const LocaleCtor = (Intl as unknown as { Locale?: new (tag: string) => IntlLocaleWeekInfo }).Locale;
-  if (!LocaleCtor) {
+  if (!IntlLocaleCtor) {
     return undefined;
   }
   try {
-    const info = new LocaleCtor(locale);
+    const info = new IntlLocaleCtor(locale);
     const firstDay = info.weekInfo?.firstDay;
     const normalize = (value: string) => {
       const key = value.toLowerCase();
