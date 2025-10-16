@@ -857,13 +857,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       { operator: "LessThanOrEqual", value: toDateOnlyIso(constrained.to) },
     ]);
 
-    this.host.applyJsonFilter(
-      undefined as unknown as models.IFilter,
-      "general",
-      "filter",
-      powerbi.FilterAction.remove,
-    );
-    this.host.applyJsonFilter(filter, "general", "filter", powerbi.FilterAction.merge);
+    this.host.applyJsonFilter(filter.toJSON(), "general", "filter", powerbi.FilterAction.merge);
   }
 
   private persistState(range: DateRange, presetId: string): void {
