@@ -6,50 +6,122 @@
   gap: var(--ds-spacing-2);
 }
 
-.calendar .MuiDateRangeCalendar-root {
+.calendar__panel {
   width: 100%;
-  background: transparent;
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+  padding: var(--ds-spacing-2) var(--ds-spacing-3);
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiPickersDay-root {
-  border-radius: var(--ds-radius-small);
+.calendar__panel .p-datepicker-group-container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-spacing-3);
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiDateRangePickerDay-rangeIntervalDayHighlightStart,
-.calendar .MuiDateRangeCalendar-root .MuiDateRangePickerDay-rangeIntervalDayHighlightEnd {
-  border-radius: var(--ds-radius-small);
+.calendar__panel .p-datepicker-group {
+  flex: 1 1 0;
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiDateRangePickerDay-dayOutsideRangeInterval {
-  color: var(--visual-text-muted, var(--ds-color-text-muted));
-}
-
-.calendar .MuiDateRangeCalendar-root .Mui-disabled {
-  color: rgba(148, 163, 184, 0.6);
-}
-
-.calendar .MuiDateRangeCalendar-root .MuiPickersArrowSwitcher-root button:hover,
-.calendar .MuiDateRangeCalendar-root .MuiPickersArrowSwitcher-root button:focus-visible {
-  background-color: var(--visual-surface, var(--ds-color-surface));
-  outline: none;
-}
-
-.calendar .MuiDateRangeCalendar-root .MuiPickersCalendarHeader-labelContainer {
+.calendar__panel .p-datepicker-header {
   color: var(--visual-text, var(--ds-color-text));
+  padding: 0;
+  margin-bottom: var(--ds-spacing-2);
+}
+
+.calendar__panel .p-datepicker-prev,
+.calendar__panel .p-datepicker-next {
+  color: var(--visual-text, var(--ds-color-text));
+  border-radius: var(--ds-radius-small);
+}
+
+.calendar__panel .p-datepicker-prev:focus-visible,
+.calendar__panel .p-datepicker-next:focus-visible {
+  outline: 2px solid var(--visual-accent, #2563eb);
+  outline-offset: 2px;
+}
+
+.calendar__panel .p-datepicker-title {
   font-weight: 600;
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiPickersCalendarHeader-label {
-  font-size: var(--ds-font-size-medium);
+.calendar__panel .p-datepicker table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiDayCalendar-weekDayLabel {
+.calendar__panel .p-datepicker table thead th {
   color: var(--visual-text-muted, var(--ds-color-text-muted));
   font-size: var(--ds-font-size-small);
   text-transform: uppercase;
+  font-weight: 500;
+  padding-bottom: var(--ds-spacing-1);
 }
 
-.calendar .MuiDateRangeCalendar-root .MuiPickersDay-today::after {
+.calendar__panel .p-datepicker table td {
+  padding: 0;
+}
+
+.calendar__panel .p-datepicker table td > span {
+  border-radius: var(--ds-radius-small);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.calendar__panel .p-datepicker table td.p-datepicker-other-month > span {
+  color: var(--visual-text-muted, var(--ds-color-text-muted));
+  opacity: 0.6;
+}
+
+.calendar__panel .p-highlight {
+  background: var(--visual-accent, #2563eb) !important;
+  color: var(--visual-accent-text, #ffffff) !important;
+}
+
+.calendar__panel .p-highlight.p-disabled {
+  opacity: 0.5;
+}
+
+.calendar__panel .p-datepicker table td > span.p-disabled {
+  color: rgba(148, 163, 184, 0.6);
+}
+
+.calendar__panel .p-datepicker table td > span:focus-visible {
+  outline: 2px solid var(--visual-accent, #2563eb);
+  outline-offset: 2px;
+}
+
+.calendar__panel .p-datepicker-today > span::after {
   display: none;
+}
+
+.calendar__panel .p-datepicker-range-highlight {
+  background: var(--visual-accent-weak, rgba(37, 99, 235, 0.12));
+}
+
+.calendar__panel .p-datepicker-range-start > span,
+.calendar__panel .p-datepicker-range-end > span {
+  background: var(--visual-accent, #2563eb);
+  color: var(--visual-accent-text, #ffffff);
+}
+
+.calendar__panel .p-datepicker-range-start > span {
+  border-radius: var(--ds-radius-small) 0 0 var(--ds-radius-small);
+}
+
+.calendar__panel .p-datepicker-range-end > span {
+  border-radius: 0 var(--ds-radius-small) var(--ds-radius-small) 0;
+}
+
+.calendar__panel .p-datepicker-group:not(:last-child) .p-datepicker-calendar {
+  border-right: 1px solid var(--visual-border, rgba(15, 23, 42, 0.12));
+  margin-right: var(--ds-spacing-3);
+  padding-right: var(--ds-spacing-3);
+}
+
+.calendar__panel .p-datepicker-group:last-child .p-datepicker-calendar {
+  margin-left: var(--ds-spacing-3);
+  padding-left: var(--ds-spacing-3);
 }
 
