@@ -41,12 +41,14 @@ type PersistedBounds = {
 type PersistedState = {
   range?: { from: string; to: string };
   presetId?: string;
+  defaultPreset?: string;
   bounds?: PersistedBounds;
   raw?: string;
 };
 
 type DefaultsSettings = {
   presetId?: string;
+  defaultPreset?: string;
   weekStartsOn?: number;
   locale?: string;
 };
@@ -127,7 +129,17 @@ function parsePersistedState(value: unknown): PersistedState | undefined {
             max: typeof bounds.max === "string" ? bounds.max : undefined,
           }
         : undefined;
-    return { ...parsed, bounds: normalizedBounds, raw: value };
+    const presetId = typeof parsed.presetId === "string" ? parsed.presetId : undefined;
+    const legacyPreset =
+      typeof parsed.defaultPreset === "string" ? parsed.defaultPreset : undefined;
+    const normalizedPresetId = presetId ?? legacyPreset;
+    return {
+      ...parsed,
+      presetId: normalizedPresetId,
+      defaultPreset: legacyPreset ?? presetId,
+      bounds: normalizedBounds,
+      raw: value,
+    };
   } catch (error) {
     console.warn("Failed to parse persisted state", error);
     return undefined;
@@ -214,9 +226,16 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
   const pill = objects?.pill as powerbi.DataViewObject | undefined;
   const buttons = objects?.buttons as powerbi.DataViewObject | undefined;
 
+  const presetId =
+    typeof defaults?.presetId === "string" ? defaults.presetId : undefined;
+  const defaultPreset =
+    typeof defaults?.defaultPreset === "string" ? defaults.defaultPreset : undefined;
+  const normalizedPreset = presetId ?? defaultPreset;
+
   return {
     defaults: {
-      presetId: (defaults?.defaultPreset as string | undefined) ?? undefined,
+      presetId: normalizedPreset ?? undefined,
+      defaultPreset: defaultPreset ?? presetId,
       weekStartsOn: getNumericValue(defaults?.weekStartsOn),
       locale: typeof defaults?.locale === "string" ? defaults.locale : undefined,
     },
@@ -457,9 +476,15 @@ function toPersistedPayload(
   presetId: string,
   bounds?: { min?: Date; max?: Date },
 ): string {
-  const payload: { range: { from: string; to: string }; presetId: string; bounds?: PersistedBounds } = {
+  const payload: {
+    range: { from: string; to: string };
+    presetId: string;
+    defaultPreset: string;
+    bounds?: PersistedBounds;
+  } = {
     range: { from: toISODate(range.from), to: toISODate(range.to) },
     presetId,
+    defaultPreset: presetId,
   };
   if (bounds?.min || bounds?.max) {
     payload.bounds = {
@@ -485,6 +510,19 @@ function toRangeKey(range: DateRange | undefined): string | undefined {
     return undefined;
   }
   return `${toISODate(range.from)}:${toISODate(range.to)}`;
+}
+
+function getEffectivePresetId(defaults?: DefaultsSettings): string | undefined {
+  if (!defaults) {
+    return undefined;
+  }
+  if (typeof defaults.presetId === "string" && defaults.presetId) {
+    return defaults.presetId;
+  }
+  if (typeof defaults.defaultPreset === "string" && defaults.defaultPreset) {
+    return defaults.defaultPreset;
+  }
+  return undefined;
 }
 
 export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVisual {
@@ -526,6 +564,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
   private lastAppliedFilterKey?: string;
 
   private lastPersistedPayload?: string;
+
+  private persistedRangeSnapshot?: { from?: string; to?: string; presetId?: string };
 
   private allowInteractions = true;
 
@@ -812,21 +852,33 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       this.lastAppliedFilterKey = key;
     }
 
-    const filter: models.IAdvancedFilter = {
-      $schema: "https://powerbi.com/product/schema#advanced",
-      target: this.columnTarget,
-      logicalOperator: "And",
-      conditions: [
-        { operator: "GreaterThanOrEqual", value: toDateOnlyIso(constrained.from) },
-        { operator: "LessThanOrEqual", value: toDateOnlyIso(constrained.to) },
-      ],
-      filterType: models.FilterType.Advanced,
-    };
+    const filter = new models.AdvancedFilter(this.columnTarget, "And", [
+      { operator: "GreaterThanOrEqual", value: toDateOnlyIso(constrained.from) },
+      { operator: "LessThanOrEqual", value: toDateOnlyIso(constrained.to) },
+    ]);
 
+    this.host.applyJsonFilter(
+      undefined as unknown as models.IFilter,
+      "general",
+      "filter",
+      powerbi.FilterAction.remove,
+    );
     this.host.applyJsonFilter(filter, "general", "filter", powerbi.FilterAction.merge);
   }
 
   private persistState(range: DateRange, presetId: string): void {
+    const normalizedFrom = toDateOnlyIso(range.from);
+    const normalizedTo = toDateOnlyIso(range.to);
+    const previous = this.persistedRangeSnapshot;
+    if (
+      previous?.from === normalizedFrom &&
+      previous?.to === normalizedTo &&
+      previous?.presetId === presetId
+    ) {
+      return;
+    }
+    this.persistedRangeSnapshot = { from: normalizedFrom, to: normalizedTo, presetId };
+
     const payload = toPersistedPayload(range, presetId, this.dataBounds);
     if (this.lastPersistedPayload === payload) {
       return;
@@ -852,12 +904,14 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     });
     const bounds = this.getPersistableBounds();
     this.settings.persistedState = {
-      range: { from: toISODate(range.from), to: toISODate(range.to) },
+      range: { from: normalizedFrom, to: normalizedTo },
       presetId,
+      defaultPreset: presetId,
       bounds,
       raw: payload,
     };
     this.settings.defaults.presetId = presetId;
+    this.settings.defaults.defaultPreset = presetId;
   }
 
   private buildSelectionIdsForRange(range: DateRange): powerbi.extensibility.ISelectionId[] {
@@ -904,9 +958,10 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
 
   private syncFormattingSettings(settings: VisualSettings): void {
     const defaultsCard = this.formattingSettings.defaults;
-    const presetItem = FORMAT_PRESET_ITEMS.find(
-      (item) => item.value === (settings.defaults.presetId ?? undefined),
-    );
+    const effectivePresetId = getEffectivePresetId(settings.defaults);
+    const presetItem = effectivePresetId
+      ? FORMAT_PRESET_ITEMS.find((item) => item.value === effectivePresetId)
+      : undefined;
     if (presetItem) {
       defaultsCard.defaultPreset.value = presetItem;
     }
@@ -972,7 +1027,20 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     }
     this.columnTarget = nextTarget;
     const settings = parseVisualSettings(this.dataView);
+    const normalizedDefaultPreset = getEffectivePresetId(settings.defaults);
+    if (normalizedDefaultPreset) {
+      settings.defaults.presetId = normalizedDefaultPreset;
+      settings.defaults.defaultPreset = normalizedDefaultPreset;
+    }
     this.settings = settings;
+    this.persistedRangeSnapshot = {
+      from: settings.persistedState?.range?.from,
+      to: settings.persistedState?.range?.to,
+      presetId:
+        settings.persistedState?.presetId ??
+        settings.persistedState?.defaultPreset ??
+        normalizedDefaultPreset,
+    };
     this.seedBoundsFromPersisted(settings.persistedState?.bounds);
     this.syncFormattingSettings(settings);
 
@@ -1021,9 +1089,11 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       ? ensureWithinRange(initialRange, limitedMin, limitedMax)
       : undefined;
 
+    const persistedPresetId =
+      settings.persistedState?.presetId ?? settings.persistedState?.defaultPreset;
     const defaultPresetId = appliedRange
       ? undefined
-      : settings.persistedState?.presetId ?? settings.defaults.presetId ?? undefined;
+      : persistedPresetId ?? getEffectivePresetId(settings.defaults) ?? undefined;
 
     const rangeForComponent = defaultRange ?? initialRange;
     const appliedKey = toRangeKey(appliedRange);
