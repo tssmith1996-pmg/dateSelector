@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider, ThemeOptions, createTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
-import { PickerChangeHandlerContext } from "@mui/x-date-pickers/models";
-import { DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
-import "@mui/x-date-pickers/themeAugmentation";
-import "@mui/x-date-pickers-pro/themeAugmentation";
+import { DateRangeCalendar } from "@mui/x-date-pickers-pro/DateRangeCalendar";
+import { PickerSelectionState } from "@mui/x-date-pickers/internals";
 import dayjs, { Dayjs } from "dayjs";
 import updateLocale from "dayjs/plugin/updateLocale";
 import "dayjs/locale/en";
@@ -214,40 +211,40 @@ export const Calendar: React.FC<CalendarProps> = ({
             },
           },
         },
-      }),
+      } as ThemeOptions),
     [],
   );
 
-  const handleChange = (
-    value: DayjsRangeValue,
-    _context: PickerChangeHandlerContext<DateRangeValidationError>,
-  ) => {
-    setPickerValue(value);
+  const handleChange = useCallback(
+    (value: DayjsRangeValue, _selectionState?: PickerSelectionState) => {
+      setPickerValue(value);
 
-    const [start, end] = value;
-    if (!start && !end) {
-      return;
-    }
+      const [start, end] = value;
+      if (!start && !end) {
+        return;
+      }
 
-    if (start && !end) {
-      const normalized = ensureWithinRange(
-        normalizeRange(start.toDate(), start.toDate()),
-        dataMin,
-        dataMax,
-      );
-      onRangeChange(normalized);
-      return;
-    }
+      if (start && !end) {
+        const normalized = ensureWithinRange(
+          normalizeRange(start.toDate(), start.toDate()),
+          dataMin,
+          dataMax,
+        );
+        onRangeChange(normalized);
+        return;
+      }
 
-    if (start && end) {
-      const normalized = ensureWithinRange(
-        normalizeRange(start.toDate(), end.toDate()),
-        dataMin,
-        dataMax,
-      );
-      onRangeChange(normalized);
-    }
-  };
+      if (start && end) {
+        const normalized = ensureWithinRange(
+          normalizeRange(start.toDate(), end.toDate()),
+          dataMin,
+          dataMax,
+        );
+        onRangeChange(normalized);
+      }
+    },
+    [dataMax, dataMin, onRangeChange],
+  );
 
   const minDate = useMemo(() => (dataMin ? dayjs(dataMin) : undefined), [dataMin]);
   const maxDate = useMemo(() => (dataMax ? dayjs(dataMax) : undefined), [dataMax]);
@@ -268,19 +265,21 @@ export const Calendar: React.FC<CalendarProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={activeLocale}>
+      <LocalizationProvider
+        dateAdapter={AdapterDayjs}
+        adapterLocale={activeLocale}
+        localeText={{
+          previousMonth: strings.previousMonth,
+          nextMonth: strings.nextMonth,
+        }}
+      >
         <Box className="calendar" aria-label={ariaLabel}>
-          <StaticDateRangePicker
-            displayStaticWrapperAs="desktop"
+          <DateRangeCalendar
             value={pickerValue}
             onChange={handleChange}
             onMonthChange={handleMonthChange}
             minDate={minDate}
             maxDate={maxDate}
-            localeText={{
-              previousMonth: strings.previousMonth,
-              nextMonth: strings.nextMonth,
-            }}
             calendars={2}
             slotProps={{
               previousIconButton: {
