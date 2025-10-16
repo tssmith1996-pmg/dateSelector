@@ -273,6 +273,43 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     return ((rounded % 7) + 7) % 7;
   }, [weekStartsOn]);
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+    const inertable = container as HTMLElement & { inert?: boolean };
+    const hadInertAttribute = container.hasAttribute("inert");
+    const previousInert = typeof inertable.inert === "boolean" ? inertable.inert : undefined;
+    const previousAriaHidden = container.getAttribute("aria-hidden");
+    if ("inert" in inertable) {
+      inertable.inert = true;
+    } else {
+      container.setAttribute("inert", "");
+    }
+    if (previousAriaHidden !== null) {
+      container.removeAttribute("aria-hidden");
+    }
+    return () => {
+      if ("inert" in inertable) {
+        if (typeof previousInert === "boolean") {
+          inertable.inert = previousInert;
+        } else {
+          inertable.inert = false;
+        }
+      } else if (!hadInertAttribute) {
+        container.removeAttribute("inert");
+      } else {
+        container.setAttribute("inert", "");
+      }
+      if (previousAriaHidden !== null) {
+        container.setAttribute("aria-hidden", previousAriaHidden);
+      }
+    };
+  }, [open]);
 
   const commitChange = useCallback(
     (range: DateRange, presetId: string, options?: { force?: boolean }) => {

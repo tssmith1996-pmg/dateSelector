@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useId } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useId } from "react";
 import { DatePreset } from "../date";
 import { DateRange } from "../types/dateRange";
 import { VisualStrings } from "../types/localization";
@@ -51,11 +51,16 @@ export const Popover: React.FC<PopoverProps> = ({
   const previousActive = useRef<HTMLElement | null>(null);
   const headingId = useId();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     previousActive.current = document.activeElement as HTMLElement | null;
     const focusable = getFocusable(containerRef.current);
     focusable[0]?.focus();
+    return () => {
+      previousActive.current?.focus();
+    };
+  }, []);
 
+  useEffect(() => {
     const handlePointerDown = (event: MouseEvent | TouchEvent) => {
       const target = event.target as Node;
       if (!containerRef.current?.contains(target)) {
@@ -70,7 +75,6 @@ export const Popover: React.FC<PopoverProps> = ({
     return () => {
       doc.removeEventListener("mousedown", handlePointerDown);
       doc.removeEventListener("touchstart", handlePointerDown);
-      previousActive.current?.focus();
     };
   }, [onClose]);
 

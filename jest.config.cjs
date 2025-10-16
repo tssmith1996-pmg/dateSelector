@@ -5,7 +5,8 @@ module.exports = {
   moduleFileExtensions: ["ts", "tsx", "js"],
   moduleNameMapper: {
     "^.+\\.(css)$": "<rootDir>/test/mocks/styleMock.js",
-    "^.+\\.(png|jpg|jpeg|gif|svg)$": "<rootDir>/test/mocks/fileMock.js"
+    "^.+\\.(png|jpg|jpeg|gif|svg)$": "<rootDir>/test/mocks/fileMock.js",
+    "^primereact/(.*)$": "<rootDir>/test/mocks/primereact/$1"
   },
   setupFilesAfterEnv: [],
 };
