@@ -1,4 +1,5 @@
 import * as models from "powerbi-models";
+import { DateRange } from "../types/dateRange";
 
 function normalizeIdentifier(value?: string): string | undefined {
   if (!value) {
@@ -86,4 +87,17 @@ export function extentFromValues(values: unknown[]): { min?: Date; max?: Date } 
   dates.sort((a, b) => a.getTime() - b.getTime());
 
   return { min: dates[0], max: dates[dates.length - 1] };
+}
+
+export function buildDateRangeFilter(
+  target: models.IFilterColumnTarget,
+  range: DateRange,
+): models.AdvancedFilter {
+  const lowerBound = new Date(range.from.getTime());
+  const upperBound = new Date(range.to.getTime());
+
+  return new models.AdvancedFilter(target, "And", [
+    { operator: "GreaterThanOrEqual", value: lowerBound },
+    { operator: "LessThanOrEqual", value: upperBound },
+  ]);
 }

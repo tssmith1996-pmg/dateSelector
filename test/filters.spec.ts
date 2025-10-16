@@ -1,4 +1,6 @@
-import { parseTargetFromQueryName } from "../src/utils/filters";
+import * as models from "powerbi-models";
+import { buildDateRangeFilter, parseTargetFromQueryName } from "../src/utils/filters";
+import { DateRange } from "../src/types/dateRange";
 
 describe("parseTargetFromQueryName", () => {
   it("parses table and column from bracket notation", () => {
@@ -23,5 +25,27 @@ describe("parseTargetFromQueryName", () => {
   it("normalizes escaped quotes", () => {
     const target = parseTargetFromQueryName("'Weird''Table'[Value]");
     expect(target).toEqual({ table: "Weird'Table", column: "Value" });
+  });
+});
+
+describe("buildDateRangeFilter", () => {
+  it("emits date-typed operands for the provided range", () => {
+    const target: models.IFilterColumnTarget = { table: "Sales", column: "OrderDate" };
+    const range: DateRange = {
+      from: new Date(2024, 0, 1, 0, 0, 0, 0),
+      to: new Date(2024, 0, 31, 23, 59, 59, 999),
+    };
+
+    const filter = buildDateRangeFilter(target, range);
+    const json = filter.toJSON() as models.IAdvancedFilter;
+
+    expect(json.target).toEqual(target);
+    expect(json.conditions).toHaveLength(2);
+    const lower = json.conditions?.[0]?.value;
+    const upper = json.conditions?.[1]?.value;
+    expect(lower).toBeInstanceOf(Date);
+    expect(upper).toBeInstanceOf(Date);
+    expect((lower as Date).getTime()).toBe(range.from.getTime());
+    expect((upper as Date).getTime()).toBe(range.to.getTime());
   });
 });

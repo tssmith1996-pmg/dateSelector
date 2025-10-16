@@ -179,6 +179,30 @@
       }
     },
 
+    "manualEntry": {
+      "displayNameKey": "format_manualEntry_displayName",
+      "displayName": "Manual entry",
+      "properties": {
+        "enabled": {
+          "displayNameKey": "format_manualEntry_enabled",
+          "displayName": "Allow manual inline entry",
+          "type": { "bool": true }
+        }
+      }
+    },
+
+    "tooltips": {
+      "displayNameKey": "format_tooltips_displayName",
+      "displayName": "Tooltips",
+      "properties": {
+        "show": {
+          "displayNameKey": "format_tooltips_show",
+          "displayName": "Show tooltips",
+          "type": { "bool": true }
+        }
+      }
+    },
+
     "state": {
       "displayNameKey": "format_state_displayName",
       "displayName": "State",

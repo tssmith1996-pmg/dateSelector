@@ -90,7 +90,7 @@ jest.mock("d3-selection", () => ({
 import PresetDateSlicerVisual from "../src/visual/visual";
 import capabilities from "../capabilities.json";
 import { parseTargetFromQueryName } from "../src/utils/filters";
-import { toISODate } from "../src/date";
+import { normalizeRange, toISODate } from "../src/date";
 
 type VisualObjectInstancesToPersist = powerbi.VisualObjectInstancesToPersist;
 
@@ -332,19 +332,26 @@ describe("PresetDateSlicerVisual integration", () => {
       min: new Date(2023, 11, 31),
       max: new Date(2024, 0, 10),
     };
-    (visual as unknown as { settings: unknown }).settings = { defaults: {}, pill: {}, buttons: {} };
+    (visual as unknown as { settings: unknown }).settings = {
+      defaults: {},
+      pill: {},
+      buttons: {},
+      manualEntry: {},
+    };
 
-    const range = { from: new Date(2024, 0, 1), to: new Date(2024, 0, 2) };
+    const range = normalizeRange(new Date(2024, 0, 1), new Date(2024, 0, 2));
 
     (visual as unknown as { applyRangeFilter(r: typeof range): void }).applyRangeFilter(range);
 
     expect(host.applyJsonFilter).toHaveBeenCalledTimes(1);
     const appliedFilter = host.applyJsonFilter.mock.calls[0][0] as models.IAdvancedFilter;
     expect(appliedFilter.target).toEqual({ table: "Sales", column: "OrderDate" });
-    expect(appliedFilter.conditions).toEqual([
-      { operator: "GreaterThanOrEqual", value: toISODate(range.from) },
-      { operator: "LessThanOrEqual", value: toISODate(range.to) },
-    ]);
+    const lower = appliedFilter.conditions?.[0]?.value as Date;
+    const upper = appliedFilter.conditions?.[1]?.value as Date;
+    expect(lower).toBeInstanceOf(Date);
+    expect(upper).toBeInstanceOf(Date);
+    expect(lower.getTime()).toBe(range.from.getTime());
+    expect(upper.getTime()).toBe(range.to.getTime());
     expect(host.applyJsonFilter.mock.calls[0][1]).toBe("general");
     expect(host.applyJsonFilter.mock.calls[0][2]).toBe("filter");
     expect(host.applyJsonFilter.mock.calls[0][3]).toBe(powerbi.FilterAction.merge);
@@ -370,14 +377,22 @@ describe("PresetDateSlicerVisual integration", () => {
     expect(parsed.range).toEqual({ from: toISODate(range.from), to: toISODate(range.to) });
     expect(parsed.presetId).toBe("custom");
 
-    const settings = (visual as unknown as { settings: { persistedState?: unknown; defaults: { presetId?: string } } }).settings;
+    const settings = (visual as unknown as {
+      settings: {
+        persistedState?: unknown;
+        defaults: { presetId?: string };
+        manualEntry: { enabled?: boolean };
+      };
+    }).settings;
     expect(settings.persistedState).toMatchObject({
       range: { from: toISODate(range.from), to: toISODate(range.to) },
       presetId: "custom",
     });
     expect(settings.defaults.presetId).toBe("custom");
 
-    visual.destroy();
+    act(() => {
+      visual.destroy();
+    });
     element.remove();
   });
 
@@ -404,6 +419,8 @@ describe("PresetDateSlicerVisual integration", () => {
         pillMinWidth: 300,
       },
       buttons: { showQuickApply: true, showClear: false },
+      manualEntry: { enabled: false },
+      tooltips: { show: true },
       state: { payload },
     } as powerbi.DataViewObjects;
 
@@ -418,6 +435,11 @@ describe("PresetDateSlicerVisual integration", () => {
     await act(async () => {
       visual.update(updateOptions);
     });
+
+    const runtimeSettings = (visual as unknown as {
+      settings: { manualEntry: { enabled?: boolean } };
+    }).settings;
+    expect(runtimeSettings.manualEntry.enabled).toBe(false);
 
     const formattingModel = visual.getFormattingModel() as FormattingModel;
     const formattingPath = path.join(ARTIFACTS_DIR, "formatting-model.json");
@@ -492,7 +514,9 @@ describe("PresetDateSlicerVisual integration", () => {
     const missingEntries = Object.entries(localization).filter(([, entry]) => entry.missing.length > 0);
     expect(missingEntries).toEqual([]);
 
-    visual.destroy();
+    act(() => {
+      visual.destroy();
+    });
     element.remove();
   });
 });
