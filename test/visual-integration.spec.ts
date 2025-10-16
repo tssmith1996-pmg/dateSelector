@@ -338,13 +338,27 @@ describe("PresetDateSlicerVisual integration", () => {
 
     (visual as unknown as { applyRangeFilter(r: typeof range): void }).applyRangeFilter(range);
 
-    expect(host.applyJsonFilter).toHaveBeenCalledTimes(1);
-    const appliedFilter = host.applyJsonFilter.mock.calls[0][0] as models.IAdvancedFilter;
+    expect(host.applyJsonFilter).toHaveBeenCalledTimes(2);
+    expect(host.applyJsonFilter).toHaveBeenNthCalledWith(
+      1,
+      undefined,
+      "general",
+      "filter",
+      powerbi.FilterAction.remove,
+    );
+    const appliedFilterArg = host.applyJsonFilter.mock.calls[1][0] as models.AdvancedFilter;
+    const appliedFilter =
+      typeof appliedFilterArg?.toJSON === "function"
+        ? appliedFilterArg.toJSON()
+        : (appliedFilterArg as unknown as models.IAdvancedFilter);
     expect(appliedFilter.target).toEqual({ table: "Sales", column: "OrderDate" });
     expect(appliedFilter.conditions).toEqual([
       { operator: "GreaterThanOrEqual", value: toISODate(range.from) },
       { operator: "LessThanOrEqual", value: toISODate(range.to) },
     ]);
+    expect(host.applyJsonFilter.mock.calls[1][1]).toBe("general");
+    expect(host.applyJsonFilter.mock.calls[1][2]).toBe("filter");
+    expect(host.applyJsonFilter.mock.calls[1][3]).toBe(powerbi.FilterAction.merge);
 
     expect(host.selectionManager.selectCallCount).toBe(1);
     const keys = host.selectionManager.selectCalls[0].map((id) => (id as MockSelectionId).key);
