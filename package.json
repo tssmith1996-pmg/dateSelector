@@ -13,12 +13,19 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/material": "^7.3.4",
+    "@mui/system": "^7.3.3",
+    "@mui/x-date-pickers-pro": "^8.14.0",
+    "@mui/x-date-pickers": "^8.14.0",
+    "d3-selection": "3.0.0",
+    "dayjs": "^1.11.13",
     "powerbi-models": "2.0.1",
     "powerbi-visuals-utils-formattingmodel": "6.2.2",
     "powerbi-visuals-utils-tooltiputils": "6.0.4",
     "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "d3-selection": "3.0.0"
+    "react-dom": "18.2.0"
   },
   "devDependencies": {
     "@types/jest": "29.5.11",

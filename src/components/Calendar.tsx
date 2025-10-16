@@ -1,24 +1,26 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import {
-  addMonths,
-  endOfDay,
-  getMonthMatrix,
-  getToday,
-  isAfter,
-  isBefore,
-  isSameDay,
-  isSameMonth,
-  moveMonth,
-  normalizeRange,
-  startOfDay,
-  startOfMonth,
-  toISODate,
-} from "../date";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { StaticDateRangePicker } from "@mui/x-date-pickers-pro/StaticDateRangePicker";
+import { PickerChangeHandlerContext } from "@mui/x-date-pickers/models";
+import { DateRangeValidationError } from "@mui/x-date-pickers-pro/models";
+import "@mui/x-date-pickers/themeAugmentation";
+import "@mui/x-date-pickers-pro/themeAugmentation";
+import dayjs, { Dayjs } from "dayjs";
+import updateLocale from "dayjs/plugin/updateLocale";
+import "dayjs/locale/en";
+
+import { ensureWithinRange, normalizeRange } from "../date";
 import { DateRange } from "../types/dateRange";
 import { formatTemplate } from "../utils/localization";
+
 import "../styles/calendar.css";
 
-export type CalendarProps = {
+dayjs.extend(updateLocale);
+
+type CalendarProps = {
   range: DateRange;
   onRangeChange: (range: DateRange) => void;
   locale: string;
@@ -32,6 +34,65 @@ export type CalendarProps = {
   };
 };
 
+const FALLBACK_LOCALE = "en";
+
+const loadedLocales = new Set<string>([FALLBACK_LOCALE]);
+
+function normalizeLocale(locale?: string): string {
+  if (!locale) {
+    return FALLBACK_LOCALE;
+  }
+  return locale.toLowerCase().replace("_", "-");
+}
+
+async function loadLocale(locale: string): Promise<string> {
+  const normalized = normalizeLocale(locale);
+  const candidates = [normalized, normalized.split("-")[0]].filter(Boolean) as string[];
+
+  for (const candidate of candidates) {
+    if (loadedLocales.has(candidate)) {
+      dayjs.locale(candidate);
+      return candidate;
+    }
+
+    try {
+      await import(
+        /* webpackChunkName: "dayjs-locale-[request]" */ `dayjs/locale/${candidate}.js`
+      );
+      loadedLocales.add(candidate);
+      dayjs.locale(candidate);
+      return candidate;
+    } catch (error) {
+      // Continue trying fallback candidates
+    }
+  }
+
+  dayjs.locale(FALLBACK_LOCALE);
+  return FALLBACK_LOCALE;
+}
+
+function toDayjs(date: Date | undefined, locale: string): Dayjs | null {
+  if (!date) {
+    return null;
+  }
+  return dayjs(date).locale(locale);
+}
+
+type DayjsRangeValue = [Dayjs | null, Dayjs | null];
+
+function formatVisibleMonth(value: DayjsRangeValue | null, locale: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+
+  const start = value[0];
+  if (!start) {
+    return undefined;
+  }
+
+  return start.locale(locale).format("MMMM YYYY");
+}
+
 export const Calendar: React.FC<CalendarProps> = ({
   range,
   onRangeChange,
@@ -41,235 +102,198 @@ export const Calendar: React.FC<CalendarProps> = ({
   weekStartsOn,
   strings,
 }) => {
-  const [visibleMonth, setVisibleMonth] = useState<Date>(startOfMonth(range.from));
-  const [pendingStart, setPendingStart] = useState<Date | null>(null);
-  const [focusDate, setFocusDate] = useState<Date>(() => range.from);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const monthTitleFormatter = useMemo(() => new Intl.DateTimeFormat(locale, { month: "long", year: "numeric" }), [locale]);
-  const weekdayFormatter = useMemo(() => new Intl.DateTimeFormat(locale, { weekday: "short" }), [locale]);
-  const fullDateFormatter = useMemo(
-    () =>
-      new Intl.DateTimeFormat(locale, {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-      }),
-    [locale],
+  const [activeLocale, setActiveLocale] = useState<string>(FALLBACK_LOCALE);
+  const [pickerValue, setPickerValue] = useState<DayjsRangeValue>([
+    toDayjs(range.from, FALLBACK_LOCALE),
+    toDayjs(range.to, FALLBACK_LOCALE),
+  ]);
+  const [visibleMonthLabel, setVisibleMonthLabel] = useState<string | undefined>(
+    formatVisibleMonth(pickerValue, FALLBACK_LOCALE),
   );
 
-  const fromTime = range.from.getTime();
-  const toTime = range.to.getTime();
-  const rangeRef = useRef(range);
-  rangeRef.current = range;
+  useEffect(() => {
+    let isMounted = true;
+    loadLocale(locale)
+      .then((resolved) => {
+        if (!isMounted) {
+          return;
+        }
+        if (weekStartsOn != null) {
+          dayjs.updateLocale(resolved, { weekStart: weekStartsOn });
+        }
+        setActiveLocale(resolved);
+      })
+      .catch(() => {
+        if (!isMounted) {
+          return;
+        }
+        if (weekStartsOn != null) {
+          dayjs.updateLocale(FALLBACK_LOCALE, { weekStart: weekStartsOn });
+        }
+        setActiveLocale(FALLBACK_LOCALE);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [locale, weekStartsOn]);
 
   useEffect(() => {
-    setVisibleMonth((current) => {
-      const { from, to } = rangeRef.current;
-      if (isSameMonth(from, current) || isSameMonth(to, current)) {
-        return current;
-      }
-      return startOfMonth(from);
-    });
-  }, [fromTime, toTime]);
+    const nextValue: DayjsRangeValue = [
+      toDayjs(range.from, activeLocale),
+      toDayjs(range.to, activeLocale),
+    ];
+    setPickerValue(nextValue);
+    setVisibleMonthLabel(formatVisibleMonth(nextValue, activeLocale));
+  }, [range.from, range.to, activeLocale]);
 
-  useEffect(() => {
-    setFocusDate(range.from);
-  }, [range]);
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          primary: {
+            main: "var(--visual-accent, #2563eb)",
+            contrastText: "var(--visual-accent-text, #ffffff)",
+          },
+          text: {
+            primary: "var(--visual-text, #0f172a)",
+            secondary: "var(--visual-text-muted, #64748b)",
+          },
+          background: {
+            paper: "var(--visual-surface, #ffffff)",
+          },
+          divider: "var(--visual-border, rgba(15, 23, 42, 0.12))",
+        },
+        typography: {
+          fontFamily: "inherit",
+          fontSize: 14,
+        },
+        components: {
+          MuiPickersCalendarHeader: {
+            styleOverrides: {
+              label: {
+                color: "var(--visual-text, #0f172a)",
+                fontWeight: 600,
+              },
+              switchViewButton: {
+                color: "var(--visual-text, #0f172a)",
+              },
+            },
+          },
+          MuiPickersDay: {
+            styleOverrides: {
+              root: {
+                fontSize: "1rem",
+              },
+              today: {
+                borderColor: "var(--visual-accent, #2563eb)",
+              },
+              dayWithMargin: {
+                margin: 0,
+              },
+            },
+          },
+          MuiDateRangePickerDay: {
+            styleOverrides: {
+              rangeIntervalDayHighlight: {
+                backgroundColor: "var(--visual-accent, #2563eb)",
+                color: "var(--visual-accent-text, #ffffff)",
+              },
+              rangeIntervalDayHighlightStart: {
+                borderRadius: "var(--ds-radius-small, 6px) 0 0 var(--ds-radius-small, 6px)",
+              },
+              rangeIntervalDayHighlightEnd: {
+                borderRadius: "0 var(--ds-radius-small, 6px) var(--ds-radius-small, 6px) 0",
+              },
+              rangeIntervalPreview: {
+                borderColor: "var(--visual-accent, rgba(37, 99, 235, 0.3))",
+              },
+              rangeIntervalDayPreview: {
+                borderColor: "var(--visual-accent, rgba(37, 99, 235, 0.3))",
+              },
+            },
+          },
+        },
+      }),
+    [],
+  );
 
-  useEffect(() => {
-    const label = monthTitleFormatter.format(visibleMonth);
-    if (containerRef.current) {
-      containerRef.current.setAttribute("aria-label", formatTemplate(strings.ariaLabelTemplate, label));
-    }
-  }, [visibleMonth, monthTitleFormatter, strings.ariaLabelTemplate]);
+  const handleChange = (
+    value: DayjsRangeValue,
+    _context: PickerChangeHandlerContext<DateRangeValidationError>,
+  ) => {
+    setPickerValue(value);
 
-  const startDay = typeof weekStartsOn === "number" ? weekStartsOn : 1;
-
-  const monthMatrix = useMemo(() => getMonthMatrix(visibleMonth, startDay), [visibleMonth, startDay]);
-
-  const today = useMemo(() => getToday(), []);
-
-  const handleDayCommit = (date: Date) => {
-    const normalizedDate = startOfDay(date);
-    const inBounds = isDateSelectable(normalizedDate, dataMin, dataMax);
-    if (!inBounds) {
+    const [start, end] = value;
+    if (!start && !end) {
       return;
     }
 
-    if (pendingStart) {
-      const nextRange = normalizeRange(pendingStart, normalizedDate);
-      setPendingStart(null);
-      onRangeChange(nextRange);
+    if (start && !end) {
+      const normalized = ensureWithinRange(
+        normalizeRange(start.toDate(), start.toDate()),
+        dataMin,
+        dataMax,
+      );
+      onRangeChange(normalized);
       return;
     }
 
-    setPendingStart(normalizedDate);
-    onRangeChange(normalizeRange(normalizedDate, normalizedDate));
+    if (start && end) {
+      const normalized = ensureWithinRange(
+        normalizeRange(start.toDate(), end.toDate()),
+        dataMin,
+        dataMax,
+      );
+      onRangeChange(normalized);
+    }
   };
 
-  const handleDayHover = (date: Date) => {
-    if (!pendingStart) {
-      return;
-    }
-    const normalizedDate = startOfDay(date);
-    if (!isDateSelectable(normalizedDate, dataMin, dataMax)) {
-      return;
-    }
-    const nextRange = normalizeRange(pendingStart, normalizedDate);
-    onRangeChange(nextRange);
-  };
+  const minDate = useMemo(() => (dataMin ? dayjs(dataMin) : undefined), [dataMin]);
+  const maxDate = useMemo(() => (dataMax ? dayjs(dataMax) : undefined), [dataMax]);
 
-  const handleKeyNavigation = (event: React.KeyboardEvent<HTMLButtonElement>, date: Date) => {
-    let next = date;
-    if (event.key === "ArrowRight") {
-      next = addDaysClamped(date, 1, dataMin, dataMax);
-    } else if (event.key === "ArrowLeft") {
-      next = addDaysClamped(date, -1, dataMin, dataMax);
-    } else if (event.key === "ArrowUp") {
-      next = addDaysClamped(date, -7, dataMin, dataMax);
-    } else if (event.key === "ArrowDown") {
-      next = addDaysClamped(date, 7, dataMin, dataMax);
-    } else if (event.key === "PageUp") {
-      event.preventDefault();
-      setVisibleMonth(moveMonth(visibleMonth, event.shiftKey ? -12 : -1));
-      return;
-    } else if (event.key === "PageDown") {
-      event.preventDefault();
-      setVisibleMonth(moveMonth(visibleMonth, event.shiftKey ? 12 : 1));
-      return;
-    } else if (event.key === "Home") {
-      event.preventDefault();
-      setFocusDate(range.from);
-      return;
-    } else if (event.key === "End") {
-      event.preventDefault();
-      setFocusDate(range.to);
-      return;
-    } else if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      handleDayCommit(date);
-      return;
-    } else if (event.key === "Escape") {
-      event.preventDefault();
-      setPendingStart(null);
-      onRangeChange(range);
-      return;
+  const ariaLabel = useMemo(() => {
+    if (!visibleMonthLabel) {
+      return undefined;
     }
-    if (next !== date) {
-      event.preventDefault();
-      setFocusDate(next);
-      if (!isSameMonth(next, visibleMonth)) {
-        setVisibleMonth(startOfMonth(next));
-      }
-    }
-  };
+    return formatTemplate(strings.ariaLabelTemplate, visibleMonthLabel);
+  }, [strings.ariaLabelTemplate, visibleMonthLabel]);
 
-  const handlePrevMonth = () => {
-    setVisibleMonth(addMonths(visibleMonth, -1));
-  };
-
-  const handleNextMonth = () => {
-    setVisibleMonth(addMonths(visibleMonth, 1));
-  };
+  const handleMonthChange = useCallback(
+    (month: Dayjs) => {
+      setVisibleMonthLabel(month.locale(activeLocale).format("MMMM YYYY"));
+    },
+    [activeLocale],
+  );
 
   return (
-    <div className="calendar" ref={containerRef} role="application">
-      <div className="calendar__header">
-        <button
-          type="button"
-          className="calendar__nav"
-          onClick={handlePrevMonth}
-          aria-label={strings.previousMonth}
-        >
-          ‹
-        </button>
-        <div className="calendar__title">{monthTitleFormatter.format(visibleMonth)}</div>
-        <button
-          type="button"
-          className="calendar__nav"
-          onClick={handleNextMonth}
-          aria-label={strings.nextMonth}
-        >
-          ›
-        </button>
-      </div>
-      <div className="calendar__weekdays" role="row">
-        {monthMatrix[0].map((date) => {
-          const label = weekdayFormatter.format(date);
-          return (
-            <div key={`weekday-${label}`} className="calendar__weekday" role="columnheader" aria-label={label}>
-              {label.slice(0, 2)}
-            </div>
-          );
-        })}
-      </div>
-      <div className="calendar__grid" role="grid">
-        {monthMatrix.map((week, rowIndex) => (
-          <div key={`row-${rowIndex}`} className="calendar__row" role="row">
-            {week.map((date) => {
-              const disabled = !isDateSelectable(date, dataMin, dataMax);
-              const selectedStart = isSameDay(date, range.from);
-              const selectedEnd = isSameDay(date, range.to);
-              const inRange = !selectedStart && !selectedEnd && isWithinDraftRange(date, range);
-              const outside = !isSameMonth(date, visibleMonth);
-              const isTodayFlag = isSameDay(date, today);
-
-              const classes = ["calendar__day"];
-              if (selectedStart) classes.push("calendar__day--start");
-              if (selectedEnd) classes.push("calendar__day--end");
-              if (inRange) classes.push("calendar__day--in-range");
-              if (disabled) classes.push("calendar__day--disabled");
-              if (outside) classes.push("calendar__day--outside");
-              if (isTodayFlag) classes.push("calendar__day--today");
-              if (isSameDay(focusDate, date)) classes.push("calendar__day--focus");
-
-              return (
-                <button
-                  type="button"
-                  key={toISODate(date)}
-                  className={classes.join(" ")}
-                  role="gridcell"
-                  aria-selected={selectedStart || selectedEnd || inRange}
-                  aria-label={fullDateFormatter.format(date)}
-                  onClick={() => handleDayCommit(date)}
-                  onFocus={() => setFocusDate(date)}
-                  onKeyDown={(event) => handleKeyNavigation(event, date)}
-                  onMouseEnter={() => handleDayHover(date)}
-                  disabled={disabled}
-                >
-                  <span>{date.getDate()}</span>
-                </button>
-              );
-            })}
-          </div>
-        ))}
-      </div>
-    </div>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={activeLocale}>
+        <Box className="calendar" aria-label={ariaLabel}>
+          <StaticDateRangePicker
+            displayStaticWrapperAs="desktop"
+            value={pickerValue}
+            onChange={handleChange}
+            onMonthChange={handleMonthChange}
+            minDate={minDate}
+            maxDate={maxDate}
+            localeText={{
+              previousMonth: strings.previousMonth,
+              nextMonth: strings.nextMonth,
+            }}
+            calendars={2}
+            slotProps={{
+              previousIconButton: {
+                "aria-label": strings.previousMonth,
+              },
+              nextIconButton: {
+                "aria-label": strings.nextMonth,
+              },
+            }}
+          />
+        </Box>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 };
-
-function isDateSelectable(date: Date, min?: Date, max?: Date) {
-  if (min && isBefore(endOfDay(date), min)) {
-    return false;
-  }
-  if (max && isAfter(startOfDay(date), max)) {
-    return false;
-  }
-  return true;
-}
-
-function isWithinDraftRange(date: Date, range: DateRange) {
-  const time = date.getTime();
-  return time > range.from.getTime() && time < range.to.getTime();
-}
-
-function addDaysClamped(date: Date, amount: number, min?: Date, max?: Date) {
-  const target = new Date(date);
-  target.setDate(target.getDate() + amount);
-  const normalized = startOfDay(target);
-  if (!isDateSelectable(normalized, min, max)) {
-    return date;
-  }
-  return normalized;
-}
 
