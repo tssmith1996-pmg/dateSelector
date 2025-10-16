@@ -77,6 +77,9 @@ settings clamp the interactive calendar and preset ranges, preventing selections
 The `PresetDateSlicerVisual` mirrors any existing report filters on the bound date column and merges new ranges via
 `applyJsonFilter`, ensuring the host model always stays synchronised.
 
+All date serialisation utilities normalise to the local calendar day (`YYYY-MM-DD`) rather than UTC timestamps, preventing
+the off-by-one behaviour that surfaces when browsers and Power BI disagree on timezone offsets.
+
 ## Running the demo
 
 The Vite workspace still offers a quick way to observe the outside-iframe handshake.

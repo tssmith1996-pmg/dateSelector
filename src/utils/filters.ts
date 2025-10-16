@@ -55,7 +55,10 @@ export function parseTargetFromQueryName(
 }
 
 export function toDateOnlyIso(date: Date): string {
-  return date.toISOString().slice(0, 10);
+  const y = date.getFullYear();
+  const m = `${date.getMonth() + 1}`.padStart(2, "0");
+  const d = `${date.getDate()}`.padStart(2, "0");
+  return `${y}-${m}-${d}`;
 }
 
 export function extentFromValues(values: unknown[]): { min?: Date; max?: Date } {
