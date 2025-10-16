@@ -116,6 +116,7 @@ type DateRangeFilterProps = {
   showQuickApply?: boolean;
   showClear?: boolean;
   isInteractive?: boolean;
+  allowManualEntry?: boolean;
   strings: VisualStrings;
 };
 
@@ -213,6 +214,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   showQuickApply = false,
   showClear = true,
   isInteractive = true,
+  allowManualEntry = true,
   strings,
 }) => {
   const locale = localeOverride && localeOverride.trim()
@@ -459,6 +461,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   );
   const isEditingFrom = manualEdit?.field === "from";
   const isEditingTo = manualEdit?.field === "to";
+  const manualEntryEnabled = isInteractive && allowManualEntry;
 
   const closeManualEdit = useCallback(() => {
     setManualEdit(null);
@@ -469,7 +472,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
     (field: "from" | "to") => (event: React.MouseEvent<HTMLElement> | React.KeyboardEvent<HTMLElement>) => {
       event.preventDefault();
       event.stopPropagation();
-      if (!isInteractive) {
+      if (!manualEntryEnabled) {
         return;
       }
       setOpen(false);
@@ -478,7 +481,7 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
         value: formatManualDate(field === "from" ? committedRange.from : committedRange.to),
       });
     },
-    [committedRange.from, committedRange.to, isInteractive],
+    [committedRange.from, committedRange.to, manualEntryEnabled],
   );
 
   const handleManualChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -546,10 +549,10 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
   }, [manualEdit]);
 
   useEffect(() => {
-    if (!isInteractive) {
+    if (!manualEntryEnabled) {
       setManualEdit(null);
     }
-  }, [isInteractive]);
+  }, [manualEntryEnabled]);
 
   const handlePresetDraft = useCallback(
     (presetId: string) => {
@@ -688,9 +691,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             ]
               .filter(Boolean)
               .join(" ")}
-            onClick={isEditingFrom ? undefined : openManualEdit("from")}
+            onClick={isEditingFrom || !manualEntryEnabled ? undefined : openManualEdit("from")}
             onKeyDown={
-              isEditingFrom
+              isEditingFrom || !manualEntryEnabled
                 ? undefined
                 : (event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -698,8 +701,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                     }
                   }
             }
-            role={!isEditingFrom && isInteractive ? "button" : undefined}
-            tabIndex={!isEditingFrom && isInteractive ? 0 : -1}
+            role={!isEditingFrom && manualEntryEnabled ? "button" : undefined}
+            tabIndex={!isEditingFrom && manualEntryEnabled ? 0 : -1}
             aria-label={
               !isEditingFrom
                 ? `${strings.manualEntry.startLabel}: ${committedFromLabel}`
@@ -754,9 +757,9 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
             ]
               .filter(Boolean)
               .join(" ")}
-            onClick={isEditingTo ? undefined : openManualEdit("to")}
+            onClick={isEditingTo || !manualEntryEnabled ? undefined : openManualEdit("to")}
             onKeyDown={
-              isEditingTo
+              isEditingTo || !manualEntryEnabled
                 ? undefined
                 : (event) => {
                     if (event.key === "Enter" || event.key === " ") {
@@ -764,8 +767,8 @@ export const DateRangeFilter: React.FC<DateRangeFilterProps> = ({
                     }
                   }
             }
-            role={!isEditingTo && isInteractive ? "button" : undefined}
-            tabIndex={!isEditingTo && isInteractive ? 0 : -1}
+            role={!isEditingTo && manualEntryEnabled ? "button" : undefined}
+            tabIndex={!isEditingTo && manualEntryEnabled ? 0 : -1}
             aria-label={
               !isEditingTo
                 ? `${strings.manualEntry.endLabel}: ${committedToLabel}`

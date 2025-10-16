@@ -20,7 +20,12 @@ import {
   WEEK_START_ITEMS as FORMAT_WEEK_START_ITEMS,
   LOCALE_ITEMS as FORMAT_LOCALE_ITEMS,
 } from "./formattingSettings";
-import { extentFromValues, parseTargetFromQueryName, toDateOnlyIso } from "../utils/filters";
+import {
+  buildDateRangeFilter,
+  extentFromValues,
+  parseTargetFromQueryName,
+  toDateOnlyIso,
+} from "../utils/filters";
 import { mergeBounds } from "../utils/bounds";
 import { getContrastingTextColor, lighten, toRgbaString } from "../utils/colors";
 
@@ -68,10 +73,20 @@ type ButtonSettings = {
   showClear?: boolean;
 };
 
+type TooltipSettings = {
+  show?: boolean;
+};
+
+type ManualEntrySettings = {
+  enabled?: boolean;
+};
+
 type VisualSettings = {
   defaults: DefaultsSettings;
   pill: PillSettings;
   buttons: ButtonSettings;
+  manualEntry: ManualEntrySettings;
+  tooltips: TooltipSettings;
   persistedState?: PersistedState;
 };
 
@@ -225,6 +240,8 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
 
   const pill = objects?.pill as powerbi.DataViewObject | undefined;
   const buttons = objects?.buttons as powerbi.DataViewObject | undefined;
+  const manualEntry = objects?.manualEntry as powerbi.DataViewObject | undefined;
+  const tooltips = objects?.tooltips as powerbi.DataViewObject | undefined;
 
   const presetId =
     typeof defaults?.presetId === "string" ? defaults.presetId : undefined;
@@ -251,6 +268,12 @@ function parseVisualSettings(dataView?: DataView): VisualSettings {
     buttons: {
       showQuickApply: getBooleanValue(buttons?.showQuickApply),
       showClear: getBooleanValue(buttons?.showClear),
+    },
+    manualEntry: {
+      enabled: getBooleanValue(manualEntry?.enabled),
+    },
+    tooltips: {
+      show: getBooleanValue(tooltips?.show),
     },
     persistedState: parsePersistedState(state?.payload),
   };
@@ -552,6 +575,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     defaults: {},
     pill: {},
     buttons: {},
+    manualEntry: {},
+    tooltips: {},
   };
 
   private formattingSettingsService: FormattingSettingsService;
@@ -852,10 +877,7 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
       this.lastAppliedFilterKey = key;
     }
 
-    const filter = new models.AdvancedFilter(this.columnTarget, "And", [
-      { operator: "GreaterThanOrEqual", value: toDateOnlyIso(constrained.from) },
-      { operator: "LessThanOrEqual", value: toDateOnlyIso(constrained.to) },
-    ]);
+    const filter = buildDateRangeFilter(this.columnTarget, constrained);
 
     this.host.applyJsonFilter(filter.toJSON(), "general", "filter", powerbi.FilterAction.merge);
   }
@@ -1000,6 +1022,12 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
     const buttonsCard = this.formattingSettings.buttons;
     buttonsCard.showQuickApply.value = settings.buttons.showQuickApply ?? false;
     buttonsCard.showClear.value = settings.buttons.showClear ?? true;
+
+    const manualEntryCard = this.formattingSettings.manualEntry;
+    manualEntryCard.enabled.value = settings.manualEntry.enabled ?? true;
+
+    const tooltipsCard = this.formattingSettings.tooltips;
+    tooltipsCard.show.value = settings.tooltips.show ?? true;
   }
 
   private renderCore(options: VisualUpdateOptions): void {
@@ -1138,6 +1166,9 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         showQuickApply: settings.buttons.showQuickApply ?? null,
         showClear: settings.buttons.showClear ?? null,
       },
+      manualEntry: {
+        enabled: settings.manualEntry.enabled ?? true,
+      },
       allowInteractions: this.allowInteractions,
       highContrast: this.isHighContrast,
       theme: themeSignature,
@@ -1180,6 +1211,8 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         : undefined;
     const dialogInvoker = this.canUseHostDialog() ? this.openDateDialog : undefined;
 
+    const allowManualEntry = settings.manualEntry.enabled ?? true;
+
     this.reactRoot.render(
       <DateRangeFilter
         presets={localizedPresets}
@@ -1203,30 +1236,36 @@ export class PresetDateSlicerVisual implements powerbi.extensibility.visual.IVis
         showClear={showClear}
         onChange={handleChange}
         isInteractive={this.allowInteractions}
+        allowManualEntry={allowManualEntry}
         strings={this.strings}
       />,
     );
 
     const tooltipLocale = localeOverride ?? (typeof navigator !== "undefined" ? navigator.language : "en-US");
+    const tooltipsEnabled = settings.tooltips.show ?? true;
     const pillElement = this.rootElement.querySelector<HTMLElement>(".date-range-filter__pill");
     if (pillElement) {
       const tooltipSelection = select(pillElement);
       tooltipSelection.on(".tooltip", null);
       tooltipSelection.datum({});
-      this.tooltipServiceWrapper.addTooltip(
-        tooltipSelection,
-        () => {
-          if (!this.currentRange) {
-            return [];
-          }
-          return [
-            {
-              displayName: this.strings.tooltip.label,
-              value: formatRange(this.currentRange.from, this.currentRange.to, tooltipLocale),
-            },
-          ];
-        },
-      );
+      if (tooltipsEnabled) {
+        this.tooltipServiceWrapper.addTooltip(
+          tooltipSelection,
+          () => {
+            if (!this.currentRange) {
+              return [];
+            }
+            return [
+              {
+                displayName: this.strings.tooltip.label,
+                value: formatRange(this.currentRange.from, this.currentRange.to, tooltipLocale),
+              },
+            ];
+          },
+        );
+      } else {
+        this.tooltipServiceWrapper.hide();
+      }
     } else {
       this.tooltipServiceWrapper.hide();
     }

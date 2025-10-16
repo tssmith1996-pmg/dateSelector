@@ -73,6 +73,22 @@
       ],
       "missing": []
     },
+    "format_manualEntry_displayName": {
+      "present": [
+        "en-AU",
+        "en-US",
+        "fr-FR"
+      ],
+      "missing": []
+    },
+    "format_manualEntry_enabled": {
+      "present": [
+        "en-AU",
+        "en-US",
+        "fr-FR"
+      ],
+      "missing": []
+    },
     "format_pill_background": {
       "present": [
         "en-AU",
@@ -146,6 +162,22 @@
       "missing": []
     },
     "format_state_payload": {
+      "present": [
+        "en-AU",
+        "en-US",
+        "fr-FR"
+      ],
+      "missing": []
+    },
+    "format_tooltips_displayName": {
+      "present": [
+        "en-AU",
+        "en-US",
+        "fr-FR"
+      ],
+      "missing": []
+    },
+    "format_tooltips_show": {
       "present": [
         "en-AU",
         "en-US",

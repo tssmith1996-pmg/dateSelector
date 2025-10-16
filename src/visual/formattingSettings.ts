@@ -185,12 +185,44 @@ export class ButtonsCardSettings extends SimpleCard {
   public slices = [this.showQuickApply, this.showClear];
 }
 
+export class ManualEntryCardSettings extends SimpleCard {
+  public name = "manualEntry";
+  public displayNameKey = "format_manualEntry_displayName";
+  public displayName = "Manual entry";
+
+  public enabled = new ToggleSwitch({
+    name: "enabled",
+    displayNameKey: "format_manualEntry_enabled",
+    displayName: "Allow manual inline entry",
+    value: true,
+  });
+
+  public slices = [this.enabled];
+}
+
+export class TooltipsCardSettings extends SimpleCard {
+  public name = "tooltips";
+  public displayNameKey = "format_tooltips_displayName";
+  public displayName = "Tooltips";
+
+  public show = new ToggleSwitch({
+    name: "show",
+    displayNameKey: "format_tooltips_show",
+    displayName: "Show tooltips",
+    value: true,
+  });
+
+  public slices = [this.show];
+}
+
 export class PresetDateSlicerFormattingSettingsModel extends Model {
   public defaults = new DefaultsCardSettings();
   public pill = new PillCardSettings();
   public buttons = new ButtonsCardSettings();
+  public manualEntry = new ManualEntryCardSettings();
+  public tooltips = new TooltipsCardSettings();
 
-  public cards = [this.defaults, this.pill, this.buttons];
+  public cards = [this.defaults, this.pill, this.buttons, this.manualEntry, this.tooltips];
 }
 
 export type PresetDateSlicerFormattingSettings = PresetDateSlicerFormattingSettingsModel;

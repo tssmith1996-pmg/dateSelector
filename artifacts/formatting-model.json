@@ -556,6 +556,44 @@
         "displayName": "Show Clear",
         "value": false
       }
+    },
+    {
+      "slices": [
+        {
+          "name": "enabled",
+          "displayNameKey": "format_manualEntry_enabled",
+          "displayName": "Allow manual inline entry",
+          "value": false
+        }
+      ],
+      "name": "manualEntry",
+      "displayNameKey": "format_manualEntry_displayName",
+      "displayName": "Manual entry",
+      "enabled": {
+        "name": "enabled",
+        "displayNameKey": "format_manualEntry_enabled",
+        "displayName": "Allow manual inline entry",
+        "value": false
+      }
+    },
+    {
+      "slices": [
+        {
+          "name": "show",
+          "displayNameKey": "format_tooltips_show",
+          "displayName": "Show tooltips",
+          "value": true
+        }
+      ],
+      "name": "tooltips",
+      "displayNameKey": "format_tooltips_displayName",
+      "displayName": "Tooltips",
+      "show": {
+        "name": "show",
+        "displayNameKey": "format_tooltips_show",
+        "displayName": "Show tooltips",
+        "value": true
+      }
     }
   ]
 }

@@ -221,6 +221,41 @@ describe("DateRangeFilter defaults", () => {
     expect(endInput.getAttribute("aria-describedby")).toBe(endMessage.id);
     expect(endMessage.id).not.toBe(startMessageId);
   });
+
+  it("disables inline manual editing when allowManualEntry is false", async () => {
+    await act(async () => {
+      root.render(
+        <DateRangeFilter
+          presets={PRESETS}
+          onChange={jest.fn()}
+          forcePortalStrategy="iframe"
+          defaultRange={{ from: new Date(2024, 0, 2), to: new Date(2024, 0, 5) }}
+          allowManualEntry={false}
+          strings={STRINGS}
+        />,
+      );
+    });
+
+    const triggers = container.querySelectorAll<HTMLSpanElement>(
+      ".date-range-filter__label-date",
+    );
+    const startTrigger = triggers[0];
+    if (!startTrigger) {
+      throw new Error("Expected start date trigger to exist");
+    }
+
+    expect(startTrigger.getAttribute("role")).toBeNull();
+    expect(startTrigger.getAttribute("tabindex")).toBe("-1");
+
+    await act(async () => {
+      startTrigger.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
+    const manualInput = container.querySelector<HTMLInputElement>(
+      ".date-range-filter__input",
+    );
+    expect(manualInput).toBeNull();
+  });
 });
 const STRINGS = getVisualStrings({
   getDisplayName: () => "",
